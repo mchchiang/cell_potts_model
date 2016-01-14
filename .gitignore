@@ -1,0 +1,16 @@
+
+# Ignore Mac generated files
+*.DS_Store
+
+# Ignore java class files
+*.class
+
+# Ignore mobile tools for Java
+*.mtj.tmp/
+
+# Ignore package files
+*.jar
+*.war
+*.ear
+
+/bin/

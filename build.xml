@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<project name="project" default="default">
+    <description>
+		ANT build file to build and test the puma_hare_model package.
+    </description>
+	
+	<!-- classpath -->
+	<path id="classpath">
+		<pathelement location="build/classes"/>
+		<pathelement location="build/test/classes"/>
+		<pathelement location="."/>
+		<fileset dir=".">
+			<include name="*.jar"/>
+		</fileset>
+	</path>
+	
+    <target name="default" depends="compile-tests" 
+    	description="Compile all the classes and test classes"/>
+	
+	<target name="init" description="Make build directories">
+		<mkdir dir="build"/>
+		<mkdir dir="build/lib"/>
+		<mkdir dir="build/javadocs"/>
+		<mkdir dir="build/classes"/>
+		<mkdir dir="build/test/classes"/>
+		<mkdir dir="build/test/classes/puma_hare_model"/>
+		<!-- make sure all test-related resources are copied to build folder -->
+		<copy todir="build/test/classes/puma_hare_model">
+			<fileset dir="test/puma_hare_model/">
+				<exclude name="*.java"/>
+			</fileset>
+		</copy>
+	</target>
+
+	
+	<target name="clean" description="Clear the build directory">
+		<delete dir="build"/>
+	</target>
+	
+	
+    <target name="compile" depends="init" description="Compile code">
+    	<javac srcdir="src" destdir="build/classes" classpathref="classpath">
+    		<include name="**/*.java"/>
+    	</javac>
+	</target>
+	
+	<target name="compile-tests" depends="compile" description="Compile tests">
+		<javac srcdir="test" destdir="build/test/classes" classpathref="classpath">
+			<include name="**/*.java" />
+		</javac>
+	</target>
+	
+	<target name="run" depends="compile" description="Run the code">
+		<java classname="puma_hare_model.Simulation" classpathref="classpath">
+			<arg value="${configPath}"/>
+			<classpath>
+				<pathelement location="build/classes"/>
+			</classpath>
+		</java>
+	</target>
+	
+	<target name="test" depends="compile-tests" description="Test classes">
+		<mkdir dir="build/test/xml" />
+		<junit printsummary="yes" haltonfailure="no" >
+			<classpath>
+			        <path refid="classpath"/>
+			</classpath>
+			<formatter type="xml"/>
+			<batchtest fork="yes" todir="build/test/xml">
+				<fileset dir="test">
+					<include name="**/*.java"/>
+				</fileset>
+			</batchtest>
+		</junit>
+	</target>
+	
+	<target name="doc" depends="init" description="generate documentation">
+	    <javadoc sourcepath="src/" destdir="build/javadocs/"/>
+	</target>
+
+	<target name="jar" depends="compile" description="Package to jar file">
+		<jar destfile="build/lib/puma_hare_model.jar" basedir="build/classes"/>
+	</target>
+	
+	<target name="test-report" description="Convert ANT junit XML reports into HTML">
+		<mkdir dir="build/test/html"/>
+		<junitreport todir="build/test/xml">
+			<fileset dir="build/test/xml">
+				<include name="TEST-*.xml"/>
+			</fileset>
+			<report todir="build/test/html"/>
+		</junitreport>
+	</target>
+	
+</project>
