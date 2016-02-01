@@ -33,4 +33,12 @@ public class IsingView extends JFrame {
 	public void setModel(SpinModel model){
 		viewPanel.setModel(model);
 	}
+	
+	public void initImage(){
+		viewPanel.initImage();
+	}
+	
+	public void stopDrawingImage(){
+		viewPanel.stopDrawingImage();
+	}
 }

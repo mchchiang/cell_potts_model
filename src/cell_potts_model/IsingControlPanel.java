@@ -90,8 +90,11 @@ public class IsingControlPanel extends JPanel implements ActionListener {
 					int steps = Integer.parseInt(txtNumOfSteps.getText());*/
 					btnRun.setEnabled(false);
 					CellPottsModel model = new CellPottsModel();
+					model.initSpin();
 					view.setModel(model);
-					model.run(1000);
+					view.initImage();
+					model.run(10000);
+					view.stopDrawingImage();
 					btnRun.setEnabled(true);
 				}
 			};

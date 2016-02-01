@@ -1,16 +1,21 @@
 package cell_potts_model;
 
 import javax.swing.*;
+
 import java.awt.*;
+import java.awt.image.BufferedImage;
 import java.util.Observable;
 import java.util.Observer;
+import java.util.Timer;
+import java.util.TimerTask;
 
 @SuppressWarnings("serial")
 public class IsingViewPanel extends JPanel implements Observer {
 	
 	private SpinModel model;
-	private int cellSize;
 	private Color [] colours;
+	private BufferedImage fg = null;
+	private Timer timer = null;
 	
 	public IsingViewPanel(SpinModel model){
 		this.model = model;
@@ -46,32 +51,47 @@ public class IsingViewPanel extends JPanel implements Observer {
 		}
 	}
 	
+	public void initImage(){
+		int width = model.getNumOfColumns();
+		int height = model.getNumOfRows();
+		
+		fg = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
+		
+		//draw an initial image of the cell
+		for (int i = 0; i < width; i++){
+			for (int j = 0; j < height; j++){
+				fg.setRGB(i, j, colours[model.getSpin(i, j)].getRGB());
+			}
+		}
+		
+		JPanel panel = this;
+		panel.getGraphics().drawImage(fg, 0, 
+				panel.getInsets().top, panel.getWidth(), 
+				panel.getHeight() - panel.getInsets().top, null);
+		
+		timer = new Timer();
+		timer.scheduleAtFixedRate(new TimerTask() {
+			public void run() {
+				panel.getGraphics().drawImage(
+						fg, 0, panel.getInsets().top, 
+						panel.getWidth(), 
+						panel.getHeight() - panel.getInsets().top, null);
+			}
+		}, 0, 33);
+	}
+	
+	public void stopDrawingImage(){
+		timer.cancel();
+		timer = null;
+	}
+	
 	@Override
 	public void paint(Graphics g){
 		super.paint(g);
-		int width = this.getWidth();
-		int height = this.getHeight();
-		
-		//determine the pixel per square
-		int rows = model.getNumOfRows();
-		int columns = model.getNumOfColumns();
-		
-		if (rows != 0 || columns != 0){
-			int cellWidth = width / columns;
-			int cellHeight = height / rows;
-			if (cellWidth > cellHeight){
-				cellSize = cellHeight;
-			} else {
-				cellSize = cellWidth;
-			}
-			
-			for (int i = 0; i < rows; i++){
-				for (int j = 0; j < columns; j++){
-					g.setColor(colours[model.getSpin(i, j)]);
-					g.fillRect(j * cellSize, i * cellSize, cellSize, cellSize);
-				}
-			}
-		}
+		g.drawImage(
+				fg, 0, this.getInsets().top, 
+				this.getWidth(), 
+				this.getHeight() - this.getInsets().top, null);
 	}
 	
 	@Override
@@ -81,8 +101,6 @@ public class IsingViewPanel extends JPanel implements Observer {
 	}	
 	
 	public void drawSpin(int i, int j){
-		Graphics g = this.getGraphics();
-		g.setColor(colours[model.getSpin(i, j)]);
-		g.fillRect(j * cellSize, i * cellSize, cellSize, cellSize);
+		fg.setRGB(i, j, colours[model.getSpin(i, j)].getRGB());
 	}
 }

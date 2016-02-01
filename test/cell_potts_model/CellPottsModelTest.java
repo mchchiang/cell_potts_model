@@ -45,10 +45,10 @@ public class CellPottsModelTest {
 	@Test
 	public void testNegDeltaE1(){
 		int [][] spin = new int [][] {
-			{1, 1, 4, 1},
-			{2, 2, 3, 2},
-			{2, 3, 3, 3},
-			{1, 4, 4, 4}
+				{1,2,2,1},
+				{1,2,3,4},
+				{4,3,3,4},
+				{1,2,3,4}
 		};
 		double [] areaTarget = new double [] {4.0, 4.0, 4.0, 4.0, 4.0};
 		double [] area = new double [] {0.0, 4.0, 4.0, 4.0, 4.0};
@@ -67,10 +67,14 @@ public class CellPottsModelTest {
 	@Test
 	public void testNegDeltaE2(){
 		int [][] spin = new int [][] {
-			{1, 1, 4, 1},
-			{2, 2, 3, 2},
-			{2, 3, 3, 3},
-			{1, 4, 4, 4}
+				{1,2,2,1},
+				{1,2,3,4},
+				{4,3,3,4},
+				{1,2,3,4}
+//			{1, 1, 4, 1},
+//			{2, 2, 3, 2},
+//			{2, 3, 3, 3},
+//			{1, 4, 4, 4}
 		};
 		double [] areaTarget = new double [] {4.0, 4.0, 4.0, 4.0, 4.0};
 		double [] area = new double [] {0.0, 4.0, 4.0, 4.0, 4.0};
