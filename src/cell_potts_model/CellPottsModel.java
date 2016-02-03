@@ -55,9 +55,9 @@ public class CellPottsModel extends SpinModel {
 	public CellPottsModel(){
 		nxmax = 50;
 		nymax = 50;	
-		nx = 80;
-		ny = 80;
-		q = 200;
+		nx = 50;
+		ny = 50;
+		q = 50;
 		seed = -1;
 		temperature = 1;
 		lambda = 0.1;
@@ -227,6 +227,7 @@ public class CellPottsModel extends SpinModel {
 				area[oldSpin], area[newSpin], newAreaOldSpin, newAreaNewSpin);
 
 		if (Math.log(rand.nextDouble()) <= (negDeltaE + motilityE(i,j,newSpin)) / temperature){
+		//if (Math.log(rand.nextDouble()) <= (negDeltaE) / temperature){
 			area[spin[i][j]] = newAreaOldSpin;
 			area[newSpin] = newAreaNewSpin;
 			spin[i][j] = newSpin;
