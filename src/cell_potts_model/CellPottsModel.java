@@ -51,9 +51,9 @@ public class CellPottsModel extends SpinModel {
 	public CellPottsModel(){
 		nxmax = 50;
 		nymax = 50;	
-		nx = 50;
-		ny = 50;
-		q = 20;
+		nx = 80;
+		ny = 80;
+		q = 100;
 		seed = -1;
 		temperature = 1;
 		lambda = 0.1;
@@ -65,8 +65,8 @@ public class CellPottsModel extends SpinModel {
 		init();
 
 		try {
-			cmWriter = new PrintWriter(new BufferedWriter(new FileWriter("cm.dat")));
-			r2Writer = new PrintWriter(new BufferedWriter(new FileWriter("r2_200_1000_j2_2.dat")));			
+			cmWriter = new PrintWriter(new BufferedWriter(new FileWriter("cm_searchEntireArray.dat")));
+			r2Writer = new PrintWriter(new BufferedWriter(new FileWriter("r2_searchEntireArray.dat")));			
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
