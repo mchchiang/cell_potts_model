@@ -31,15 +31,19 @@ public class CellPottsModel extends SpinModel {
 	private double [] ycm;
 	private double [] xcmNew;
 	private double [] ycmNew;
-	
+
 	//variables for measuring <R^2>
 	private double [] drx;
 	private double [] dry;
 
+	//variables for cell motility
+	private double [] px;
+	private double [] py;
+
 	//seed for generating random numbers
 	private int seed;
 	private Random rand;
-	
+
 	private PrintWriter cmWriter = null;
 	private PrintWriter r2Writer = null;
 
@@ -47,9 +51,9 @@ public class CellPottsModel extends SpinModel {
 	public CellPottsModel(){
 		nxmax = 50;
 		nymax = 50;	
-		nx = 200;
-		ny = 200;
-		q = 1000;
+		nx = 50;
+		ny = 50;
+		q = 20;
 		seed = -1;
 		temperature = 1;
 		lambda = 0.1;
@@ -57,17 +61,13 @@ public class CellPottsModel extends SpinModel {
 		spin = new int [nx][ny];
 		area = new double [q+1];
 		areaTarget = new double [q+1];
-		
+
 		init();
-		
+
 		try {
 			cmWriter = new PrintWriter(new BufferedWriter(new FileWriter("cm.dat")));
-			r2Writer = new PrintWriter(new BufferedWriter(new FileWriter("r2.dat")));			
-			for (int i = 0; i <= q; i++){
-				cmWriter.print(i + "x " + i + "y ");
-			}
+			r2Writer = new PrintWriter(new BufferedWriter(new FileWriter("r2_200_1000_j2_2.dat")));			
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
@@ -86,7 +86,7 @@ public class CellPottsModel extends SpinModel {
 		this.seed = seed;
 		init();
 	}
-	
+
 	public void init(){
 		xx = new double [q+1];
 		xy = new double [q+1];
@@ -96,11 +96,14 @@ public class CellPottsModel extends SpinModel {
 		ycm = new double [q+1];
 		xcmNew = new double [q+1];
 		ycmNew = new double [q+1];
-		
+
 		drx = new double [q+1];
 		dry = new double [q+1];
 		
-		rand = new Random(seed);
+		px = new double [q+1];
+		py = new double [q+1];
+
+		rand = new Random();
 	}
 
 
@@ -131,6 +134,12 @@ public class CellPottsModel extends SpinModel {
 	public void run(int numOfSweeps){
 		//init();
 		//printSpins();
+		double x = 1.0 / Math.sqrt(2);
+		for (int i = 0; i <= q; i++){
+			px[i] = x;
+			py[i] = x;
+		}
+		
 		calculateCM();
 		writeCM(0);
 		for (int n = 0;  n < numOfSweeps; n++){
@@ -138,17 +147,17 @@ public class CellPottsModel extends SpinModel {
 				nextStep();	
 			}
 			//if (n % 2000 == 0){
-				System.out.println("Sweep: " + n);
+			System.out.println("Sweep: " + n);
 			//}
-			
+
 			calculateCM();
-			//if (n > 1000){
+			if (n > 1000){
 				updatedr();
 				writeR2(n+1, calculateR2());	
-			//}
+			}
 			writeCM(n+1);
 		}
-		
+
 		cmWriter.close();
 		r2Writer.close();
 	}
@@ -199,7 +208,7 @@ public class CellPottsModel extends SpinModel {
 		double negDeltaE = negDeltaE(i, j, newSpin, 
 				area[spin[i][j]], area[newSpin], newAreaOldSpin, newAreaNewSpin);
 
-		if (Math.log(rand.nextDouble()) <= negDeltaE / temperature){
+		if (Math.log(rand.nextDouble()) <= (negDeltaE + motilityE(i,j,newSpin))/ temperature){
 			area[spin[i][j]] = newAreaOldSpin;
 			area[newSpin] = newAreaNewSpin;
 			spin[i][j] = newSpin;
@@ -209,7 +218,16 @@ public class CellPottsModel extends SpinModel {
 		}
 	}
 
-	
+	//calculate the energy 
+	public double motilityE(int i, int j, int newSpin){
+		double energy = 0.0;
+		double [] dcmOld = calculateDeltaCM(i,j, spin[i][j], true);
+		double [] dcmNew = calculateDeltaCM(i,j, newSpin, false);
+		energy += 4.0 * dot(dcmOld[0], dcmOld[1], px[spin[i][j]], py[spin[i][j]]);
+		energy += 4.0 * dot(dcmNew[0], dcmNew[1], px[newSpin], py[newSpin]);
+		return energy;
+	}
+
 	//calculate the negative of the change in energy due to spin change
 	public double negDeltaE(int i, int j, int newSpin, 
 			double oldAreaOldSpin, double oldAreaNewSpin,
@@ -219,7 +237,7 @@ public class CellPottsModel extends SpinModel {
 		int idown = idown(i);
 		int jup = jup(j);
 		int jdown = jdown(j);
-		
+
 		double eold, enew;
 		//calculate the change in energy due to spin change
 		//energy changes due to pair-wise spin interaction
@@ -272,8 +290,68 @@ public class CellPottsModel extends SpinModel {
 
 		return energy;
 	}
-	
-	
+
+
+	public double [] calculateDeltaCM(int x, int y, int cellSpin, boolean remove){
+		double xx = 0;
+		double xy = 0;
+		double yx = 0;
+		double yy = 0;
+		
+		for (int i = 0; i < nx; i++){
+			for (int j = 0; j < ny; j++){
+				if (spin[i][j] == cellSpin && x != i && y != j){
+					xx += Math.cos((double) i * 2 * Math.PI / (double) nx);
+					xy += Math.sin((double) i * 2 * Math.PI / (double) nx);
+					yx += Math.cos((double) j * 2 * Math.PI / (double) ny);
+					yy += Math.sin((double) j * 2 * Math.PI / (double) ny);
+				}
+			}
+		}
+		
+		double xxNew, xyNew, yxNew, yyNew, xcm, ycm, xcmNew, ycmNew;
+		
+		if (!remove){
+			xxNew = xx + Math.cos((double) x * 2 * Math.PI / (double) nx);
+			xyNew = xy + Math.sin((double) x * 2 * Math.PI / (double) nx);
+			yxNew = yx + Math.cos((double) y * 2 * Math.PI / (double) ny);
+			yyNew = yy + Math.sin((double) y * 2 * Math.PI / (double) ny);
+			xxNew /= (double) (area[cellSpin] + 1);
+			xyNew /= (double) (area[cellSpin] + 1);
+			yxNew /= (double) (area[cellSpin] + 1);
+			yyNew /= (double) (area[cellSpin] + 1);
+			xx /= (double) area[cellSpin];
+			xy /= (double) area[cellSpin];
+			yx /= (double) area[cellSpin];
+			yy /= (double) area[cellSpin];
+			
+		} else {
+			xxNew = xx;
+			xyNew = xy;
+			yxNew = yx;
+			yyNew = yy;
+			xx += Math.cos((double) x * 2 * Math.PI / (double) nx);
+			xy += Math.sin((double) x * 2 * Math.PI / (double) nx);
+			yx += Math.cos((double) y * 2 * Math.PI / (double) ny);
+			yy += Math.sin((double) y * 2 * Math.PI / (double) ny);
+			xx /= (double) area[cellSpin];
+			xy /= (double) area[cellSpin];
+			yx /= (double) area[cellSpin];
+			yy /= (double) area[cellSpin];
+			xxNew /= (double) (area[cellSpin] - 1);
+			xyNew /= (double) (area[cellSpin] - 1);
+			yxNew /= (double) (area[cellSpin] - 1);
+			yyNew /= (double) (area[cellSpin] - 1);
+		}
+		xcmNew = (Math.atan2(-xyNew, -xxNew) + Math.PI) * (double) nx / (2 * Math.PI);
+		ycmNew = (Math.atan2(-yyNew, -yxNew) + Math.PI) * (double) ny / (2 * Math.PI);
+		xcm = (Math.atan2(-xy, -xx) + Math.PI) * (double) nx / (2 * Math.PI);
+		ycm = (Math.atan2(-yy, -yx) + Math.PI) * (double) ny / (2 * Math.PI);
+		
+		return new double [] {xDiff(xcmNew, xcm), yDiff(ycmNew, ycm)};
+	}
+
+
 	public void calculateCM(){
 		for (int i = 0; i <= q; i++){
 			xx[i] = 0;
@@ -281,7 +359,7 @@ public class CellPottsModel extends SpinModel {
 			yx[i] = 0;
 			yy[i] = 0;
 		}
-		
+
 		for (int i = 0; i < nx; i++){
 			for (int j = 0; j < ny; j++){
 				/*
@@ -294,32 +372,32 @@ public class CellPottsModel extends SpinModel {
 				yy[spin[i][j]] += Math.sin((double) j * 2 * Math.PI / (double) ny);
 			}
 		}
-		
+
 		for (int i = 0; i <= q; i++){
 			//average all the transformed coordinates
 			xx[i] /= area[i];
 			xy[i] /= area[i];
 			yx[i] /= area[i];
 			yy[i] /= area[i];
-			
+
 			//transfer new cm to old cm
 			xcm[i] = xcmNew[i];
 			ycm[i] = ycmNew[i];
-			
+
 			//convert back to the 2D coordinates to get the CM
 			xcmNew[i] = (Math.atan2(-xy[i], -xx[i]) + Math.PI) * (double) nx / (2 * Math.PI);
 			ycmNew[i] = (Math.atan2(-yy[i], -yx[i]) + Math.PI) * (double) ny / (2 * Math.PI);
-			
+
 		}
 	}
-	
+
 	public void updatedr(){
 		for (int i = 1; i <= q; i++){
 			drx[i] += xDiff(xcmNew[i], xcm[i]);
 			dry[i] += yDiff(ycmNew[i], ycm[i]);
 		}
 	}
-	
+
 	public double calculateR2(){
 		double dr2 = 0.0;
 		int count = 0;
@@ -330,62 +408,73 @@ public class CellPottsModel extends SpinModel {
 			}
 		}
 		return dr2 / (double) (count);
-		
+
 	}
+
+	//vector methods
 	
 	//calculate the difference between two points in periodic B.C.
 	public double xDiff(double x1, double x2){
 		double dx = x1-x2;
-		if (dx > (double) nx / 2.0) dx -= nx;
-		if (dx < (double) -nx / 2.0) dx += nx;
+		if (dx > (double) nx / 2.0) {
+			dx -= nx;
+		} else if (dx < (double) -nx / 2.0) {
+			dx += nx;
+		}
 		return dx;
 	}
-	
+
 	public double yDiff(double y1, double y2){
 		double dy = y1-y2;
-		if (dy > (double) ny / 2.0) dy -= ny;
-		if (dy < (double) -ny / 2.0) dy += ny;
+		if (dy > (double) ny / 2.0){
+			dy -= ny;
+		} else if (dy < (double) -ny / 2.0) {
+			dy += ny;
+		}
 		return dy;
 	}
-	
+
 	public double mag2(double x, double y){
 		return x * x + y * y;
 	}
-	
-	
+
+	public double dot(double x1, double y1, double x2, double y2){
+		return x1 * x2 + y1 * y2;
+	}
+
 	public void writeCM(int time){
 		cmWriter.println();
 		for (int i = 0; i <= q; i++){
 			cmWriter.printf("%.6f %.6f %.6f", (double) time, xcmNew[i], ycmNew[i]);
 		}
 	}
-	
+
 	public void writeR2(int time, double r2){
 		r2Writer.println();
-		r2Writer.printf("%d %.6f %.6f", time, r2, getTotalEnergy());
+		r2Writer.printf("%d %.6f", time, r2);
 	}
-	
+
 	//periodic boundary methods
 	private int iup(int i){
 		if (i == nx-1) return 0;
 		return i+1;
 	}
-	
+
 	private int idown(int i){
 		if (i == 0) return nx-1;
 		return i-1;
 	}
-	
+
 	private int jup(int j){
 		if (j == ny-1) return 0;
 		return j+1;
 	}
-	
+
 	private int jdown(int j){
 		if (j == 0) return ny-1;
 		return j-1;
 	}
-	
+
 	//accessor methods
 	@Override
 	public int getSpin(int i, int j){
@@ -425,12 +514,12 @@ public class CellPottsModel extends SpinModel {
 		for (int i = 0; i < nx; i++){
 			for (int j = 0; j < ny; j++){
 				energy += pottsEnergy(spin[i][j], spin[idown(i)][j]) +
-						  pottsEnergy(spin[i][j], spin[idown(i)][jdown(j)]) +
-						  pottsEnergy(spin[i][j], spin[i][jdown(j)]) +
-						  pottsEnergy(spin[i][j], spin[iup(i)][jdown(j)]);
+						pottsEnergy(spin[i][j], spin[idown(i)][jdown(j)]) +
+						pottsEnergy(spin[i][j], spin[i][jdown(j)]) +
+						pottsEnergy(spin[i][j], spin[iup(i)][jdown(j)]);
 			}
 		}
-		
+
 		//summing energy associated with elastic area constraint
 		for(int i = 0; i <= q; i++){
 			energy += lambda * Math.pow(area[i] - areaTarget[i], 2);
@@ -490,7 +579,7 @@ public class CellPottsModel extends SpinModel {
 			}
 		}
 	}
-	
+
 	public static void main (String [] args){
 		CellPottsModel model = new CellPottsModel();
 		model.initSpin();
