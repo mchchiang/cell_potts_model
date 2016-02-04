@@ -49,9 +49,9 @@ public class CellPottsModel extends SpinModel {
 
 	//constructors
 	public CellPottsModel(){
-		nx = 70;
-		ny = 70;
-		q = 200;
+		nx = 100;
+		ny = 100;
+		q = 100;
 		seed = -1;
 		temperature = 1;
 		lambda = 0.1;
@@ -74,13 +74,11 @@ public class CellPottsModel extends SpinModel {
 	}
 
 	//constructor used for unit testing only!
-	protected CellPottsModel(int [][] initSpin, double [] area, 
-			double [] areaTarget, int q, double temp, double lambda, int seed){
-		this.nx = initSpin.length;
-		this.ny = initSpin[0].length;
-		this.spin = initSpin;
+	protected CellPottsModel(int nx, int ny, int q, double [] areaTarget, 
+			double temp, double lambda, int seed){
+		this.nx = nx;
+		this.ny = ny;
 		this.q = q;
-		this.area = area;
 		this.areaTarget = areaTarget;
 		this.temperature = temp;
 		this.lambda = lambda;
@@ -117,8 +115,9 @@ public class CellPottsModel extends SpinModel {
 
 		rand = new Random(seed);
 	}
-
-
+	
+	//initialisation of the spins
+	//init random spins
 	public void initSpin(){
 		//initialising each of the Q cells as a square with length delta
 		delta = (int) (Math.sqrt((nx*ny)/ (double) q));
@@ -145,10 +144,25 @@ public class CellPottsModel extends SpinModel {
 			}
 		}
 	}
+	
+	//init spins specified by user
+	public void initSpin(int [][] spin){
+		if (spin.length == nx && spin[0].length == ny){
+			area = new double [q+1];
+			this.spin = spin;
+			
+			//update the area and the spin positions (x,y)
+			for (int i = 0; i < nx; i++){
+				for (int j = 0; j < ny; j++){
+					area[spin[i][j]] += 1.0;
+					spinXPos.get(spin[i][j]).add(i);
+					spinYPos.get(spin[i][j]).add(j);
+				}
+			}
+		}
+	}
 
 	public void run(int numOfSweeps){
-		//init();
-		//printSpins();
 		calculateCM();
 		writeCM(0);
 		for (int n = 0;  n < numOfSweeps; n++){
@@ -157,13 +171,10 @@ public class CellPottsModel extends SpinModel {
 			}
 			System.out.println("Sweep: " + n);
 			calculateCM();
-			//if (n > 1000){
 			updatedr();
-			writeR2(n+1, calculateR2());	
-			//}
+			writeR2(n+1, calculateR2());
 			writeCM(n+1);
 		}
-
 		cmWriter.close();
 		r2Writer.close();
 	}
@@ -217,11 +228,10 @@ public class CellPottsModel extends SpinModel {
 				area[oldSpin], area[newSpin], newAreaOldSpin, newAreaNewSpin);
 		
 		double totalEnergy = negDeltaE;
-		if (n > 200){
+		if (n > 1000000){
 			totalEnergy += motilityE(i,j,newSpin);
 		} 
 		
-		//if (Math.log(rand.nextDouble()) <= (negDeltaE + motilityE(i,j,newSpin)) / temperature){
 		if (Math.log(rand.nextDouble()) <= totalEnergy / temperature){
 			area[spin[i][j]] = newAreaOldSpin;
 			area[newSpin] = newAreaNewSpin;
@@ -347,10 +357,10 @@ public class CellPottsModel extends SpinModel {
 				x = pos.get(i);
 				if (x < length / 2){
 					leftCount++;
-					leftSum += x;
+					leftSum += (x+1);//shift by one to avoid starting from zero 
 				} else {
 					rightCount++;
-					rightSum += x;
+					rightSum += (x+1);
 				}
 			}
 			
@@ -375,12 +385,12 @@ public class CellPottsModel extends SpinModel {
 			
 		} else {
 			for (int i = 0; i < n; i++){
-				cm += pos.get(i);
+				cm += pos.get(i) + 1;
 			}
 			cm /= (double) n;
 		}
 		
-		return cm;
+		return (cm-1);
 	}
 	
 	public void calculateCM(){
@@ -410,7 +420,6 @@ public class CellPottsModel extends SpinModel {
 			}
 		}
 		return dr2 / (double) (count);
-
 	}
 
 	//vector related operations
@@ -429,10 +438,12 @@ public class CellPottsModel extends SpinModel {
 		return dy;
 	}
 
+	//return the magnitude square of the vector (x,y)
 	public double mag2(double x, double y){
 		return x * x + y * y;
 	}
 
+	//return the dot product of two vectors
 	public double dot(double x1, double y1, double x2, double y2){
 		return x1 * x2 + y1 * y2;
 	}
@@ -472,6 +483,13 @@ public class CellPottsModel extends SpinModel {
 	}
 
 	//accessor methods
+	protected ArrayList<Integer> getSpinXPos(int spin){
+		return spinXPos.get(spin);
+	}
+	protected ArrayList<Integer> getSpinYPos(int spin){
+		return spinYPos.get(spin);
+	}
+	
 	@Override
 	public int getSpin(int i, int j){
 		return spin[i][j];
