@@ -1,8 +1,10 @@
 package cell_potts_model;
 
+import java.util.ArrayList;
+
 public class TestPottsModel {
 	public static void main (String [] args){
-		int nx = 200;
+		/*int nx = 200;
 		int ny = 200;
 		int q = 100;
 		int [][] spin = new int [nx][ny];
@@ -26,7 +28,10 @@ public class TestPottsModel {
 			}
 		}
 		
-		printList(spin);
+		printList(spin);*/
+		ArrayList<Integer> list = new ArrayList<Integer>();
+		list.add(10);
+		System.out.println(list.contains(10));
 		
 	}
 	
