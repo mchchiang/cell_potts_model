@@ -10,7 +10,7 @@ import java.util.Random;
 
 public class CellPottsModel extends SpinModel {
 
-	private int nx, ny, nxmax, nymax;
+	private int nx, ny;
 	private int q;	
 	private int [][] spin;
 
@@ -25,10 +25,6 @@ public class CellPottsModel extends SpinModel {
 	private double [] areaTarget;
 
 	//for measuring the centre of mass of the cells
-	private double [] xx;
-	private double [] xy;
-	private double [] yx;
-	private double [] yy;
 	private double [] xcm;
 	private double [] ycm;
 	private double [] xcmNew;
@@ -53,8 +49,6 @@ public class CellPottsModel extends SpinModel {
 
 	//constructors
 	public CellPottsModel(){
-		nxmax = 50;
-		nymax = 50;	
 		nx = 70;
 		ny = 70;
 		q = 200;
@@ -95,10 +89,6 @@ public class CellPottsModel extends SpinModel {
 	}
 
 	public void init(){
-		xx = new double [q+1];
-		xy = new double [q+1];
-		yx = new double [q+1];
-		yy = new double [q+1];
 		xcm = new double [q+1];
 		ycm = new double [q+1];
 		xcmNew = new double [q+1];
@@ -342,70 +332,6 @@ public class CellPottsModel extends SpinModel {
 		}
 		return new double []{xDiff(xcmNew, xcm), yDiff(ycmNew, ycm)};
 	}
-
-	/*public double [] calculateDeltaCM(int x, int y, int spin, boolean remove){
-		double xx = 0;
-		double xy = 0;
-		double yx = 0;
-		double yy = 0;
-
-		ArrayList<Integer> xPos = spinXPos.get(spin);
-		ArrayList<Integer> yPos = spinYPos.get(spin);
-
-		int n = xPos.size();
-
-		for (int i = 0; i < n; i++){
-			xx += Math.cos((double) xPos.get(i) * 2 * Math.PI / (double) nx);
-			xy += Math.sin((double) xPos.get(i) * 2 * Math.PI / (double) nx);
-		}
-		for (int i = 0; i < n; i++){
-			yx += Math.cos((double) yPos.get(i) * 2 * Math.PI / (double) ny);
-			yy += Math.sin((double) yPos.get(i) * 2 * Math.PI / (double) ny);
-		}
-
-		double xxNew = 0;
-		double xyNew = 0;
-		double yxNew = 0;
-		double yyNew = 0;
-
-		if (remove){
-			xxNew = xx - Math.cos((double) x * 2 * Math.PI / (double) nx);
-			xyNew = xy - Math.sin((double) x * 2 * Math.PI / (double) nx);
-			yxNew = yx - Math.cos((double) y * 2 * Math.PI / (double) ny);
-			yyNew = yy - Math.sin((double) y * 2 * Math.PI / (double) ny);
-		} else {
-			xxNew = xx + Math.cos((double) x * 2 * Math.PI / (double) nx);
-			xyNew = xy + Math.sin((double) x * 2 * Math.PI / (double) nx);
-			yxNew = yx + Math.cos((double) y * 2 * Math.PI / (double) ny);
-			yyNew = yy + Math.sin((double) y * 2 * Math.PI / (double) ny);
-		}
-
-		xx /= (double) n;
-		xy /= (double) n;
-		yx /= (double) n;
-		yy /= (double) n;
-
-		if (remove){
-			xxNew /= (double) (n-1);
-			xyNew /= (double) (n-1);
-			yxNew /= (double) (n-1);
-			yyNew /= (double) (n-1);
-		} else {
-			xxNew /= (double) (n+1);
-			xyNew /= (double) (n+1);
-			yxNew /= (double) (n+1);
-			yyNew /= (double) (n+1);
-		}
-
-		double xcm, ycm, xcmNew, ycmNew;
-
-		xcmNew = (Math.atan2(-xyNew, -xxNew) + Math.PI) * (double) nx / (2 * Math.PI);
-		ycmNew = (Math.atan2(-yyNew, -yxNew) + Math.PI) * (double) ny / (2 * Math.PI);
-		xcm = (Math.atan2(-xy, -xx) + Math.PI) * (double) nx / (2 * Math.PI);
-		ycm = (Math.atan2(-yy, -yx) + Math.PI) * (double) ny / (2 * Math.PI);
-
-		return new double []{xDiff(xcmNew, xcm), yDiff(ycmNew, ycm)};
-	}*/
 	
 	public double calculateCM(ArrayList<Integer> pos, int length){
 		int n = pos.size();
@@ -466,46 +392,6 @@ public class CellPottsModel extends SpinModel {
 			ycmNew[i] = calculateCM(spinYPos.get(i), ny);
 		}
 	}
-	
-	
-	/*public void calculateCM(){
-		for (int i = 0; i <= q; i++){
-			xx[i] = 0;
-			xy[i] = 0;
-			yx[i] = 0;
-			yy[i] = 0;
-		}
-
-		for (int i = 0; i < nx; i++){
-			for (int j = 0; j < ny; j++){
-				
-				//need to first convert the 2D space into a 3D tube to 
-				//satisfy the periodic boundary condition
-				 
-				xx[spin[i][j]] += Math.cos((double) i * 2 * Math.PI / (double) nx);
-				xy[spin[i][j]] += Math.sin((double) i * 2 * Math.PI / (double) nx);
-				yx[spin[i][j]] += Math.cos((double) j * 2 * Math.PI / (double) ny);
-				yy[spin[i][j]] += Math.sin((double) j * 2 * Math.PI / (double) ny);
-			}
-		}
-
-		for (int i = 0; i <= q; i++){
-			//average all the transformed coordinates
-			xx[i] /= area[i];
-			xy[i] /= area[i];
-			yx[i] /= area[i];
-			yy[i] /= area[i];
-
-			//transfer new cm to old cm
-			xcm[i] = xcmNew[i];
-			ycm[i] = ycmNew[i];
-
-			//convert back to the 2D coordinates to get the CM
-			xcmNew[i] = (Math.atan2(-xy[i], -xx[i]) + Math.PI) * (double) nx / (2 * Math.PI);
-			ycmNew[i] = (Math.atan2(-yy[i], -yx[i]) + Math.PI) * (double) ny / (2 * Math.PI);
-
-		}
-	}*/
 
 	public void updatedr(){
 		for (int i = 1; i <= q; i++){
