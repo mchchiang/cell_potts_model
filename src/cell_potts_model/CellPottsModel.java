@@ -17,6 +17,7 @@ public class CellPottsModel extends SpinModel {
 	//parameters for the simulation
 	private double temperature;
 	private double lambda;
+	private double motility;
 
 	//physical quantities of each cell
 	private int delta; //average length of each cell
@@ -49,12 +50,13 @@ public class CellPottsModel extends SpinModel {
 
 	//constructors
 	public CellPottsModel(){
-		nx = 100;
-		ny = 100;
+		nx = 50;
+		ny = 50;
 		q = 100;
 		seed = -1;
 		temperature = 1;
 		lambda = 0.1;
+		motility = 4.0;
 
 		spin = new int [nx][ny];
 		area = new double [q+1];
@@ -63,8 +65,8 @@ public class CellPottsModel extends SpinModel {
 		init();
 
 		try {
-			cmWriter = new PrintWriter(new BufferedWriter(new FileWriter("cm_no_atan2_motility.dat")));
-			r2Writer = new PrintWriter(new BufferedWriter(new FileWriter("r2_no_atan2_motility.dat")));			
+			cmWriter = new PrintWriter(new BufferedWriter(new FileWriter("cm_no_atan2_motility2.dat")));
+			r2Writer = new PrintWriter(new BufferedWriter(new FileWriter("r2_no_atan2_motility2.dat")));			
 			for (int i = 0; i <= q; i++){
 				cmWriter.print(i + "x " + i + "y ");
 			}
@@ -75,13 +77,14 @@ public class CellPottsModel extends SpinModel {
 
 	//constructor used for unit testing only!
 	protected CellPottsModel(int nx, int ny, int q, double [] areaTarget, 
-			double temp, double lambda, int seed){
+			double temp, double lambda, double motility, int seed){
 		this.nx = nx;
 		this.ny = ny;
 		this.q = q;
 		this.areaTarget = areaTarget;
 		this.temperature = temp;
 		this.lambda = lambda;
+		this.motility = motility;
 		this.seed = seed;
 		init();
 	}
@@ -117,6 +120,7 @@ public class CellPottsModel extends SpinModel {
 	}
 	
 	//initialisation of the spins
+	
 	//init random spins
 	public void initSpin(){
 		//initialising each of the Q cells as a square with length delta
@@ -188,71 +192,91 @@ public class CellPottsModel extends SpinModel {
 
 		int oldSpin = spin[i][j];
 
-		/*
-		 * randomly pick one of its neighbour's spin (including 
-		 * the ones located along the diagonals with respect to
-		 * the lattice site
-		 */
-		p = rand.nextInt(8);
-		if (p == 0){
-			newSpin = spin[iup(i)][j];
-		} else if (p == 1){
-			newSpin = spin[idown(i)][j];
-		} else if (p == 2){
-			newSpin = spin[i][jup(j)];
-		} else if (p == 3){
-			newSpin = spin[i][jdown(j)];
-		} else if (p == 4){
-			newSpin = spin[iup(i)][jup(j)];
-		} else if (p == 5){
-			newSpin = spin[idown(i)][jup(j)];
-		} else if (p == 6){
-			newSpin = spin[iup(i)][jdown(j)];
-		} else if (p == 7){
-			newSpin = spin[idown(i)][jdown(j)];
-		} 
+		//only perform calculations if the neighbours don't have the same spin
+		if (!hasSameNeighbours(i,j)){
+			/*
+			 * randomly pick one of its neighbour's spin (including 
+			 * the ones located along the diagonals with respect to
+			 * the lattice site
+			 */
+			p = rand.nextInt(8);
+			if (p == 0){
+				newSpin = spin[iup(i)][j];
+			} else if (p == 1){
+				newSpin = spin[idown(i)][j];
+			} else if (p == 2){
+				newSpin = spin[i][jup(j)];
+			} else if (p == 3){
+				newSpin = spin[i][jdown(j)];
+			} else if (p == 4){
+				newSpin = spin[iup(i)][jup(j)];
+			} else if (p == 5){
+				newSpin = spin[idown(i)][jup(j)];
+			} else if (p == 6){
+				newSpin = spin[iup(i)][jdown(j)];
+			} else if (p == 7){
+				newSpin = spin[idown(i)][jdown(j)];
+			} 
 
-		//update area of the affected cells due to spin change
-		double newAreaNewSpin, newAreaOldSpin;
+			//update area of the affected cells due to spin change
+			double newAreaNewSpin, newAreaOldSpin;
 
-		if (newSpin != oldSpin){
-			newAreaNewSpin = area[newSpin]+1;
-			newAreaOldSpin = area[oldSpin]-1;
-		} else {
-			newAreaNewSpin = area[newSpin];
-			newAreaOldSpin = area[oldSpin];
-		}
+			if (newSpin != oldSpin){
+				newAreaNewSpin = area[newSpin]+1;
+				newAreaOldSpin = area[oldSpin]-1;
+			} else {
+				newAreaNewSpin = area[newSpin];
+				newAreaOldSpin = area[oldSpin];
+			}
 
-		//implement the metropolis algorithm
-		double negDeltaE = negDeltaE(i, j, newSpin, 
-				area[oldSpin], area[newSpin], newAreaOldSpin, newAreaNewSpin);
-		
-		double totalEnergy = negDeltaE;
-		if (n > 1000000){
-			totalEnergy += motilityE(i,j,newSpin);
-		} 
-		
-		if (Math.log(rand.nextDouble()) <= totalEnergy / temperature){
-			area[spin[i][j]] = newAreaOldSpin;
-			area[newSpin] = newAreaNewSpin;
-			spin[i][j] = newSpin;
-			spinXPos.get(oldSpin).remove(new Integer(i));
-			spinYPos.get(oldSpin).remove(new Integer(j));
-			spinXPos.get(newSpin).add(new Integer(i));
-			spinYPos.get(newSpin).add(new Integer(j));
+			//implement the metropolis algorithm
+			double negDeltaE = negDeltaE(i, j, newSpin, 
+					area[oldSpin], area[newSpin], newAreaOldSpin, newAreaNewSpin);
+			
+			double totalEnergy = negDeltaE;
+			
+			//only introduce motility once system reaches equilibrium
+			if (n > 200){
+				totalEnergy += motilityE(i, j, newSpin, motility);
+			} 
+			
+			if (Math.log(rand.nextDouble()) <= totalEnergy / temperature){
+				area[spin[i][j]] = newAreaOldSpin;
+				area[newSpin] = newAreaNewSpin;
+				spin[i][j] = newSpin;
+				spinXPos.get(oldSpin).remove(new Integer(i));
+				spinYPos.get(oldSpin).remove(new Integer(j));
+				spinXPos.get(newSpin).add(new Integer(i));
+				spinYPos.get(newSpin).add(new Integer(j));
 
-			this.setChanged();
-			this.notifyObservers(new Object [] {i,j});
+				this.setChanged();
+				this.notifyObservers(new Object [] {i,j});
+			}
 		}
 	}
-
+	
+	public boolean hasSameNeighbours(int i, int j){
+		int cellSpin = spin[i][j];
+		if (cellSpin == spin[iup(i)][j] &&
+			cellSpin == spin[idown(i)][j] &&
+			cellSpin == spin[i][jup(j)] &&
+			cellSpin == spin[i][jdown(j)] &&
+			cellSpin == spin[iup(i)][jup(j)] &&
+			cellSpin == spin[idown(i)][jup(j)] &&
+			cellSpin == spin[iup(i)][jdown(j)] &&
+			cellSpin == spin[idown(i)][jdown(j)]){
+			return true;
+		}
+		return false;
+	}
+	
 	//calculate the energy 
-	public double motilityE(int i, int j, int newSpin){
+	public double motilityE(int i, int j, int newSpin, double p){
 		double energy = 0.0;
 		double [] dcmOld = calculateDeltaCM(i,j, spin[i][j], true);
 		double [] dcmNew = calculateDeltaCM(i,j, newSpin, false);
-		energy += 4.0 * dot(dcmOld[0], dcmOld[1], px[spin[i][j]], py[spin[i][j]]);
-		energy += 4.0 * dot(dcmNew[0], dcmNew[1], px[newSpin], py[newSpin]);
+		energy += p * dot(dcmOld[0], dcmOld[1], px[spin[i][j]], py[spin[i][j]]);
+		energy += p * dot(dcmNew[0], dcmNew[1], px[newSpin], py[newSpin]);
 		return energy;
 	}
 
@@ -325,6 +349,9 @@ public class CellPottsModel extends SpinModel {
 		double xcm = calculateCM(xPos, nx);
 		double ycm = calculateCM(yPos, ny);
 		double xcmNew, ycmNew;
+		
+		//check if the spin swap involves boundary
+		
 		if (remove){
 			xPos.remove(new Integer(x));
 			yPos.remove(new Integer(y));
@@ -357,7 +384,7 @@ public class CellPottsModel extends SpinModel {
 				x = pos.get(i);
 				if (x < length / 2){
 					leftCount++;
-					leftSum += (x+1);//shift by one to avoid starting from zero 
+					leftSum += (x+1);//to ensure that the cm starts from 0 but not -1
 				} else {
 					rightCount++;
 					rightSum += (x+1);
@@ -389,8 +416,7 @@ public class CellPottsModel extends SpinModel {
 			}
 			cm /= (double) n;
 		}
-		
-		return (cm-1);
+		return cm;
 	}
 	
 	public void calculateCM(){

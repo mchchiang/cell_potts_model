@@ -64,7 +64,7 @@ public class IsingViewPanel extends JPanel implements Observer {
 			}
 		}
 		
-		JPanel panel = this;
+		final JPanel panel = this;
 		panel.getGraphics().drawImage(fg, 0, 
 				panel.getInsets().top, panel.getWidth(), 
 				panel.getHeight() - panel.getInsets().top, null);
