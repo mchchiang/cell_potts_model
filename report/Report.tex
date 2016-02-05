@@ -1,0 +1,237 @@
+%
+%                       This is a LaTeX 2e version of the
+%                       laboratory project template file.
+\documentclass[a4paper,12pt]{article}
+\usepackage{fullpage,epsf}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{amstext}
+\usepackage{array}
+\usepackage{graphicx}
+\usepackage{tabularx}
+\usepackage{url}
+\usepackage{verbatim}
+\usepackage{listings}
+\usepackage{color}
+\usepackage{courier}
+\usepackage{epstopdf}
+\usepackage{placeins}
+\epstopdfsetup{update}
+%
+%                       This section generates a title page
+%                       Edit only the sections indicated to put
+%                       in the project title, your name, supervisor,
+%                       project length in weeks and submission date
+%
+\begin{document}
+\pagestyle{empty}                       % No numbers of title page                      
+\epsfxsize=40mm                         % Size of crest
+\begin{minipage}[b]{110mm}
+        {\Huge\bf School of Physics\\ and Astronomy
+        \vspace*{17mm}}
+\end{minipage}
+\hfill
+\begin{minipage}[t]{40mm}               
+        \makebox[40mm]{
+        \epsffile{crest.eps}}
+\end{minipage}
+\par\noindent                                           % Centre Title, and name
+\vspace*{2cm}
+\begin{center}
+        \Large\bf \Large\bf Senior Honours Project\\
+        \Large\bf Physics 4\\[10pt]                     % Change to MP/CP/Astro
+        \LARGE\bf Solid-Fluid Transition of a Cellular Monolayer         % Change to suit
+\end{center}
+\vspace*{0.5cm}
+\begin{center}
+        \bf Michael Chiang\\                           % Repace with your name
+        25 March 2015                                    % Submission Date
+\end{center}
+\vspace*{5mm}
+%
+%                       Insert your abstract HERE
+%                       
+\begin{abstract}
+        The abstract is a short, concise explanation of the project
+        covering the aims, outlines of techniques used and a short
+        summary of the results. It should contain enough information to
+        make the aims and success of the project clear, but contain no details.
+        A typical abstract should be between 50 and 100 words.
+\end{abstract}
+
+\vspace*{1cm}
+
+\subsubsection*{Declaration}
+
+\begin{quotation}
+        I declare that this project and report is my own work.
+\end{quotation}
+
+\vspace*{2cm}
+Signature:\hspace*{8cm}Date: 25 March 2015
+
+\vfill
+{\bf Supervisor:} Prof. D. Marenduzzo                 % Change to suit
+\hfill
+10 Weeks                                         % Change to suit
+\newpage
+%
+%                       End of Title Page
+\pagestyle{plain}                               % Page numbers at bottom
+\setcounter{page}{1}                            % Set page number to 1
+\tableofcontents                                % Makes Table of Contents
+
+\break
+\section{Introduction}
+
+The introduction section of the report should introduce the project in
+more detail than in the abstract. In particular it should present the
+motivation, the aims, outline of techniques used, and the scope of the project. 
+It should also contain references to similar work in the
+same field to put your work in the correct context.
+
+As a general rule, people reading the abstract and introduction alone
+should have a good idea of the material in the project, the techniques
+employed and the results obtained. A typical introduction should be
+about 1 page, (300-450 words). 
+\section{Background or Theory}
+
+%This section should cover the theory of the material in the project
+%in sufficient detail to make the following work understandable to the
+%average physicist. It should not contain large sections of standard
+%bookwork, but should contain references to this material. The exact
+%contents of this section will depend on the project being undertaken.
+%
+%This section should contain only the
+%relevant theory. In particular a life history of the inventor of the
+%technique to be used is
+%totally irrelevant\footnote{I have seen a report that contained three pages
+%on the life of Gabor, and it was not very interesting.}. Here use common sense
+%and the general rule, ``If in doubt: leave it out'', however
+%include information that you judge would be useful to one of your
+%peers if they wehe to repeat the project. If you are
+%undertaking a 12 week project and it includes a literature search, put the
+%result of the search here. As a rough guide this section should be
+%about 3-4 pages for a 6 week project, longer for longer projects.
+%
+%Note that if the project consists of a series of short experiments
+%each of which requires a different theory and method, it may be appropriate
+%to have one {\bf Theory, Method, Results} section for each
+%experiment.
+
+\subsection{Cellular Potts Model}
+The cellular potts model is a statistical model that . A two-dimensional model is used.
+
+
+\begin{eqnarray}
+\Delta H = \sigma \sum_{\left(i,j\right)} J\left(\sigma(i,j) + \sigma(i',j')\right) + \lambda \sum_{i=1}^{N} \left(a(i) - A(i)\right)^2
+\end{eqnarray}
+
+
+\section{Method or Strategy}
+
+\subsection{Code Structure}
+
+%This section should contain the details of the method employed. 
+%As in the previous sections standard techniques should not be written
+%out in detail. For example if you use an oscilloscope to take a
+%measurement, the theory of the CRO tube\footnote{Don't laugh, I have actually
+%seen this.} is {\bf not relevant}. In computational projects this
+%section should be used to explain the algorithms used and the layout of
+%the computational code. A copy of the acutal code must be
+%given in the appendices. Long detailed sections of theory, data tables
+%and details of computational code used in data analysis only should not
+%appear in this section, but should/may be included in the appendices.
+%
+%This section should emphasise the philosophy of the approach used
+%and detail novel techniques. However
+%please note: this section in {\bf not} a blow-by-blow account of what
+%you did throughout the project, and in particular it should {\bf not} 
+%contain large detailed sections about things you tried and found to be
+%completely wrong. Remember you are writing a technical report, and
+%not a diary. If however you find that a technique that was expected to
+%work failed, that is a valid result and should be included.
+%
+%Here logical structure is particularly important, and you may find that
+%to maintain good structure you may have to present the experiments
+%in a different order from the one in which you carried them out.
+\section{Results \& Discussion}
+
+This section should detail the obtained results in a clear,
+easy-to-follow manner. Remember long tables of numbers are just as boring to
+read as they are to type-in. Use graphs to present your results where
+-ever practicable. When quoting results or measurements
+{\bf DO NOT FORGET ABOUT ERRORS}. Remember there are two basic types
+of errors, these being random and systematic, which you must consider.
+Remember also the difference between an error and a mistake, computer
+program bugs are mistakes.
+
+ 
+Again be selective in what you include. Half a dozen
+tables that contain totally wrong data you collected while you forgot
+to switch on the power supply are {\bf not relevant} and will frequently
+mask the correct results. 
+%
+%                       Here is how to inserted a centered
+%                       postscript file, this one is actually
+%                       out of Maple, but it will work for other
+%                       figures out of Xfig, Idraw and Xgraph
+%
+\begin{figure}[htb]     %Insert a figure as soon as possible
+        \begin{center}
+                \leavevmode             % Warn Latex a figure is comming
+                \epsfxsize=90mm         % Horizontal size YOUR want
+                                        % figure to be
+                \epsffile{otf.eps}
+\end{center}
+\caption{This is an inserted Postscript file}
+\end{figure}
+
+This section must contain a discussion of the results. This should
+include a discussion of the experimental and/or numerical errors, and a
+comparison with the predictions of the background and theory underlying
+the techniques used. This section should highlight particular strengths
+and/or weaknesses of the methods used.
+
+ 
+\section{Conclusion}
+This section should summarise the results obtained, detail
+conclusions reached, suggest future work, and changes that you would make if you repeated the
+experiment. This section should in general be short, 100 to 150 words
+being typical for most projects.
+\par\noindent
+If you have opted to have multiple {\bf Theory, Method, Results}
+sections, draw all the results together in a {\bf single} conclusion.
+\section{References}
+
+Don't forget this section. Detail the relevant references which
+should be cited at the correct place in the text of the report. There
+are no fixed rules as to how many references are {\it needed}. Generally
+the longer the project, and the more background reading you had to do,
+the more references will be required. 
+
+When you cite a reference you must give sufficient information. For
+example, for a journal article give, {\it Author}, {\it Title of
+article},
+{\it Journal Name}, {\it Volumn}, {\it Page}, and {\it Year}, 
+while for a book give, {\it Author}, {\it Title},
+{\it (Editor if there is one)}, {\it Publisher}, and {\it Year}.        
+\appendix
+\section{Appendices}
+
+Material that is useful background to the report, but is not essential,
+or whose inclusion within the report  would detract from its
+structure and readablity, should be included in appendices. Typical
+material could be diagrams of electronic circuits built, specialist
+data tables used to analyse results, details of computer programs
+written for analysis and display of results, photographic plates,
+and, for computational projects, a copy of all written code.
+
+Again be selective. The appendix is {\bf not} an excuse for you to add every
+last detail and piece of data, but should be used to assist the reader
+of the report by supplying additional material. Not all reports require
+appendices and if the report is complete without this additional
+material leave it out.
+
+\end{document}
