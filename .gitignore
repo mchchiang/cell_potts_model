@@ -14,3 +14,17 @@
 *.ear
 
 /bin/
+
+#TeX stuff
+*.bbl
+*.blg
+*.aux
+*.gz
+*.log
+*.out
+*.toc
+Report.pdf
+*.jpg
+*.eps
+/report/template/
+/report/figure/
