@@ -7,6 +7,8 @@
 \usepackage{amsfonts}
 \usepackage{amssymb}
 \usepackage{amstext}
+\usepackage{bm}
+\usepackage{braket}
 \usepackage{array}
 \usepackage{graphicx}
 \usepackage{tabularx}
@@ -18,6 +20,16 @@
 \usepackage{epstopdf}
 \usepackage{placeins}
 \epstopdfsetup{update}
+\usepackage[]{cite}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\renewcommand{\vec}[1]{\mathbf{#1}}
+\newcommand{\abs}[1]{\left|#1\right|}
+\newcommand{\inc}{\Delta}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 %
 %                       This section generates a title page
 %                       Edit only the sections indicated to put
@@ -41,7 +53,7 @@
 \begin{center}
         \Large\bf \Large\bf Senior Honours Project\\
         \Large\bf Physics 4\\[10pt]                     % Change to MP/CP/Astro
-        \LARGE\bf Solid-Fluid Transition of a Cellular Monolayer         % Change to suit
+        \LARGE\bf Simulating the Jamming Transitions of a Cellular Monolayer with the Cellular Potts Model        % Change to suit
 \end{center}
 \vspace*{0.5cm}
 \begin{center}
@@ -85,19 +97,19 @@ Signature:\hspace*{8cm}Date: 25 March 2015
 \break
 \section{Introduction}
 
-The introduction section of the report should introduce the project in
-more detail than in the abstract. In particular it should present the
-motivation, the aims, outline of techniques used, and the scope of the project. 
-It should also contain references to similar work in the
-same field to put your work in the correct context.
-
-As a general rule, people reading the abstract and introduction alone
-should have a good idea of the material in the project, the techniques
-employed and the results obtained. A typical introduction should be
-about 1 page, (300-450 words). 
+%The introduction section of the report should introduce the project in
+%more detail than in the abstract. In particular it should present the
+%motivation, the aims, outline of techniques used, and the scope of the project. 
+%It should also contain references to similar work in the
+%same field to put your work in the correct context.
+%
+%As a general rule, people reading the abstract and introduction alone
+%should have a good idea of the material in the project, the techniques
+%employed and the results obtained. A typical introduction should be
+%about 1 page, (300-450 words). 
 
 \pagebreak
-\section{Background or Theory}
+\section{Background and Theory}
 
 %This section should cover the theory of the material in the project
 %in sufficient detail to make the following work understandable to the
@@ -122,16 +134,35 @@ about 1 page, (300-450 words).
 %to have one {\bf Theory, Method, Results} section for each
 %experiment.
 
-\subsection{Cellular Potts Model}
-The cellular potts model is a statistical model that . A two-dimensional model is used.
+\subsection{Jamming Transitions in Biology}
 
+The jamming\cite{bimotility-driven2015}
+
+\subsection{Cellular Potts Model}
+
+
+The cellular Potts model (CPM) is a statistical model that has been widely used to simulate the motion of closely packed cells. The model is an extension of th
+
+CPM has been used for studying biological processes such as cell-sorting,
+
+In a two-dimensional CPM, each lattice site is assigned with a non-negative integer spin $\sigma$ where $\sigma = 1, 2, ..., N$. A biological cell is associated with the collection of 
+\begin{eqnarray}
+H = \sum_{\langle{\bm{x}, \bm{x'}\rangle}} J\left(\sigma(\bm{x}), \sigma(\bm{x'})\right) + \lambda \sum_{q\,=\,1}^{N} \left(a_q - A_q\right)^2,
+\end{eqnarray}
+where the first term of Hamiltonian is associated with the surface energy that arises from the intercellular boundary
+
+\subsection{Motivation of the Study}
 
 \begin{eqnarray}
-\Delta H = \sigma \sum_{\left(i,j\right)} J\left(\sigma(i,j) + \sigma(i',j')\right) + \lambda \sum_{i=1}^{N} \left(a(i) - A(i)\right)^2
+w (\bm{a} \rightarrow \bm{b}) = P \sum_{k \;=\; \sigma(a),\,\sigma(b)} \frac{\inc \bm{X}_k \cdot \bm{p}_k}{\abs{\bm{p}_k}}
+\end{eqnarray}
+
+\begin{eqnarray}
+\ln p (\bm{a} \rightarrow \bm{b}) = \min \left[0, -\inc u (\bm{a} \rightarrow \bm{b}) + w (\bm{a} \rightarrow \bm{b}) \right]
 \end{eqnarray}
 
 \pagebreak
-\section{Method or Strategy}
+\section{Methodology}
 
 \subsection{Code Structure}
 
@@ -160,7 +191,7 @@ The cellular potts model is a statistical model that . A two-dimensional model i
 %in a different order from the one in which you carried them out.
 
 \pagebreak
-\section{Results \& Discussion}
+\section{Results and Discussion}
 
 This section should detail the obtained results in a clear,
 easy-to-follow manner. Remember long tables of numbers are just as boring to
@@ -221,21 +252,28 @@ article},
 {\it Journal Name}, {\it Volumn}, {\it Page}, and {\it Year}, 
 while for a book give, {\it Author}, {\it Title},
 {\it (Editor if there is one)}, {\it Publisher}, and {\it Year}.        
+
+\bibliographystyle{unsrt}   
+\bibliography{bibliography}
+
+
 \appendix
 \section{Appendices}
 
-Material that is useful background to the report, but is not essential,
-or whose inclusion within the report  would detract from its
-structure and readablity, should be included in appendices. Typical
-material could be diagrams of electronic circuits built, specialist
-data tables used to analyse results, details of computer programs
-written for analysis and display of results, photographic plates,
-and, for computational projects, a copy of all written code.
+%Material that is useful background to the report, but is not essential,
+%or whose inclusion within the report  would detract from its
+%structure and readablity, should be included in appendices. Typical
+%material could be diagrams of electronic circuits built, specialist
+%data tables used to analyse results, details of computer programs
+%written for analysis and display of results, photographic plates,
+%and, for computational projects, a copy of all written code.
+%
+%Again be selective. The appendix is {\bf not} an excuse for you to add every
+%last detail and piece of data, but should be used to assist the reader
+%of the report by supplying additional material. Not all reports require
+%appendices and if the report is complete without this additional
+%material leave it out.
 
-Again be selective. The appendix is {\bf not} an excuse for you to add every
-last detail and piece of data, but should be used to assist the reader
-of the report by supplying additional material. Not all reports require
-appendices and if the report is complete without this additional
-material leave it out.
+\subsection{Simulation Code}
 
 \end{document}
