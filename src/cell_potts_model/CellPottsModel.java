@@ -50,13 +50,13 @@ public class CellPottsModel extends SpinModel {
 
 	//constructors
 	public CellPottsModel(){
-		nx = 50;
-		ny = 50;
+		nx = 100;
+		ny = 100;
 		q = 100;
 		seed = -1;
 		temperature = 1;
 		lambda = 0.1;
-		motility = 4.0;
+		motility = 7.0;
 
 		spin = new int [nx][ny];
 		area = new double [q+1];
@@ -333,7 +333,7 @@ public class CellPottsModel extends SpinModel {
 	 * @return the pair-wise Potts energy between the two spins
 	 */
 	public double pottsEnergy(int i, int j){
-		double alpha = 2.0;
+		double alpha = 3.0;
 		double beta = 16.0;
 		double energy = alpha;
 
