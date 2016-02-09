@@ -1,9 +1,5 @@
 package cell_potts_model;
 
-import java.io.BufferedWriter;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -18,6 +14,10 @@ public class CellPottsModel extends SpinModel {
 	private double temperature;
 	private double lambda;
 	private double motility;
+	
+	//parameters for cell adhesion energy
+	private double alpha;
+	private double beta;
 
 	//physical quantities of each cell
 	private int delta; //average length of each cell
@@ -40,50 +40,52 @@ public class CellPottsModel extends SpinModel {
 	private double [] py;
 	private List<ArrayList<Integer>> spinXPos;
 	private List<ArrayList<Integer>> spinYPos;
+	
+	//variables for calculating acceptance rate
+	private double acceptRate;
 
 	//seed for generating random numbers
 	private int seed;
 	private Random rand;
 
-	private PrintWriter cmWriter = null;
-	private PrintWriter r2Writer = null;
-
+	//data writers
+	private DataWriter [] writers;
+	
 	//constructors
-	public CellPottsModel(){
-		nx = 100;
-		ny = 100;
-		q = 100;
-		seed = -1;
-		temperature = 1;
-		lambda = 0.1;
-		motility = 7.0;
+	public CellPottsModel(int nx, int ny, int q, double temp, 
+			double lambda, double alpha, double beta, 
+			double motility, int seed, DataWriter [] writers){
+		this.nx = nx;
+		this.ny = ny;
+		this.q = q;
+		this.seed = seed;
+		this.temperature = temp;
+		this.lambda = lambda;
+		this.motility = motility;
+		
+		this.alpha = alpha;
+		this.beta = beta;
+		
+		this.writers = writers;
 
 		spin = new int [nx][ny];
 		area = new double [q+1];
 		areaTarget = new double [q+1];
 
 		init();
-
-		try {
-			cmWriter = new PrintWriter(new BufferedWriter(new FileWriter("cm_no_atan2_motility2.dat")));
-			r2Writer = new PrintWriter(new BufferedWriter(new FileWriter("r2_no_atan2_motility2.dat")));			
-			for (int i = 0; i <= q; i++){
-				cmWriter.print(i + "x " + i + "y ");
-			}
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
 	}
 
 	//constructor used for unit testing only!
 	protected CellPottsModel(int nx, int ny, int q, double [] areaTarget, 
-			double temp, double lambda, double motility, int seed){
+			double temp, double lambda, double alpha, double beta, double motility, int seed){
 		this.nx = nx;
 		this.ny = ny;
 		this.q = q;
 		this.areaTarget = areaTarget;
 		this.temperature = temp;
 		this.lambda = lambda;
+		this.alpha = alpha;
+		this.beta = beta;
 		this.motility = motility;
 		this.seed = seed;
 		init();
@@ -116,7 +118,7 @@ public class CellPottsModel extends SpinModel {
 			spinYPos.add(new ArrayList<Integer>());
 		}
 
-		rand = new Random(seed);
+		rand = new Random();
 	}
 	
 	//initialisation of the spins
@@ -166,21 +168,26 @@ public class CellPottsModel extends SpinModel {
 		}
 	}
 
-	public void run(int numOfSweeps){
+	public void run(int numOfSweeps, int nequil){
+		
+		acceptRate = 0.0;
+		
 		calculateCM();
-		writeCM(0);
 		for (int n = 0;  n < numOfSweeps; n++){
 			for (int k = 0; k < nx * ny; k++){
 				nextStep(n);	
 			}
-			System.out.println("Sweep: " + n);
+			
 			calculateCM();
-			updatedr();
-			writeR2(n+1, calculateR2());
-			writeCM(n+1);
+			System.out.println(n);
+			if (n > nequil){
+				updatedr();
+				writeData(n);
+			}
 		}
-		cmWriter.close();
-		r2Writer.close();
+		
+		acceptRate /= (double) (numOfSweeps * nx * ny);
+
 	}
 
 	public void nextStep(int n){
@@ -236,7 +243,7 @@ public class CellPottsModel extends SpinModel {
 			double totalEnergy = negDeltaE;
 			
 			//only introduce motility once system reaches equilibrium
-			if (n > 200){
+			if (n > 200 && motility > 0.000001){
 				totalEnergy += motilityE(i, j, newSpin, motility);
 			} 
 			
@@ -248,7 +255,9 @@ public class CellPottsModel extends SpinModel {
 				spinYPos.get(oldSpin).remove(new Integer(j));
 				spinXPos.get(newSpin).add(new Integer(i));
 				spinYPos.get(newSpin).add(new Integer(j));
-
+				
+				acceptRate = acceptRate + 1.0;
+				
 				this.setChanged();
 				this.notifyObservers(new Object [] {i,j});
 			}
@@ -333,8 +342,6 @@ public class CellPottsModel extends SpinModel {
 	 * @return the pair-wise Potts energy between the two spins
 	 */
 	public double pottsEnergy(int i, int j){
-		double alpha = 3.0;
-		double beta = 16.0;
 		double energy = alpha;
 
 		if (i == j) energy = 0.0;
@@ -349,8 +356,6 @@ public class CellPottsModel extends SpinModel {
 		double xcm = calculateCM(xPos, nx);
 		double ycm = calculateCM(yPos, ny);
 		double xcmNew, ycmNew;
-		
-		//check if the spin swap involves boundary
 		
 		if (remove){
 			xPos.remove(new Integer(x));
@@ -436,16 +441,22 @@ public class CellPottsModel extends SpinModel {
 		}
 	}
 
-	public double calculateR2(){
+	public double [] calculateR2(){
 		double dr2 = 0.0;
+		double dr2Sq = 0.0; //for computing the error of R^2
+		double value = 0.0;
 		int count = 0;
 		for (int i = 1; i <= q; i++){
 			if (area[i] > 0.000001){
-				dr2 += mag2(drx[i], dry[i]);
+				value = mag2(drx[i], dry[i]);
+				dr2 += value;
+				dr2Sq += value * value;
 				count++;
 			}
 		}
-		return dr2 / (double) (count);
+		dr2 /= (double) count;
+		dr2Sq /= (double) count;
+		return new double [] {dr2, (dr2Sq - dr2 * dr2) / (double) (count-1)};
 	}
 
 	//vector related operations
@@ -475,17 +486,12 @@ public class CellPottsModel extends SpinModel {
 	}
 
 
-	public void writeCM(int time){
-		cmWriter.println();
-		for (int i = 0; i <= q; i++){
-			cmWriter.printf("%.6f %.6f %.6f", (double) time, xcmNew[i], ycmNew[i]);
+	public void writeData(double time){
+		for (int i = 0; i < writers.length; i++){
+			writers[i].writeData(this, time);
 		}
 	}
-
-	public void writeR2(int time, double r2){
-		r2Writer.println();
-		r2Writer.printf("%d %.6f %.6f", time, r2, getTotalEnergy());
-	}
+	
 
 	//periodic boundary methods
 	private int iup(int i){
@@ -514,6 +520,18 @@ public class CellPottsModel extends SpinModel {
 	}
 	protected ArrayList<Integer> getSpinYPos(int spin){
 		return spinYPos.get(spin);
+	}
+	
+	public double getAcceptRate(){
+		return acceptRate;
+	}
+	
+	public double getXCM(int q){
+		return xcmNew[q];
+	}
+	
+	public double getYCM(int q){
+		return ycmNew[q];
 	}
 	
 	@Override
@@ -621,8 +639,19 @@ public class CellPottsModel extends SpinModel {
 	}
 
 	public static void main (String [] args){
-		CellPottsModel model = new CellPottsModel();
+		int nx = 200;
+		int ny = 200;
+		int q = 1000;
+		double temp = 1.0;
+		double lambda = 0.1;
+		double alpha = 100.0;
+		double beta = 16.0;
+		double motility = 0.0;
+		int seed = -1;
+		CellPottsModel model = new CellPottsModel(
+				nx, ny, q, temp, lambda, alpha, beta, motility, seed,
+				new DataWriter [] {new NullWriter()});
 		model.initSpin();
-		model.run(10000);
+		model.run(1000, 200);
 	}
 }

@@ -2,6 +2,7 @@ package cell_potts_model;
 
 import java.awt.*;
 import java.awt.event.*;
+
 import javax.swing.*;
 
 @SuppressWarnings("serial")
@@ -88,12 +89,24 @@ public class IsingControlPanel extends JPanel implements ActionListener {
 					double temperature = Double.parseDouble(txtTemperature.getText());
 					double energy = Double.parseDouble(txtEnergy.getText());
 					int steps = Integer.parseInt(txtNumOfSteps.getText());*/
+					int nx = 200;
+					int ny = 200;
+					int q = 1000;
+					double temp = 1.0;
+					double lambda = 1.0;
+					double alpha = 1.0;
+					double beta = 16.0;
+					double motility = 0.0;
+					int seed = -1;
+					
 					btnRun.setEnabled(false);
-					CellPottsModel model = new CellPottsModel();
+					CellPottsModel model = new CellPottsModel(
+							nx, ny, q, temp, lambda, alpha, beta, motility, seed,
+							new DataWriter [] {new NullWriter()});
 					model.initSpin();
 					view.setModel(model);
 					view.initImage();
-					model.run(10000);
+					model.run(10000, 200);
 					view.stopDrawingImage();
 					btnRun.setEnabled(true);
 				}
