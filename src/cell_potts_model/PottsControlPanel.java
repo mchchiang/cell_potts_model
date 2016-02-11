@@ -6,7 +6,7 @@ import java.awt.event.*;
 import javax.swing.*;
 
 @SuppressWarnings("serial")
-public class IsingControlPanel extends JPanel implements ActionListener {
+public class PottsControlPanel extends JPanel implements ActionListener {
 	private JPanel paramsPanel;
 	
 	private JLabel lblWidth;
@@ -29,9 +29,9 @@ public class IsingControlPanel extends JPanel implements ActionListener {
 	private JButton btnRun;
 	private JButton btnStop;
 	
-	private IsingView view;
+	private PottsView view;
 	
-	public IsingControlPanel(IsingView view){
+	public PottsControlPanel(PottsView view){
 		this.view = view;
 		
 		lblWidth = new JLabel("Width: ");

@@ -37,5 +37,10 @@ public class NullModel extends SpinModel {
 	public int getTypesOfSpin() {
 		return 0;
 	}
+
+	@Override
+	public double getTemp() {
+		return 0;
+	}
 	
 }

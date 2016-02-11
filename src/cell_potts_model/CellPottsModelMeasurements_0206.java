@@ -1,6 +1,6 @@
 package cell_potts_model;
 
-public class CellPottsModelMeasurements {
+public class CellPottsModelMeasurements_0206 {
 	
 	private DataWriter r2Writer = new R2Writer();
 	private DataWriter cmWriter = new NullWriter();
@@ -19,7 +19,7 @@ public class CellPottsModelMeasurements {
 	
 	private CellPottsModel model;
 	
-	public CellPottsModelMeasurements(){		
+	public CellPottsModelMeasurements_0206(){		
 		writers[0] = cmWriter;
 		writers[1] = r2Writer;
 		writers[2] = energyWriter;	
@@ -54,6 +54,6 @@ public class CellPottsModelMeasurements {
 	}	
 	
 	public static void main (String [] args){
-		new CellPottsModelMeasurements();
+		new CellPottsModelMeasurements_0206();
 	}
 }

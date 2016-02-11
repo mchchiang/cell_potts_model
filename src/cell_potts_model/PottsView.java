@@ -5,19 +5,19 @@ import java.awt.*;
 import javax.swing.*;
 
 @SuppressWarnings("serial")
-public class IsingView extends JFrame {
+public class PottsView extends JFrame {
 	private SpinModel model = new NullModel();
-	private IsingViewPanel viewPanel;
-	private IsingControlPanel controlPanel;
+	private PottsViewPanel viewPanel;
+	private PottsControlPanel controlPanel;
 	
-	public IsingView(){
+	public PottsView(){
 		this.setSize(1000, 1000);
 		this.setTitle("Ising Model");
 		this.setDefaultCloseOperation(EXIT_ON_CLOSE);
 		this.setResizable(true);
 		
-		viewPanel = new IsingViewPanel(model);
-		controlPanel = new IsingControlPanel(this);
+		viewPanel = new PottsViewPanel(model);
+		controlPanel = new PottsControlPanel(this);
 		
 		Container content = this.getContentPane();
 		content.add(viewPanel, BorderLayout.CENTER);
@@ -27,7 +27,7 @@ public class IsingView extends JFrame {
 	}
 	
 	public static void main (String [] args){
-		new IsingView();
+		new PottsView();
 	}
 	
 	public void setModel(SpinModel model){

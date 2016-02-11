@@ -20,5 +20,5 @@ public abstract class DataWriter {
 		writer = null;
 	}
 	
-	public abstract void writeData(CellPottsModel model, double time);
+	public abstract void writeData(CellPottsModel model, int time);
 }

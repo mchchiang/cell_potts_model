@@ -24,13 +24,6 @@
 		<mkdir dir="build/javadocs"/>
 		<mkdir dir="build/classes"/>
 		<mkdir dir="build/test/classes"/>
-		<mkdir dir="build/test/classes/puma_hare_model"/>
-		<!-- make sure all test-related resources are copied to build folder -->
-		<copy todir="build/test/classes/puma_hare_model">
-			<fileset dir="test/puma_hare_model/">
-				<exclude name="*.java"/>
-			</fileset>
-		</copy>
 	</target>
 
 	
@@ -51,14 +44,6 @@
 		</javac>
 	</target>
 	
-	<target name="run" depends="compile" description="Run the code">
-		<java classname="puma_hare_model.Simulation" classpathref="classpath">
-			<arg value="${configPath}"/>
-			<classpath>
-				<pathelement location="build/classes"/>
-			</classpath>
-		</java>
-	</target>
 	
 	<target name="test" depends="compile-tests" description="Test classes">
 		<mkdir dir="build/test/xml" />
@@ -79,9 +64,6 @@
 	    <javadoc sourcepath="src/" destdir="build/javadocs/"/>
 	</target>
 
-	<target name="jar" depends="compile" description="Package to jar file">
-		<jar destfile="build/lib/puma_hare_model.jar" basedir="build/classes"/>
-	</target>
 	
 	<target name="test-report" description="Convert ANT junit XML reports into HTML">
 		<mkdir dir="build/test/html"/>

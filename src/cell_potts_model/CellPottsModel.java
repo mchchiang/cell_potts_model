@@ -62,16 +62,11 @@ public class CellPottsModel extends SpinModel {
 		this.temperature = temp;
 		this.lambda = lambda;
 		this.motility = motility;
-		
 		this.alpha = alpha;
 		this.beta = beta;
-		
 		this.writers = writers;
-
-		spin = new int [nx][ny];
 		area = new double [q+1];
 		areaTarget = new double [q+1];
-
 		init();
 	}
 
@@ -125,6 +120,8 @@ public class CellPottsModel extends SpinModel {
 	
 	//init random spins
 	public void initSpin(){
+		spin = new int [nx][ny];
+		
 		//initialising each of the Q cells as a square with length delta
 		delta = (int) (Math.sqrt((nx*ny)/ (double) q));
 
@@ -155,11 +152,12 @@ public class CellPottsModel extends SpinModel {
 	public void initSpin(int [][] spin){
 		if (spin.length == nx && spin[0].length == ny){
 			area = new double [q+1];
-			this.spin = spin;
-			
+			//deep copy the spin
+			this.spin = new int [nx][ny];
 			//update the area and the spin positions (x,y)
 			for (int i = 0; i < nx; i++){
 				for (int j = 0; j < ny; j++){
+					this.spin[i][j] = spin[i][j];
 					area[spin[i][j]] += 1.0;
 					spinXPos.get(spin[i][j]).add(i);
 					spinYPos.get(spin[i][j]).add(j);
@@ -172,22 +170,21 @@ public class CellPottsModel extends SpinModel {
 		
 		acceptRate = 0.0;
 		
-		calculateCM();
 		for (int n = 0;  n < numOfSweeps; n++){
 			for (int k = 0; k < nx * ny; k++){
 				nextStep(n);	
 			}
 			
-			calculateCM();
-			System.out.println(n);
+			if (n > nequil-1){
+				calculateCM();
+			}
+			
 			if (n > nequil){
 				updatedr();
 				writeData(n);
 			}
 		}
-		
 		acceptRate /= (double) (numOfSweeps * nx * ny);
-
 	}
 
 	public void nextStep(int n){
@@ -357,20 +354,23 @@ public class CellPottsModel extends SpinModel {
 		double ycm = calculateCM(yPos, ny);
 		double xcmNew, ycmNew;
 		
+		Integer xint = new Integer(x);
+		Integer yint = new Integer(y);
+		
 		if (remove){
-			xPos.remove(new Integer(x));
-			yPos.remove(new Integer(y));
+			xPos.remove(xint);
+			yPos.remove(yint);
 			xcmNew = calculateCM(xPos, nx);
 			ycmNew = calculateCM(yPos, ny);
-			xPos.add(new Integer(x));
-			yPos.add(new Integer(y));
+			xPos.add(xint);
+			yPos.add(yint);
 		} else {
-			xPos.add(new Integer(x));
-			yPos.add(new Integer(y));
+			xPos.add(xint);
+			yPos.add(yint);
 			xcmNew = calculateCM(xPos, nx);
 			ycmNew = calculateCM(yPos, ny);
-			xPos.remove(new Integer(x));
-			yPos.remove(new Integer(y));
+			xPos.remove(xint);
+			yPos.remove(yint);
 		}
 		return new double []{xDiff(xcmNew, xcm), yDiff(ycmNew, ycm)};
 	}
@@ -486,7 +486,7 @@ public class CellPottsModel extends SpinModel {
 	}
 
 
-	public void writeData(double time){
+	public void writeData(int time){
 		for (int i = 0; i < writers.length; i++){
 			writers[i].writeData(this, time);
 		}
@@ -534,6 +534,22 @@ public class CellPottsModel extends SpinModel {
 		return ycmNew[q];
 	}
 	
+	public double getAlpha(){
+		return alpha;
+	}
+	
+	public double getBeta(){
+		return beta;
+	}
+	
+	public double getLambda(){
+		return lambda;
+	}
+	
+	public double getMotility(){
+		return motility;
+	}
+	
 	@Override
 	public int getSpin(int i, int j){
 		return spin[i][j];
@@ -554,6 +570,11 @@ public class CellPottsModel extends SpinModel {
 		if (t >= 0){
 			temperature = t;
 		}
+	}
+	
+	@Override
+	public double getTemp(){
+		return temperature;
 	}
 
 	@Override
@@ -639,19 +660,35 @@ public class CellPottsModel extends SpinModel {
 	}
 
 	public static void main (String [] args){
-		int nx = 200;
-		int ny = 200;
-		int q = 1000;
+		int nx = 100;
+		int ny = 100;
+		int q = 200;
 		double temp = 1.0;
-		double lambda = 0.1;
-		double alpha = 100.0;
+		double lambda = 1.0;
+		double alpha = 2.0;
 		double beta = 16.0;
 		double motility = 0.0;
+		int numOfSweeps = 100000;
 		int seed = -1;
+		int run = 6;
+		SpinReader reader = new SpinReader();
+		reader.openReader("spin_100_100_200_a_8.0_lam_1.0_P_0.0_n_100000_run_4.dat");
+		String filename = String.format("%d_%d_%d_a_%.1f_lam_%.1f_P_%.1f_n_%d_run_%d.dat",
+				nx, ny, q, alpha, lambda, motility, numOfSweeps, run);
+		DataWriter r2Writer = new R2Writer();
+		DataWriter ergWriter = new EnergyWriter();
+		DataWriter spinWriter = new SpinWriter(numOfSweeps);
+		r2Writer.openWriter("r2_" + filename);
+		ergWriter.openWriter("energy_" + filename);
+		spinWriter.openWriter("spin_" + filename);
 		CellPottsModel model = new CellPottsModel(
 				nx, ny, q, temp, lambda, alpha, beta, motility, seed,
-				new DataWriter [] {new NullWriter()});
-		model.initSpin();
-		model.run(1000, 200);
+				new DataWriter [] {r2Writer, ergWriter, spinWriter});
+		model.initSpin(reader.readSpins());
+		model.run(numOfSweeps, 200);
+		r2Writer.closeWriter();
+		ergWriter.closeWriter();
+		spinWriter.closeWriter();
+		reader.closeReader();
 	}
 }

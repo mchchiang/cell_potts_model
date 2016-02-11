@@ -10,14 +10,14 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 @SuppressWarnings("serial")
-public class IsingViewPanel extends JPanel implements Observer {
+public class PottsViewPanel extends JPanel implements Observer {
 	
 	private SpinModel model;
 	private Color [] colours;
 	private BufferedImage fg = null;
 	private Timer timer = null;
 	
-	public IsingViewPanel(SpinModel model){
+	public PottsViewPanel(SpinModel model){
 		this.model = model;
 		this.model.addObserver(this);
 		setColours();

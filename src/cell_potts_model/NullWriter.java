@@ -8,6 +8,6 @@ public class NullWriter extends DataWriter {
 	public void closeWriter(){}
 	
 	@Override
-	public void writeData(CellPottsModel model, double time) {}
+	public void writeData(CellPottsModel model, int time) {}
 
 }

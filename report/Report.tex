@@ -96,6 +96,7 @@ Signature:\hspace*{8cm}Date: 25 March 2015
 
 \break
 \section{Introduction}
+The study of cellular monolayers has been an active field in biological physics. Cellular monolayers can be used as a simple model of a tissue. 
 
 %The introduction section of the report should introduce the project in
 %more detail than in the abstract. In particular it should present the
@@ -141,25 +142,52 @@ The jamming\cite{bimotility-driven2015}
 \subsection{Cellular Potts Model}
 
 
-The cellular Potts model (CPM) is a statistical model that has been widely used to simulate the motion of closely packed cells. The model is an extension of th
+The Cellular Potts Model (CPM) is a stochastic model widely used in simulating the motion of closely packed cells. The model is an extension of the Potts model that takes into account of the physical characteristics and dynamics of biological cells. The model has successfully explained cellular processes such as cell sorting [Glazier], collective streaming [Szabo], and other behaviours.
 
-CPM has been used for studying biological processes such as cell-sorting,
+In the CPM, biological cells are represented on a two dimensional lattice. Each lattice site is assigned with a non-negative integer spin $\sigma$, where $\sigma \in [0,N]$ and $N$ is the total number of cells. Two lattice sites which share a side or a corner are considered as neighbours. A biological cell is simply represented by a set of connected sites with the same spin. $\sigma = 0$ is reserved for enumerating sites that are not part of any cell.
 
-In a two-dimensional CPM, each lattice site is assigned with a non-negative integer spin $\sigma$ where $\sigma = 1, 2, ..., N$. A biological cell is associated with the collection of 
+
+The dynamics of the cells are using a modified version of the Metropolis algorithm. In the simulation, a series of elementary steps are taken. Each step is an attempt to change the spin of a randomly chosen lattice site, denoted as $\sigma_{\textrm{target}}$, to the spin of one of its neighbours, denoted as $\sigma_{\textrm{trial}}$. The probability of accepting the spin change, $p\left(\sigma(\bm{a}) \rightarrow \sigma(\bm{b})\right)$, is given by the relation:
 \begin{eqnarray}
+\label{eqn:prob}
+\ln p (\bm{a} \rightarrow \bm{b}) = \min \left[0, \frac{-\inc H (\bm{a} \rightarrow \bm{b}) + w (\bm{a} \rightarrow \bm{b})}{kT} \right],
+\end{eqnarray}
+where $w$ is a function to take into account of active cell motion, $H$ is an effective Hamiltonian which the system tries to minimise,  $\inc H (\bm{a} \rightarrow \bm{b})$ represents its change in the considered step, $T$ is the effective temperature, and $k$ is the Boltzmann constant. The functional form of $H$ and $w$ would be discussed further below. Since changing $k$ and $T$ is equivalent to multiplying both the $H$ and $w$ function by a constant, it is conventional to set $k$ and $T$ to 1 and rescale parameters in $H$ and $w$ accordingly. As the typical time for all lattice sites to have experienced an attempt depends on the lattice size, it is it is conventional to define a unit time as $N$ number of spin-copy attempts. This is known as one Monte-Carlo step (MCS). One also defines the acceptance rate as the ratio of the number of spin copies accepted to the number of attempts made. This is important for an accurate comparison between the time scales in the simulations and those used in experiments \cite{sanz2010}.
+ 
+Equation \ref{eqn:prob} shows that the CPM dynamics is governed by an effective Hamiltonian that models the physical characteristics of a biological cell. This includes the intercellular adhesion and a constraint on the 
+\begin{eqnarray}
+\label{eqn:hamiltonian}
 H = \sum_{\langle{\bm{x}, \bm{x'}\rangle}} J\left(\sigma(\bm{x}), \sigma(\bm{x'})\right) + \lambda \sum_{q\,=\,1}^{N} \left(a_q - A_q\right)^2,
 \end{eqnarray}
-where the first term of Hamiltonian is associated with the surface energy that arises from the intercellular boundary
+The first term in equation \ref{eqn:hamiltonian} describes the cell-cell adhesion strength. It is a sum over all pairs of neighbours in the lattice, and J describes the adhesion strength between two sites $\bm{x}$ and $\bm{x'}$. For simulating an ensemble of homogenous cells, $J$ is specified by the following values:
+\begin{eqnarray}
+J(\sigma,\sigma') = \left\{
+	\begin {array}{ll}
+		0 & \textrm{for $\sigma = \sigma'$}\\
+		\alpha & \textrm{for $\sigma, \sigma' > 0$ and $\sigma \neq \sigma'$}\\
+		\beta & \textrm{for $\sigma$ or $\sigma' = 0$}
+	\end{array}
+\right.
+\end{eqnarray}
+where $\alpha$ and $\beta$ are parameters for modelling the intercellular surface energy and the free surface energy, respectively. Previous studies have found that the magnitudes of these parameters have the effect on the cell shape and the flexibility of the cell boundaries: small magnitudes produce longer and rougher boundaries with more active cell dynamics, while large magnitudes result in straight boundaries and reduce the activeness of the cells \cite{szabo2010}.
 
-\subsection{Motivation of the Study}
+The second term is an elastic constraint on the volume of each cell, since a physical cell has finite volume. $a_q$ and $A_q$ are the current and target volume of the ith cell. $λ$ sets the strength of this elastic constraint. Typical values used in simulating cellular monolayers are given in table ??. 
 
+The bias w is a term proposed by Szabo et al. in their study of collective cell motion. 
 \begin{eqnarray}
 w (\bm{a} \rightarrow \bm{b}) = P \sum_{k \;=\; \sigma(a),\,\sigma(b)} \frac{\inc \bm{X}_k \cdot \bm{p}_k}{\abs{\bm{p}_k}}
 \end{eqnarray}
+where $\inc X_k$ is the change in the centre of cell labelled by spin $k$ in a elementary step, $p_k$ is a polarity vector that describes the preferred direction of the cell, and $P$ is a free parameter associated with the strength of the motility, which is proportional to the cell’s speed. The motivation for such 
 
-\begin{eqnarray}
-\ln p (\bm{a} \rightarrow \bm{b}) = \min \left[0, -\inc u (\bm{a} \rightarrow \bm{b}) + w (\bm{a} \rightarrow \bm{b}) \right]
-\end{eqnarray}
+
+\subsection{Motivation of the Study}
+Recently, the paper by Bi and co-workers demonstrated that the jamming transitions in biological tissues can be simulated using the Self-Propelled Voronoi (SPV) model \cite{bimotility-driven2015}. In this model, each cell is represented as a e
+
+In that study, researchers have found that the phase transition is characterised by three parameters: the speed of a single motile cell, the persistent time, and the target shape index. The
+
+Given the success of CPM in modelling various cellular phenomena, it seems plausible that the model should also be capable of accounting the jamming transitions.  This is strengthened by the fact that the model has been used to study the collective behaviour of cell motility. 
+
+
 
 \pagebreak
 \section{Methodology}
