@@ -1,7 +1,13 @@
 package cell_potts_model;
 
 public class R2Writer extends DataWriter {
-
+	
+	@Override
+	public void openWriter(String filename){
+		super.openWriter(filename);
+		writer.println("# time, r2, r2_error");
+	}
+	
 	@Override
 	public void writeData(CellPottsModel model, int time) {
 		writer.println();	

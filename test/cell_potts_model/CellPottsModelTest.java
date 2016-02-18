@@ -50,6 +50,7 @@ public class CellPottsModelTest {
 		CellPottsModel model = new CellPottsModel(
 				nx, ny, q, temperature, lambda, alpha, beta, motility, seed,
 				new DataWriter [] {new NullWriter()});
+		model.initSpin();
 		model.setSpin(2, 3, 1);
 		assertEquals("Returned wrong value when getting spin",
 				1, model.getSpin(2, 3));
@@ -290,4 +291,242 @@ public class CellPottsModelTest {
 		assertEquals("Returned wrong delta ycm value",
 				7.0/3.0-2.25, model.calculateDeltaCM(1, 1, 3, true)[1], tol);
 	}
+	
+	@Test
+	public void testHasSameNeighbours1(){
+		int [][] spin = new int [][]{
+				{3,3,4,4,4,3},
+				{3,3,4,4,3,3},
+				{1,1,2,2,2,1},
+				{1,1,2,2,2,1},
+				{1,2,2,2,2,1},
+				{3,3,3,4,4,3}
+		};
+		
+		double [] areaTarget = new double [] {4.0, 4.0, 4.0, 4.0};
+		CellPottsModel model = new CellPottsModel(6, 6, 4, areaTarget, 
+				temperature, lambda, alpha, beta, motility, seed);
+		
+		model.initSpin(spin);
+		
+		assertTrue("Expect to have same neighbours", model.hasSameNeighbours(0, 0));	
+	}
+	
+	@Test
+	public void testHasSameNeighbours2(){
+		int [][] spin = new int [][]{
+				{3,3,4,4,4,3},
+				{3,3,4,4,3,3},
+				{1,1,2,2,2,1},
+				{1,1,2,2,2,1},
+				{1,2,2,2,2,1},
+				{3,3,3,4,4,3}
+		};
+		
+		double [] areaTarget = new double [] {4.0, 4.0, 4.0, 4.0};
+		CellPottsModel model = new CellPottsModel(6, 6, 4, areaTarget, 
+				temperature, lambda, alpha, beta, motility, seed);
+		
+		model.initSpin(spin);
+		
+		assertTrue("Expect to have same neighbours", model.hasSameNeighbours(3, 3));
+	}
+	
+	@Test
+	public void testHasSameNeighbours3(){
+		int [][] spin = new int [][]{
+				{3,3,4,4,4,3},
+				{3,3,4,4,3,3},
+				{1,1,2,2,2,1},
+				{1,1,2,2,2,1},
+				{1,2,2,2,2,1},
+				{3,3,3,4,4,3}
+		};
+		
+		double [] areaTarget = new double [] {4.0, 4.0, 4.0, 4.0};
+		CellPottsModel model = new CellPottsModel(6, 6, 4, areaTarget, 
+				temperature, lambda, alpha, beta, motility, seed);
+		
+		model.initSpin(spin);
+		
+		assertFalse("Expect to have same neighbours", model.hasSameNeighbours(3, 0));
+	}
+	
+	@Test
+	public void testHasSameNeighbours4(){
+		int [][] spin = new int [][]{
+				{3,3,4,4,4,3},
+				{3,3,4,4,3,3},
+				{1,1,2,2,2,1},
+				{1,1,2,2,2,1},
+				{1,2,2,2,2,1},
+				{3,3,3,4,4,3}
+		};
+		
+		double [] areaTarget = new double [] {4.0, 4.0, 4.0, 4.0};
+		CellPottsModel model = new CellPottsModel(6, 6, 4, areaTarget, 
+				temperature, lambda, alpha, beta, motility, seed);
+		
+		model.initSpin(spin);
+		
+		assertFalse("Expect to have same neighbours", model.hasSameNeighbours(1, 3));
+	}
+	
+	@Test
+	public void testHasSameNeighbours5(){
+		int [][] spin = new int [][]{
+				{3,3,4,4,4,3},
+				{3,3,4,4,3,3},
+				{1,1,2,2,2,1},
+				{1,1,2,2,2,1},
+				{1,2,2,2,2,1},
+				{3,3,3,4,4,3}
+		};
+		
+		double [] areaTarget = new double [] {4.0, 4.0, 4.0, 4.0};
+		CellPottsModel model = new CellPottsModel(6, 6, 4, areaTarget, 
+				temperature, lambda, alpha, beta, motility, seed);
+		
+		model.initSpin(spin);
+		
+		assertFalse("Expect to have same neighbours", model.hasSameNeighbours(4, 2));
+	}
+	
+	
+	@Test
+	public void testXDiff1(){
+		CellPottsModel model = new CellPottsModel(
+				7, 7, q, temperature, lambda, alpha, beta, motility, seed,
+				new DataWriter [] {new NullWriter()});
+		model.initSpin();
+		
+		assertEquals("Return wrong xDiff value",
+				-2.0 , model.xDiff(2, 4), tol);
+	}
+	
+	@Test
+	public void testXDiff2(){
+		CellPottsModel model = new CellPottsModel(
+				7, 7, q, temperature, lambda, alpha, beta, motility, seed,
+				new DataWriter [] {new NullWriter()});
+		model.initSpin();
+		
+		assertEquals("Return wrong xDiff value",
+				3.0 , model.xDiff(5, 2), tol);
+	}
+	
+	//boundary cases
+	@Test
+	public void testXDiff3(){
+		CellPottsModel model = new CellPottsModel(
+				7, 7, q, temperature, lambda, alpha, beta, motility, seed,
+				new DataWriter [] {new NullWriter()});
+		model.initSpin();
+		
+		assertEquals("Return wrong xDiff value",
+				3.0 , model.xDiff(2, 6), tol);
+	}
+	
+	@Test
+	public void testXDiff4(){
+		CellPottsModel model = new CellPottsModel(
+				7, 7, q, temperature, lambda, alpha, beta, motility, seed,
+				new DataWriter [] {new NullWriter()});
+		model.initSpin();
+		
+		assertEquals("Return wrong xDiff value",
+				-2.0 , model.xDiff(6, 1), tol);
+	}
+	
+	@Test
+	public void testYDiff1(){
+		CellPottsModel model = new CellPottsModel(
+				7, 7, q, temperature, lambda, alpha, beta, motility, seed,
+				new DataWriter [] {new NullWriter()});
+		model.initSpin();
+		
+		assertEquals("Return wrong xDiff value",
+				-2.0 , model.yDiff(2, 4), tol);
+	}
+	
+	@Test
+	public void testYDiff2(){
+		CellPottsModel model = new CellPottsModel(
+				7, 7, q, temperature, lambda, alpha, beta, motility, seed,
+				new DataWriter [] {new NullWriter()});
+		model.initSpin();
+		
+		assertEquals("Return wrong xDiff value",
+				3.0 , model.yDiff(5, 2), tol);
+	}
+	
+	//boundary cases
+	@Test
+	public void testYDiff3(){
+		CellPottsModel model = new CellPottsModel(
+				7, 7, q, temperature, lambda, alpha, beta, motility, seed,
+				new DataWriter [] {new NullWriter()});
+		model.initSpin();
+		
+		assertEquals("Return wrong xDiff value",
+				3.0 , model.xDiff(2, 6), tol);
+	}
+	
+	@Test
+	public void testYDiff4(){
+		CellPottsModel model = new CellPottsModel(
+				7, 7, q, temperature, lambda, alpha, beta, motility, seed,
+				new DataWriter [] {new NullWriter()});
+		model.initSpin();
+		
+		assertEquals("Return wrong xDiff value",
+				-2.0 , model.yDiff(6, 1), tol);
+	}
+	
+	@Test
+	public void testDot1(){
+		CellPottsModel model = new CellPottsModel(
+				nx, ny, q, temperature, lambda, alpha, beta, motility, seed,
+				new DataWriter [] {new NullWriter()});
+		assertEquals("Return wrong dot product",
+				0.0, model.dot(2.0, 0.0, 0.0, 7.0), tol);
+	}
+	
+	@Test
+	public void testDot2(){
+		CellPottsModel model = new CellPottsModel(
+				nx, ny, q, temperature, lambda, alpha, beta, motility, seed,
+				new DataWriter [] {new NullWriter()});
+		assertEquals("Return wrong dot product",
+				154.0, model.dot(15.0, 2.0, 8.0, 17.0), tol);
+	}
+	
+	@Test
+	public void testMag2_1(){
+		CellPottsModel model = new CellPottsModel(
+				nx, ny, q, temperature, lambda, alpha, beta, motility, seed,
+				new DataWriter [] {new NullWriter()});
+		assertEquals("Return wrong magnitude squared value",
+				0.0, model.mag2(0.0, 0.0), tol);
+	}
+	
+	@Test
+	public void testMag2_2(){
+		CellPottsModel model = new CellPottsModel(
+				nx, ny, q, temperature, lambda, alpha, beta, motility, seed,
+				new DataWriter [] {new NullWriter()});
+		assertEquals("Return wrong magnitude squared value",
+				25.0, model.mag2(3.0, 4.0), tol);
+	}
+	
+	@Test
+	public void testMag2_3(){
+		CellPottsModel model = new CellPottsModel(
+				nx, ny, q, temperature, lambda, alpha, beta, motility, seed,
+				new DataWriter [] {new NullWriter()});
+		assertEquals("Return wrong magnitude squared value",
+				169.0, model.mag2(5.0, 12.0), tol);
+	}
+	
+	
 }

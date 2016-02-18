@@ -4,10 +4,7 @@ import java.util.ArrayList;
 
 public class TestPottsModel {
 	public static void main (String [] args){
-		
-		ArrayList<Integer> list = new ArrayList<Integer>();
-		list.add(10);
-		System.out.println(list.contains(10));
+		System.out.printf("%.8f", 0.46932847932749);
 		
 	}
 	

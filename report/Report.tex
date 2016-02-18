@@ -27,7 +27,7 @@
 \renewcommand{\vec}[1]{\mathbf{#1}}
 \newcommand{\abs}[1]{\left|#1\right|}
 \newcommand{\inc}{\Delta}
-
+\newcommand{\etal}{\textit{et. al.}}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %
@@ -135,32 +135,44 @@ The study of cellular monolayers has been an active field in biological physics.
 %to have one {\bf Theory, Method, Results} section for each
 %experiment.
 
-\subsection{Jamming Transitions in Biology}
+\subsection{Jamming Transitions in Biological Tissues}
+%In condensed matter, jamming describes the transition from a flowing to a rigid state for a material with its structure remaining disordered in the process. This occurs in various form of soft matter such as emulsions, foams, granular materials, and colloidal dispersions \cite{hecke2010}. For example, colloidal particles can jam and form a glassy structure when the packing fraction is increased beyond a critical point, while foams can lose its ability to flow when the applied stress is lowered. These materials, however, can unjam and recover their fluid-like properties when the suitable control parameter is varied. The conditions for the transition between the fluid and rigid structure is commonly summarised by the ``jamming phase diagram''\cite{liu2010}.
+%
+%Recent experiments have indicated that jamming transitions can also occur in dense biological tissues. These tissues participate in complex biological processes such as wound healing, embryonic development, and cancer metastasis. During these processes, the tissues can undergo the Epithelial-Mesenchymal Transition (EMT), where rigid-like epithelial cells transit to fluid-like mesenchymal phenotypes (i.e. loosely associated cells), or the inverse process, the Mesenchymal-Epithelial-Transition (MET). These transitions are analogous to jamming. In addition, experiments have shown that these tissues exhibit typical glass behaviours such as caging\cite{schoetz2013}, dynamical heterogeneity (i.e. spatial and temporal differences of local cell dynamics)\cite{angelini2011}, and viscoelasticity (i.e. exhibiting both viscous and elastic behaviours)\cite{schoetz2013}. 
+%
+%
+%A deeper understanding on the jamming transition of biological tissues can be gained by numerical modelling and computer simulations. Various models have used to simulate cellular dynamics. They include self-propelled models, for which individual cells are represented as simple points. Amongst these, the Cellular Potts Model is one of the most widely used model and is the idea
 
-The jamming\cite{bimotility-driven2015}
+In condensed matter, jamming describes the transition from a flowing to rigid state of a material with its structure remaining disordered in the process. This occurs in various form of soft matter such as emulsions, foams, granular materials, and colloidal dispersions\cite{hecke2010}. For example, colloidal particles can jam and form a glassy structure when the packing fraction is increased beyond a critical point, while foams can lose its ability to flow when the applied stress is lowered. These materials, however, can unjam and recover their fluid-like properties when the suitable control parameter is varied. The conditions for the transition between the fluid and rigid structure is commonly summarised by the ``jamming phase diagram''\cite{liu2010}.
+
+Recent studies have indicated that jamming transitions also occur in dense biological tissues. Experiments have shown that these tissues exhibit typical glass-like behaviours such as caging, dynamical heterogeneity, and viscoelasticity \cite{schoetz2013,angelini2011}. In addition, these tissues participate in complex biological processes such as wound healing, embryonic development, and cancer metastasis. During these processes, the tissues can undergo the Epithelial-Mesenchymal Transition (EMT), where rigid-like epithelial cells become fluid-like mesenchymal phenotypes (i.e. loosely associated cells), or the inverse process, the Mesenchymal-Epithelial-Transition (MET). These transitions are very similar to jamming of soft materials. 
+
+There have been suggestions that the collective motion of cells plays a role in explaining this transition process. Researchers have found that the transition point is closely related to the cell shapes\cite{bi-density2015}. The shapes can be affected by factors such as cell-cell adhesion strength and active cortical tension, which is an effective surface tension.
+
+Numerical modelling and computer simulations have been performed to describe the collective motion of cells with various degrees of success. An example is the self-propelled particle (SPP) model, where cells are represented as disks or spheres like colloidal particles. Another example is the vertex model, where cells are represented by a set of interconnecting vertices and their dynamics are governed by a set of force equations. A further example, which is also the model implemented in this project, is the Cellular Potts Model.  
+
 
 \subsection{Cellular Potts Model}
-
-
-The Cellular Potts Model (CPM) is a stochastic model widely used in simulating the motion of closely packed cells. The model is an extension of the Potts model that takes into account of the physical characteristics and dynamics of biological cells. The model has successfully explained cellular processes such as cell sorting [Glazier], collective streaming [Szabo], and other behaviours.
+Developed by Glazier and Graner\cite{graner1992}, the Cellular Potts Model (CPM) is a stochastic model widely used in simulating the motion of closely packed cells. The model is an extension of the Potts model used in statistical physics that takes into account of the physical characteristics and dynamics of biological cells. The model has successfully explained cellular processes such as cell sorting \cite{graner1992} and collective streaming\cite{szabo2010}.
 
 In the CPM, biological cells are represented on a two dimensional lattice. Each lattice site is assigned with a non-negative integer spin $\sigma$, where $\sigma \in [0,N]$ and $N$ is the total number of cells. Two lattice sites which share a side or a corner are considered as neighbours. A biological cell is simply represented by a set of connected sites with the same spin. $\sigma = 0$ is reserved for enumerating sites that are not part of any cell.
 
 
-The dynamics of the cells are using a modified version of the Metropolis algorithm. In the simulation, a series of elementary steps are taken. Each step is an attempt to change the spin of a randomly chosen lattice site, denoted as $\sigma_{\textrm{target}}$, to the spin of one of its neighbours, denoted as $\sigma_{\textrm{trial}}$. The probability of accepting the spin change, $p\left(\sigma(\bm{a}) \rightarrow \sigma(\bm{b})\right)$, is given by the relation:
+The dynamics of the cells are simulated using a modified version of the Metropolis algorithm, which is a Markov Chain Monte-Carlo (MCMC) method for sampling configurations in the Potts model according to their Boltzmann probabilities. In the simulation, a series of elementary steps are taken. Each step is an attempt to change the spin of a random lattice site $\bm{a}$, denoted as $\sigma(\bm{a})$, to that of a randomly chosen neighbour site $\bm{b}$, denoted as $\sigma(\bm{b})$. The probability of accepting the spin change, $p\left(\bm{a} \rightarrow \bm{b}\right)$, is given by the relation:
 \begin{eqnarray}
 \label{eqn:prob}
 \ln p (\bm{a} \rightarrow \bm{b}) = \min \left[0, \frac{-\inc H (\bm{a} \rightarrow \bm{b}) + w (\bm{a} \rightarrow \bm{b})}{kT} \right],
 \end{eqnarray}
-where $w$ is a function to take into account of active cell motion, $H$ is an effective Hamiltonian which the system tries to minimise,  $\inc H (\bm{a} \rightarrow \bm{b})$ represents its change in the considered step, $T$ is the effective temperature, and $k$ is the Boltzmann constant. The functional form of $H$ and $w$ would be discussed further below. Since changing $k$ and $T$ is equivalent to multiplying both the $H$ and $w$ function by a constant, it is conventional to set $k$ and $T$ to 1 and rescale parameters in $H$ and $w$ accordingly. As the typical time for all lattice sites to have experienced an attempt depends on the lattice size, it is it is conventional to define a unit time as $N$ number of spin-copy attempts. This is known as one Monte-Carlo step (MCS). One also defines the acceptance rate as the ratio of the number of spin copies accepted to the number of attempts made. This is important for an accurate comparison between the time scales in the simulations and those used in experiments \cite{sanz2010}.
+where $w$ is a function to take into account of active cell motion, $H$ is an effective Hamiltonian which the system tries to minimise,  $\inc H (\bm{a} \rightarrow \bm{b})$ represents its change in the considered step, $T$ is the effective temperature, and $k$ is the Boltzmann constant. The functional form of $H$ and $w$ would be discussed further below. This elementary step is also known as a spin-copy attempt. Since changing $k$ and $T$ is equivalent to multiplying both the $H$ and $w$ function by a constant, it is conventional to set $k$ and $T$ to 1 and rescale parameters in $H$ and $w$ accordingly. As the typical time for all lattice sites to have experienced an attempt depends on the lattice size, it is it is conventional to define a unit time as $N$ number of spin-copy attempts. This is known as one Monte-Carlo step (MCS). One also defines the acceptance rate as the ratio of the number of spin copies accepted to the number of attempts made. This is important for an accurate comparison between the time scales in the simulations and those used in experiments \cite{sanz2010}.
  
-Equation \ref{eqn:prob} shows that the CPM dynamics is governed by an effective Hamiltonian that models the physical characteristics of a biological cell. This includes the intercellular adhesion and a constraint on the 
+Equation \ref{eqn:prob} shows that the CPM dynamics is governed by an effective Hamiltonian that models the physical characteristics of a biological cell. It has the form of 
 \begin{eqnarray}
 \label{eqn:hamiltonian}
 H = \sum_{\langle{\bm{x}, \bm{x'}\rangle}} J\left(\sigma(\bm{x}), \sigma(\bm{x'})\right) + \lambda \sum_{q\,=\,1}^{N} \left(a_q - A_q\right)^2,
 \end{eqnarray}
-The first term in equation \ref{eqn:hamiltonian} describes the cell-cell adhesion strength. It is a sum over all pairs of neighbours in the lattice, and J describes the adhesion strength between two sites $\bm{x}$ and $\bm{x'}$. For simulating an ensemble of homogenous cells, $J$ is specified by the following values:
+The first term in equation \ref{eqn:hamiltonian} accounts for interfacial effects such as cell-cell adhesion strength and the active cortical tension. It is a sum over the interfacial energy for all pairs of neighbours in the lattice. $J$ describes the specific interfacial energy between two sites $\bm{x}$ and $\bm{x'}$. For simulating an ensemble of homogenous cells, $J$ is specified by the following values:
 \begin{eqnarray}
+\label{eqn:interfacial_energy}
 J(\sigma,\sigma') = \left\{
 	\begin {array}{ll}
 		0 & \textrm{for $\sigma = \sigma'$}\\
@@ -169,117 +181,122 @@ J(\sigma,\sigma') = \left\{
 	\end{array}
 \right.
 \end{eqnarray}
-where $\alpha$ and $\beta$ are parameters for modelling the intercellular surface energy and the free surface energy, respectively. Previous studies have found that the magnitudes of these parameters have the effect on the cell shape and the flexibility of the cell boundaries: small magnitudes produce longer and rougher boundaries with more active cell dynamics, while large magnitudes result in straight boundaries and reduce the activeness of the cells \cite{szabo2010}.
+where $\alpha$ and $\beta$ are parameters for modelling the intercellular surface energy and the boundary surface energy, respectively. Previous studies have found that the magnitudes of these parameters have the effect on the cell shape and the flexibility of the cell boundaries: small magnitudes produce longer and rougher boundaries with more active cell dynamics, while large magnitudes result in straight boundaries and reduce the activeness of the cells \cite{szabo2010}.
 
-The second term is an elastic constraint on the volume of each cell, since a physical cell has finite volume. $a_q$ and $A_q$ are the current and target volume of the ith cell. $λ$ sets the strength of this elastic constraint. Typical values used in simulating cellular monolayers are given in table ??. 
+The second term is an elastic constraint on the volume of each cell, since a physical cell has finite volume. $a_q$ and $A_q$ are the current and target volume of the $q$th cell. $
+\lambda$ sets the strength of this elastic constraint and governs the area fluctuation of each cell.
 
-The bias w is a term proposed by Szabo et al. in their study of collective cell motion. 
+The w term in equation \ref{eqn:hamiltonian} is proposed by Szabo \etal in their study of collective cell motion\cite{szabo2010}. It introduces a bias in the evolution of the system to favour spin changes that result in the cells moving in their desired direction. In particular, they proposed that individual cell motility can be modelled using the expression 
 \begin{eqnarray}
-w (\bm{a} \rightarrow \bm{b}) = P \sum_{k \;=\; \sigma(a),\,\sigma(b)} \frac{\inc \bm{X}_k \cdot \bm{p}_k}{\abs{\bm{p}_k}}
+w (\bm{a} \rightarrow \bm{b}) = P \sum_{k \;=\; \sigma(a),\,\sigma(b)} \frac{\inc \bm{X}_k \cdot \bm{p}_k}{\abs{\bm{p}_k}},
 \end{eqnarray}
-where $\inc X_k$ is the change in the centre of cell labelled by spin $k$ in a elementary step, $p_k$ is a polarity vector that describes the preferred direction of the cell, and $P$ is a free parameter associated with the strength of the motility, which is proportional to the cell’s speed. The motivation for such 
+where $\inc \bm{X}_k$ is the change in the centre of cell labelled by spin $k$ in an elementary step, $\bm{p}_k$ is a polarity vector that describes the preferred direction of the cell, and $P$ is a free parameter associated with the strength of the motility that is proportional to the cell's speed. The sum takes into account that a spin change affects the centre of two cells. The motivation for this expression based on their research on the mechanisms behind individual cell motion. 
 
 
 \subsection{Motivation of the Study}
-Recently, the paper by Bi and co-workers demonstrated that the jamming transitions in biological tissues can be simulated using the Self-Propelled Voronoi (SPV) model \cite{bimotility-driven2015}. In this model, each cell is represented as a e
+Recently, Bi and co-workers demonstrated that jamming in confluent tissues can be described using another model known as the Self-Propelled Voronoi (SPV) model and investigated the effects of cell motility on the transition condition\cite{bimotility-driven2015}. This model is a variation of the vertex model where cells are specified by the centres of enclosing vertices. The dynamics of the cells is governed by force equations on the centres which take into account of the intercellular effects such as cell-cell adhesion and cortical tension.
 
-In that study, researchers have found that the phase transition is characterised by three parameters: the speed of a single motile cell, the persistent time, and the target shape index. The
+In that study, researchers found that the phase transition can be affected by several parameters such as the speed of a single motile cell, the persistent time, and the cell shape index. The persistent time is the characteristic time in which a cell would travel before changing its direction. The cell shape index is a dimensionless ratio between the perimeter of the cell, $P$, to the square root of its cross section area, $A$ (i.e. $p_0=P/\sqrt{A}$). In the limit of zero cell motility, the simulation results agree with previous studies that $p_0^*=3.81$ is critical value where phase transition occurs. Furthermore, when the cells are motile with rotational diffusion, the results show that $p_0^*$ reduces as the motility increases.  
 
-Given the success of CPM in modelling various cellular phenomena, it seems plausible that the model should also be capable of accounting the jamming transitions.  This is strengthened by the fact that the model has been used to study the collective behaviour of cell motility. 
+Given the success of CPM in modelling various collective cell phenomena, it seems reasonable that the model should also be capable of describing the jamming transitions. In particular, both SPV and CPM take into account of intercellular effects such as intercellular adhesion and tensions. Although CPM does not allow one to explicitly alter the preferred perimeter of a cell and thus $p_0$, which is possible in SPV, it is likely that an equivalent effect can be achieved indirectly by changing the interfacial energy $\alpha$ between cells (see equation \ref{eqn:interfacial_energy}). This is because a lower $\alpha$ tends to give a rougher boundary, which would result in a higher $p_0$. In contrast, a higher $\alpha$ tends to give a smoother boundary with a lower $p_0$. 
+
+This project investigates whether the CPM can describe the jamming transition. The main objective is to determine whether the variation on the model parameter $\alpha$, which models the surface tension and cell-cell adhesion between cells, has the ability to induce a fluid-to-glass transition. Another objective is to understand the effect of cell motility on the transition. 
 
 
 
-\pagebreak
-\section{Methodology}
-
-\subsection{Code Structure}
-
-%This section should contain the details of the method employed. 
-%As in the previous sections standard techniques should not be written
-%out in detail. For example if you use an oscilloscope to take a
-%measurement, the theory of the CRO tube\footnote{Don't laugh, I have actually
-%seen this.} is {\bf not relevant}. In computational projects this
-%section should be used to explain the algorithms used and the layout of
-%the computational code. A copy of the acutal code must be
-%given in the appendices. Long detailed sections of theory, data tables
-%and details of computational code used in data analysis only should not
-%appear in this section, but should/may be included in the appendices.
+%\pagebreak
+%\section{Methodology}
 %
-%This section should emphasise the philosophy of the approach used
-%and detail novel techniques. However
-%please note: this section in {\bf not} a blow-by-blow account of what
-%you did throughout the project, and in particular it should {\bf not} 
-%contain large detailed sections about things you tried and found to be
-%completely wrong. Remember you are writing a technical report, and
-%not a diary. If however you find that a technique that was expected to
-%work failed, that is a valid result and should be included.
+%\subsection{Statistical Quantities for Classifying Transitions}
 %
-%Here logical structure is particularly important, and you may find that
-%to maintain good structure you may have to present the experiments
-%in a different order from the one in which you carried them out.
-
-\pagebreak
-\section{Results and Discussion}
-
-This section should detail the obtained results in a clear,
-easy-to-follow manner. Remember long tables of numbers are just as boring to
-read as they are to type-in. Use graphs to present your results where
--ever practicable. When quoting results or measurements
-{\bf DO NOT FORGET ABOUT ERRORS}. Remember there are two basic types
-of errors, these being random and systematic, which you must consider.
-Remember also the difference between an error and a mistake, computer
-program bugs are mistakes.
-
- 
-Again be selective in what you include. Half a dozen
-tables that contain totally wrong data you collected while you forgot
-to switch on the power supply are {\bf not relevant} and will frequently
-mask the correct results. 
+%\subsection{Code Structure}
 %
-%                       Here is how to inserted a centered
-%                       postscript file, this one is actually
-%                       out of Maple, but it will work for other
-%                       figures out of Xfig, Idraw and Xgraph
+%%This section should contain the details of the method employed. 
+%%As in the previous sections standard techniques should not be written
+%%out in detail. For example if you use an oscilloscope to take a
+%%measurement, the theory of the CRO tube\footnote{Don't laugh, I have actually
+%%seen this.} is {\bf not relevant}. In computational projects this
+%%section should be used to explain the algorithms used and the layout of
+%%the computational code. A copy of the acutal code must be
+%%given in the appendices. Long detailed sections of theory, data tables
+%%and details of computational code used in data analysis only should not
+%%appear in this section, but should/may be included in the appendices.
+%%
+%%This section should emphasise the philosophy of the approach used
+%%and detail novel techniques. However
+%%please note: this section in {\bf not} a blow-by-blow account of what
+%%you did throughout the project, and in particular it should {\bf not} 
+%%contain large detailed sections about things you tried and found to be
+%%completely wrong. Remember you are writing a technical report, and
+%%not a diary. If however you find that a technique that was expected to
+%%work failed, that is a valid result and should be included.
+%%
+%%Here logical structure is particularly important, and you may find that
+%%to maintain good structure you may have to present the experiments
+%%in a different order from the one in which you carried them out.
 %
-\begin{figure}[htb]     %Insert a figure as soon as possible
-        \begin{center}
-                \leavevmode             % Warn Latex a figure is comming
-                \epsfxsize=90mm         % Horizontal size YOUR want
-                                        % figure to be
-                \epsffile{otf.eps}
-\end{center}
-\caption{This is an inserted Postscript file}
-\end{figure}
-
-This section must contain a discussion of the results. This should
-include a discussion of the experimental and/or numerical errors, and a
-comparison with the predictions of the background and theory underlying
-the techniques used. This section should highlight particular strengths
-and/or weaknesses of the methods used.
-
- 
-\section{Conclusion}
-This section should summarise the results obtained, detail
-conclusions reached, suggest future work, and changes that you would make if you repeated the
-experiment. This section should in general be short, 100 to 150 words
-being typical for most projects.
-\par\noindent
-If you have opted to have multiple {\bf Theory, Method, Results}
-sections, draw all the results together in a {\bf single} conclusion.
-\section{References}
-
-Don't forget this section. Detail the relevant references which
-should be cited at the correct place in the text of the report. There
-are no fixed rules as to how many references are {\it needed}. Generally
-the longer the project, and the more background reading you had to do,
-the more references will be required. 
-
-When you cite a reference you must give sufficient information. For
-example, for a journal article give, {\it Author}, {\it Title of
-article},
-{\it Journal Name}, {\it Volumn}, {\it Page}, and {\it Year}, 
-while for a book give, {\it Author}, {\it Title},
-{\it (Editor if there is one)}, {\it Publisher}, and {\it Year}.        
+%\pagebreak
+%\section{Results and Discussion}
+%
+%This section should detail the obtained results in a clear,
+%easy-to-follow manner. Remember long tables of numbers are just as boring to
+%read as they are to type-in. Use graphs to present your results where
+%-ever practicable. When quoting results or measurements
+%{\bf DO NOT FORGET ABOUT ERRORS}. Remember there are two basic types
+%of errors, these being random and systematic, which you must consider.
+%Remember also the difference between an error and a mistake, computer
+%program bugs are mistakes.
+%
+% 
+%Again be selective in what you include. Half a dozen
+%tables that contain totally wrong data you collected while you forgot
+%to switch on the power supply are {\bf not relevant} and will frequently
+%mask the correct results. 
+%%
+%%                       Here is how to inserted a centered
+%%                       postscript file, this one is actually
+%%                       out of Maple, but it will work for other
+%%                       figures out of Xfig, Idraw and Xgraph
+%%
+%\begin{figure}[htb]     %Insert a figure as soon as possible
+%        \begin{center}
+%                \leavevmode             % Warn Latex a figure is comming
+%                \epsfxsize=90mm         % Horizontal size YOUR want
+%                                        % figure to be
+%                \epsffile{otf.eps}
+%\end{center}
+%\caption{This is an inserted Postscript file}
+%\end{figure}
+%
+%This section must contain a discussion of the results. This should
+%include a discussion of the experimental and/or numerical errors, and a
+%comparison with the predictions of the background and theory underlying
+%the techniques used. This section should highlight particular strengths
+%and/or weaknesses of the methods used.
+%
+% 
+%\section{Conclusion}
+%This section should summarise the results obtained, detail
+%conclusions reached, suggest future work, and changes that you would make if you repeated the
+%experiment. This section should in general be short, 100 to 150 words
+%being typical for most projects.
+%\par\noindent
+%If you have opted to have multiple {\bf Theory, Method, Results}
+%sections, draw all the results together in a {\bf single} conclusion.
+%\section{References}
+%
+%Don't forget this section. Detail the relevant references which
+%should be cited at the correct place in the text of the report. There
+%are no fixed rules as to how many references are {\it needed}. Generally
+%the longer the project, and the more background reading you had to do,
+%the more references will be required. 
+%
+%When you cite a reference you must give sufficient information. For
+%example, for a journal article give, {\it Author}, {\it Title of
+%article},
+%{\it Journal Name}, {\it Volumn}, {\it Page}, and {\it Year}, 
+%while for a book give, {\it Author}, {\it Title},
+%{\it (Editor if there is one)}, {\it Publisher}, and {\it Year}.        
 
 \bibliographystyle{unsrt}   
 \bibliography{bibliography}

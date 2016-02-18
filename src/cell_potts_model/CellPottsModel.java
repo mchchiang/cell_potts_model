@@ -32,8 +32,8 @@ public class CellPottsModel extends SpinModel {
 	private double [] ycmNew;
 
 	//variables for measuring <R^2>
-	private double [] drx;
-	private double [] dry;
+	private double [] rx;
+	private double [] ry;
 
 	//variables for motility
 	private double [] px;
@@ -92,8 +92,8 @@ public class CellPottsModel extends SpinModel {
 		xcmNew = new double [q+1];
 		ycmNew = new double [q+1];
 
-		drx = new double [q+1];
-		dry = new double [q+1];
+		rx = new double [q+1];
+		ry = new double [q+1];
 
 		px = new double [q+1];
 		py = new double [q+1];
@@ -175,16 +175,18 @@ public class CellPottsModel extends SpinModel {
 				nextStep(n);	
 			}
 			
-			if (n > nequil-1){
+			//only start measuring CM right before equilibrium is reached
+			if (n >= nequil-1){
 				calculateCM();
 			}
 			
-			if (n > nequil){
-				updatedr();
+			if (n >= nequil && n < numOfSweeps-1){
+				updateR();
 				writeData(n);
 			}
 		}
 		acceptRate /= (double) (numOfSweeps * nx * ny);
+		writeData(numOfSweeps);
 	}
 
 	public void nextStep(int n){
@@ -434,44 +436,54 @@ public class CellPottsModel extends SpinModel {
 		}
 	}
 
-	public void updatedr(){
+	public void updateR(){
 		for (int i = 1; i <= q; i++){
-			drx[i] += xDiff(xcmNew[i], xcm[i]);
-			dry[i] += yDiff(ycmNew[i], ycm[i]);
+			rx[i] += xDiff(xcmNew[i], xcm[i]);
+			ry[i] += yDiff(ycmNew[i], ycm[i]);
 		}
 	}
 
 	public double [] calculateR2(){
-		double dr2 = 0.0;
-		double dr2Sq = 0.0; //for computing the error of R^2
+		double r2 = 0.0;
+		double r2Sq = 0.0; //for computing the error of R^2
 		double value = 0.0;
 		int count = 0;
 		for (int i = 1; i <= q; i++){
-			if (area[i] > 0.000001){
-				value = mag2(drx[i], dry[i]);
-				dr2 += value;
-				dr2Sq += value * value;
+			if (area[i] > 0.000001){//only measure cells with non-zero area
+				value = mag2(rx[i], ry[i]);
+				r2 += value;
+				r2Sq += value * value;
 				count++;
 			}
 		}
-		dr2 /= (double) count;
-		dr2Sq /= (double) count;
-		return new double [] {dr2, (dr2Sq - dr2 * dr2) / (double) (count-1)};
+		r2 /= (double) count;
+		r2Sq /= (double) count;
+		
+		//use unbiased estimate for errors
+		return new double [] 
+				{r2, Math.sqrt((r2Sq - r2 * r2) * ((double) count / (double) (count-1)))};
+		
 	}
 
 	//vector related operations
 	//calculate the difference between two points in periodic B.C.
 	public double xDiff(double x1, double x2){
 		double dx = x1-x2;
-		if (dx > (double) nx / 2.0) dx -= nx;
-		if (dx < (double) -nx / 2.0) dx += nx;
+		if (dx > (double) nx / 2.0){
+			dx -= nx;
+		} else if (dx < (double) -nx / 2.0){
+			dx += nx;
+		}
 		return dx;
 	}
 
 	public double yDiff(double y1, double y2){
 		double dy = y1-y2;
-		if (dy > (double) ny / 2.0) dy -= ny;
-		if (dy < (double) -ny / 2.0) dy += ny;
+		if (dy > (double) ny / 2.0){
+			dy -= ny;
+		} else if (dy < (double) -ny / 2.0){
+			dy += ny;
+		}
 		return dy;
 	}
 
@@ -491,7 +503,6 @@ public class CellPottsModel extends SpinModel {
 			writers[i].writeData(this, time);
 		}
 	}
-	
 
 	//periodic boundary methods
 	private int iup(int i){
@@ -660,19 +671,19 @@ public class CellPottsModel extends SpinModel {
 	}
 
 	public static void main (String [] args){
-		int nx = 100;
-		int ny = 100;
-		int q = 200;
+		int nx = 200;
+		int ny = 200;
+		int q = 1000;
 		double temp = 1.0;
 		double lambda = 1.0;
-		double alpha = 2.0;
+		double alpha = 4.0;
 		double beta = 16.0;
 		double motility = 0.0;
 		int numOfSweeps = 100000;
 		int seed = -1;
-		int run = 6;
+		int run = 2;
 		SpinReader reader = new SpinReader();
-		reader.openReader("spin_100_100_200_a_8.0_lam_1.0_P_0.0_n_100000_run_4.dat");
+		reader.openReader("init_spin.dat");
 		String filename = String.format("%d_%d_%d_a_%.1f_lam_%.1f_P_%.1f_n_%d_run_%d.dat",
 				nx, ny, q, alpha, lambda, motility, numOfSweeps, run);
 		DataWriter r2Writer = new R2Writer();
@@ -684,8 +695,8 @@ public class CellPottsModel extends SpinModel {
 		CellPottsModel model = new CellPottsModel(
 				nx, ny, q, temp, lambda, alpha, beta, motility, seed,
 				new DataWriter [] {r2Writer, ergWriter, spinWriter});
-		model.initSpin(reader.readSpins());
-		model.run(numOfSweeps, 200);
+		model.initSpin();
+		model.run(numOfSweeps, 10000);
 		r2Writer.closeWriter();
 		ergWriter.closeWriter();
 		spinWriter.closeWriter();
