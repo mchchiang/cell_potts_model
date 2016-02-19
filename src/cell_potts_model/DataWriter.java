@@ -16,6 +16,7 @@ public abstract class DataWriter {
 	}
 	
 	public void closeWriter(){
+		writer.flush();
 		writer.close();
 		writer = null;
 	}

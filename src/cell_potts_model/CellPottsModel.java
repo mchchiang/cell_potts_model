@@ -195,7 +195,7 @@ public class CellPottsModel extends SpinModel implements Runnable {
 			}
 		}
 		acceptRate /= (double) (numOfSweeps * nx * ny);
-		writeData(numOfSweeps);
+		writeData(numOfSweeps-1);
 		notifyThreadCompleteListener();
 	}
 

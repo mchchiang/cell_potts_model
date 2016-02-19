@@ -5,11 +5,12 @@ import java.util.ArrayList;
 public class CellPottsModelMeasurements_0218 implements ThreadCompleteListener {
 	
 	private int trial = 1;
-	private int numOfThreads = 10;
+	private int maxTrial = 10;
+	private int numOfThreads = 1;
 	private ArrayList<CellPottsModel> models;
-	private int nx = 100;
-	private int ny = 100;
-	private int q = 200;
+	private int nx = 200;
+	private int ny = 200;
+	private int q = 1000;
 	private double temp = 1.0;
 	private double lambda = 1.0;
 	private double alpha = 0.5;
@@ -27,6 +28,11 @@ public class CellPottsModelMeasurements_0218 implements ThreadCompleteListener {
 	
 	private DataWriter [][] writers;
 	
+	private DataWriter nullWriter = new NullWriter();
+	private DataWriter cmWriter = new CMWriter();
+	
+	private boolean completeAllTrials = false;
+	
 	public CellPottsModelMeasurements_0218(){		
 		
 		SpinReader reader = new SpinReader();
@@ -38,7 +44,11 @@ public class CellPottsModelMeasurements_0218 implements ThreadCompleteListener {
 		models = new ArrayList<CellPottsModel>();
 		
 		for (int i = 0; i < numOfThreads; i++){		
-			writers[i][0] = new NullWriter();
+			if (trial == 1){
+				writers[i][0] = new CMWriter();
+			} else {
+				writers[i][0] = nullWriter;
+			}
 			writers[i][1] = new R2Writer();
 			writers[i][2] = new EnergyWriter();	
 			writers[i][3] = new StatisticsWriter(numOfSweeps, nequil);
@@ -48,12 +58,12 @@ public class CellPottsModelMeasurements_0218 implements ThreadCompleteListener {
 			CellPottsModel model = new CellPottsModel(
 					nx, ny, q, temp, lambda, alpha, beta, motility, seed,
 					numOfSweeps, nequil, writers[i]);
-			model.initSpin(spin);
+			model.initSpin();
 			model.addThreadCompleteListener(this);
 			models.add(model);
 			
 			runNewThread(i);
-			if (trial < 10){
+			if (trial < maxTrial){
 				trial++;
 			} else {
 				trial = 1;
@@ -89,22 +99,33 @@ public class CellPottsModelMeasurements_0218 implements ThreadCompleteListener {
 	
 	@Override
 	public void notifyThreadComplete(Runnable r) {
-		CellPottsModel model = (CellPottsModel) r;
-		int index = models.indexOf(model);	
-		closeWriters(index);
-		
-		model.setAlpha(alpha);
-		model.initSpin(spin);
-		
-		openWriters(index);
-		
-		runNewThread(index);
-		
-		if (trial < 10){
-			trial++;
-		} else {
-			trial = 1;
-			alpha = alpha + inc;
+		if (!completeAllTrials){
+			CellPottsModel model = (CellPottsModel) r;
+			int index = models.indexOf(model);	
+			closeWriters(index);
+			
+			model.setAlpha(alpha);
+			model.initSpin();
+			
+			if (trial == 1){
+				writers[index][0] = cmWriter;
+			} else {
+				writers[index][0] = nullWriter;
+			}
+			
+			openWriters(index);
+			
+			runNewThread(index);
+			
+			if (trial < maxTrial){
+				trial++;
+			} else {
+				trial = 1;
+				alpha = alpha + inc;
+				if (alpha > maxAlpha){
+					completeAllTrials = true;
+				}
+			}
 		}
 	}
 	
