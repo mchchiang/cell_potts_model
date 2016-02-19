@@ -5,7 +5,7 @@ import java.util.ArrayList;
 public class CellPottsModelMeasurements_0218 implements ThreadCompleteListener {
 	
 	private int trial = 1;
-	private int maxTrial = 10;
+	private int maxTrial = 1;
 	private int numOfThreads = 1;
 	private ArrayList<CellPottsModel> models;
 	private int nx = 200;
