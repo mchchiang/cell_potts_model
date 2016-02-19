@@ -1,47 +1,112 @@
 package cell_potts_model;
 
-public class CellPottsModelMeasurements_0218 {
+import java.util.ArrayList;
+
+public class CellPottsModelMeasurements_0218 implements ThreadCompleteListener {
+	
+	private int trial = 1;
+	private int numOfThreads = 10;
+	private ArrayList<CellPottsModel> models;
+	private int nx = 100;
+	private int ny = 100;
+	private int q = 200;
+	private double temp = 1.0;
+	private double lambda = 1.0;
+	private double alpha = 0.5;
+	private double beta = 16.0;
+	private double motility = 0.0;
+	private int seed = -1;
+	
+	private double inc = 0.5;
+	private double maxAlpha = 7.0;
+	private int numOfRepeats = 10;
+	private int numOfSweeps = 10000;
+	private int nequil = 1000;
+	
+	private int [][] spin;
+	
+	private DataWriter [][] writers;
 	
 	public CellPottsModelMeasurements_0218(){		
 		
-		int nx = 100;
-		int ny = 100;
-		int q = 200;
-		double temp = 1.0;
-		double lambda = 1.0;
-		double alpha = 0.5;
-		double beta = 16.0;
-		double motility = 0.0;
-		int seed = -1;
-		
-		double inc = 0.5;
-		double maxAlpha = 7.0;
-		int numOfRepeats = 10;
-		int numOfSweeps = 100000;
-		int nequil = 10000;
-		
 		SpinReader reader = new SpinReader();
 		reader.openReader("init_spin.dat");
-		int [][] spin = reader.readSpins();
+		spin = reader.readSpins();
 		
-		DataWriter r2Writer = new R2Writer();
-		DataWriter cmWriter = new CMWriter();
-		DataWriter energyWriter = new EnergyWriter();
-		DataWriter statsWriter = new StatisticsWriter(numOfSweeps, nequil);
+		writers = new DataWriter [numOfThreads][4];		
 		
-		DataWriter [] writers = new DataWriter [4];		
-		writers[0] = cmWriter;
-		writers[1] = r2Writer;
-		writers[2] = energyWriter;	
-		writers[3] = statsWriter;
+		models = new ArrayList<CellPottsModel>();
 		
-		CellPottsModel model = new CellPottsModel(
-				nx, ny, q, temp, lambda, alpha, beta, motility, seed,
-				numOfSweeps, nequil, writers);
-		
-		Thread t = new Thread(model);
-		t.start();
+		for (int i = 0; i < numOfThreads; i++){		
+			writers[i][0] = new NullWriter();
+			writers[i][1] = new R2Writer();
+			writers[i][2] = new EnergyWriter();	
+			writers[i][3] = new StatisticsWriter(numOfSweeps, nequil);
+			
+			openWriters(i);
+			
+			CellPottsModel model = new CellPottsModel(
+					nx, ny, q, temp, lambda, alpha, beta, motility, seed,
+					numOfSweeps, nequil, writers[i]);
+			model.initSpin(spin);
+			model.addThreadCompleteListener(this);
+			models.add(model);
+			
+			runNewThread(i);
+			if (trial < 10){
+				trial++;
+			} else {
+				trial = 1;
+				alpha = alpha + inc;
+			}
+		}
 	}	
+	
+	public void openWriters(int index){
+		writers[index][0].openWriter("cm_" + getOutputFileName());
+		writers[index][1].openWriter("r2_" + getOutputFileName());
+		writers[index][2].openWriter("energy_" + getOutputFileName());
+		writers[index][3].openWriter("stats_" + getOutputFileName());
+	}
+	
+	public void closeWriters(int index){
+		for (int i = 0; i < 4; i++){
+			writers[index][i].closeWriter();
+		}
+	}
+	
+	public String getOutputFileName(){
+		return String.format("%d_%d_%d_a_%.1f_lam_%.1f_P_%.1f_t_%d_run_%d.dat",
+				nx, ny, q, alpha, lambda, motility, numOfSweeps, trial);
+	}
+	
+	public void runNewThread(int index){
+		Thread t = new Thread(models.get(index));
+		t.start();
+		System.out.println("Running: a = " + alpha + "\ttrial " + trial);
+	}
+	
+	
+	@Override
+	public void notifyThreadComplete(Runnable r) {
+		CellPottsModel model = (CellPottsModel) r;
+		int index = models.indexOf(model);	
+		closeWriters(index);
+		
+		model.setAlpha(alpha);
+		model.initSpin(spin);
+		
+		openWriters(index);
+		
+		runNewThread(index);
+		
+		if (trial < 10){
+			trial++;
+		} else {
+			trial = 1;
+			alpha = alpha + inc;
+		}
+	}
 	
 	public static void main (String [] args){
 		new CellPottsModelMeasurements_0218();

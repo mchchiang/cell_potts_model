@@ -54,6 +54,9 @@ public class CellPottsModel extends SpinModel implements Runnable {
 	//data writers
 	private DataWriter [] writers;
 	
+	private ArrayList<ThreadCompleteListener> threadListeners = 
+			new ArrayList<ThreadCompleteListener>();;
+	
 	//constructors
 	public CellPottsModel(int nx, int ny, int q, double temp, 
 			double lambda, double alpha, double beta, 
@@ -193,6 +196,7 @@ public class CellPottsModel extends SpinModel implements Runnable {
 		}
 		acceptRate /= (double) (numOfSweeps * nx * ny);
 		writeData(numOfSweeps);
+		notifyThreadCompleteListener();
 	}
 
 	public void nextStep(int n){
@@ -571,16 +575,36 @@ public class CellPottsModel extends SpinModel implements Runnable {
 		return ycmNew[q];
 	}
 	
+	public void setAlpha(double a){
+		this.alpha = a;
+	}
+	
 	public double getAlpha(){
 		return alpha;
+	}
+	
+	public void setBeta(double b){
+		this.beta = b;
 	}
 	
 	public double getBeta(){
 		return beta;
 	}
 	
+	public void setLambda(double l){
+		if (l >= 0){
+			this.lambda = l;
+		}
+	}
+	
 	public double getLambda(){
 		return lambda;
+	}
+	
+	public void setMotility(double m){
+		if (m >= 0){
+			this.motility = m;
+		}
 	}
 	
 	public double getMotility(){
@@ -693,6 +717,20 @@ public class CellPottsModel extends SpinModel implements Runnable {
 					System.out.print("0 ");
 				}
 			}
+		}
+	}
+	
+	public void addThreadCompleteListener(ThreadCompleteListener l){
+		threadListeners.add(l);
+	}
+	
+	public void removeThreadCompleteListener(ThreadCompleteListener l){
+		threadListeners.remove(l);
+	}
+	
+	public void notifyThreadCompleteListener(){
+		for (ThreadCompleteListener l : threadListeners){
+			l.notifyThreadComplete(this);
 		}
 	}
 
