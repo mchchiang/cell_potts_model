@@ -95,10 +95,11 @@ public class CPMVaryAlphaMeasurements implements ThreadCompleteListener {
 	}	
 	
 	public void openWriters(int index){
-		writers[index][0].openWriter("cm_" + getOutputFileName());
-		writers[index][1].openWriter("r2_" + getOutputFileName());
-		writers[index][2].openWriter("energy_" + getOutputFileName());
-		writers[index][3].openWriter("stats_" + getOutputFileName());
+		String name = getOutputFileName();
+		writers[index][0].openWriter(Paths.get(outputFilePath, "cm_" + name).toString());
+		writers[index][1].openWriter(Paths.get(outputFilePath, "r2_" + name).toString());
+		writers[index][2].openWriter(Paths.get(outputFilePath, "energy_" + name).toString());
+		writers[index][3].openWriter(Paths.get(outputFilePath, "stats_" + name).toString());
 	}
 	
 	public void closeWriters(int index){
@@ -108,9 +109,8 @@ public class CPMVaryAlphaMeasurements implements ThreadCompleteListener {
 	}
 	
 	public String getOutputFileName(){
-		String name = String.format("%d_%d_%d_a_%.1f_lam_%.1f_P_%.1f_t_%d_run_%d.dat",
+		return String.format("%d_%d_%d_a_%.1f_lam_%.1f_P_%.1f_t_%d_run_%d.dat",
 				nx, ny, q, alpha, lambda, motility, numOfSweeps, trial);
-		return Paths.get(outputFilePath, name).toString();
 	}
 	
 	public void runNewThread(int index){
