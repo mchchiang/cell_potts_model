@@ -35,34 +35,12 @@ public class CellPottsModelMeasurements_0218 {
 		writers[2] = energyWriter;	
 		writers[3] = statsWriter;
 		
-		while (alpha <= maxAlpha){
-			
-			for (int i = 0; i < numOfRepeats; i++){
-				System.out.println("Running: a = " + alpha + "\ttrial " + (i+1));
-				String filename = String.format("%d_%d_%d_a_%.1f_lam_%.1f_P_%.1f_t_%d_run_%d.dat",
-						nx, ny, q, alpha, lambda, motility, numOfSweeps, (i+1));
-				if (i == 0){
-					cmWriter.openWriter("cm_" + filename);
-				}
-				r2Writer.openWriter("r2_" + filename);
-				energyWriter.openWriter("energy_" + filename);
-				statsWriter.openWriter("stats_" + filename);
-				
-				CellPottsModel model = new CellPottsModel(
-						nx, ny, q, temp, lambda, alpha, beta, motility, seed,
-						writers);
-				model.initSpin(spin);
-				model.run(numOfSweeps, nequil);
-				
-				if (i == 0){
-					cmWriter.closeWriter();
-				}
-				r2Writer.closeWriter();
-				energyWriter.closeWriter();
-				statsWriter.closeWriter();
-			}
-			alpha = alpha + inc;
-		}
+		CellPottsModel model = new CellPottsModel(
+				nx, ny, q, temp, lambda, alpha, beta, motility, seed,
+				numOfSweeps, nequil, writers);
+		
+		Thread t = new Thread(model);
+		t.start();
 	}	
 	
 	public static void main (String [] args){

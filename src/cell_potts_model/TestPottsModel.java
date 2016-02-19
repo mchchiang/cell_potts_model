@@ -3,8 +3,26 @@ package cell_potts_model;
 import java.util.ArrayList;
 
 public class TestPottsModel {
+	
+	static class MyRunnable implements Runnable{
+
+		@Override
+		public void run() {
+			for (int i = 0; i < 10000; i++){
+				System.out.println(i);
+			}
+		}
+		
+	}
+	
 	public static void main (String [] args){
-		System.out.printf("%.8f", 0.46932847932749);
+		
+		Runnable r = new MyRunnable();
+		
+		Thread t1 = new Thread(r);
+		Thread t2 = new Thread(r);
+		t1.start();
+		t2.start();
 		
 	}
 	

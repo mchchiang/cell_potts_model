@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-public class CellPottsModel extends SpinModel {
+public class CellPottsModel extends SpinModel implements Runnable {
 
 	private int nx, ny;
 	private int q;	
@@ -14,6 +14,9 @@ public class CellPottsModel extends SpinModel {
 	private double temperature;
 	private double lambda;
 	private double motility;
+	
+	private int numOfSweeps = 0;
+	private int nequil = 0;
 	
 	//parameters for cell adhesion energy
 	private double alpha;
@@ -54,7 +57,7 @@ public class CellPottsModel extends SpinModel {
 	//constructors
 	public CellPottsModel(int nx, int ny, int q, double temp, 
 			double lambda, double alpha, double beta, 
-			double motility, int seed, DataWriter [] writers){
+			double motility, int seed, int n, int nequil, DataWriter [] writers){
 		this.nx = nx;
 		this.ny = ny;
 		this.q = q;
@@ -64,6 +67,8 @@ public class CellPottsModel extends SpinModel {
 		this.motility = motility;
 		this.alpha = alpha;
 		this.beta = beta;
+		this.numOfSweeps = n;
+		this.nequil = nequil;
 		this.writers = writers;
 		area = new double [q+1];
 		areaTarget = new double [q+1];
@@ -166,8 +171,9 @@ public class CellPottsModel extends SpinModel {
 		}
 	}
 
-	public void run(int numOfSweeps, int nequil){
-		
+	
+	@Override
+	public void run(){
 		acceptRate = 0.0;
 		
 		for (int n = 0;  n < numOfSweeps; n++){
@@ -533,6 +539,26 @@ public class CellPottsModel extends SpinModel {
 		return spinYPos.get(spin);
 	}
 	
+	public void setNumOfSweeps(int n){
+		if (n >= 0){
+			numOfSweeps = n;
+		}
+	}
+	
+	public int getNumOfSweeps(){
+		return numOfSweeps;
+	}
+	
+	public void setNEquil(int n){
+		if (n >= 0){
+			nequil = n;
+		}
+	}
+	
+	public int getNEquil(){
+		return nequil;
+	}
+	
 	public double getAcceptRate(){
 		return acceptRate;
 	}
@@ -694,9 +720,10 @@ public class CellPottsModel extends SpinModel {
 		spinWriter.openWriter("spin_" + filename);
 		CellPottsModel model = new CellPottsModel(
 				nx, ny, q, temp, lambda, alpha, beta, motility, seed,
+				numOfSweeps, 10000, 
 				new DataWriter [] {r2Writer, ergWriter, spinWriter});
 		model.initSpin();
-		model.run(numOfSweeps, 10000);
+		model.run();
 		r2Writer.closeWriter();
 		ergWriter.closeWriter();
 		spinWriter.closeWriter();

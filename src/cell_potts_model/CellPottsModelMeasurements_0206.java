@@ -42,9 +42,9 @@ public class CellPottsModelMeasurements_0206 {
 						nx, ny, alpha, motility, (i+1)));
 				model = new CellPottsModel(
 						nx, ny, q, temp, lambda, alpha, beta, motility, seed,
-						writers);
+						numOfSweeps, nequil, writers);
 				model.initSpin();
-				model.run(numOfSweeps, nequil);
+				model.run();
 				cmWriter.closeWriter();
 				r2Writer.closeWriter();
 				energyWriter.closeWriter();

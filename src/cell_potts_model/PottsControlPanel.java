@@ -98,16 +98,18 @@ public class PottsControlPanel extends JPanel implements ActionListener {
 					double beta = 16.0;
 					double motility = 0.0;
 					int seed = -1;
+					int numOfSweeps = 100000;
+					int nequil = 1000;
 					SpinReader reader = new SpinReader();
 					reader.openReader("init_spin.dat");
 					btnRun.setEnabled(false);
 					CellPottsModel model = new CellPottsModel(
 							nx, ny, q, temp, lambda, alpha, beta, motility, seed,
-							new DataWriter [] {new NullWriter()});
+							numOfSweeps, nequil, new DataWriter [] {new NullWriter()});
 					model.initSpin();
 					view.setModel(model);
 					view.initImage();
-					model.run(100000, 200);
+					model.run();
 					view.stopDrawingImage();
 					btnRun.setEnabled(true);
 				}
