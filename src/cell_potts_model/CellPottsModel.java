@@ -55,7 +55,7 @@ public class CellPottsModel extends SpinModel implements Runnable {
 	private DataWriter [] writers;
 	
 	private ArrayList<ThreadCompleteListener> threadListeners = 
-			new ArrayList<ThreadCompleteListener>();;
+			new ArrayList<ThreadCompleteListener>();
 	
 	//constructors
 	public CellPottsModel(int nx, int ny, int q, double temp, 
@@ -193,7 +193,7 @@ public class CellPottsModel extends SpinModel implements Runnable {
 				updateR();
 				writeData(n);
 			}
-			System.out.println(n);
+			//System.out.println(n);
 		}
 		acceptRate /= (double) (numOfSweeps * nx * ny);
 		writeData(numOfSweeps-1);
