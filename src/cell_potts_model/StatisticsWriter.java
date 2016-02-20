@@ -24,6 +24,7 @@ public class StatisticsWriter extends DataWriter {
 			writer.printf("accept_rate %.8f\n", model.getAcceptRate());
 			writer.printf("num_of_sweeps %d\n", numOfSweeps);
 			writer.printf("nequil %d\n", nequil);
+			writer.printf("cells_alive %d\n", model.getNumOfCellsAlive());
 		}
 	}
 

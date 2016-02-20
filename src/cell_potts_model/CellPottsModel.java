@@ -217,7 +217,7 @@ public class CellPottsModel extends SpinModel implements Runnable {
 			if (n >= nequil && n < numOfSweeps-1){
 				writeData(n);
 			}
-			
+			//System.out.println(n);
 		}
 		acceptRate /= (double) (numOfSweeps * nx * ny);
 		writeData(numOfSweeps-1);
@@ -703,7 +703,16 @@ public class CellPottsModel extends SpinModel implements Runnable {
 	public int getTypesOfSpin(){
 		return q+1;
 	}
-
+	
+	public int getNumOfCellsAlive(){
+		int cellsAlive = 0;
+		for (int i = 1; i <= q; i++){
+			if (area[i] > 0.000001){
+				cellsAlive++;
+			}
+		}
+		return cellsAlive;
+	}
 
 	//printing methods
 	public void printSpins(){
@@ -765,7 +774,7 @@ public class CellPottsModel extends SpinModel implements Runnable {
 	public static void main (String [] args){
 		int nx = 200;
 		int ny = 200;
-		int q = 1000;
+		int q = 1001;
 		double temp = 1.0;
 		double lambda = 1.0;
 		double alpha = 8.0;
