@@ -1,6 +1,6 @@
 #!/bin/bash
 
-inputfiles="somedata1.dat somedata2.dat"
+inputfiles="$@"
 
 echo "# filename, a, error, b, error" > output_file.dat
 
