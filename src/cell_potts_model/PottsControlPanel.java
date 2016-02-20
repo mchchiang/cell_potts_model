@@ -105,7 +105,7 @@ public class PottsControlPanel extends JPanel implements ActionListener {
 					btnRun.setEnabled(false);
 					CellPottsModel model = new CellPottsModel(
 							nx, ny, q, temp, lambda, alpha, beta, motility, seed,
-							numOfSweeps, nequil, new DataWriter [] {new NullWriter()});
+							numOfSweeps, nequil, new DataWriter [] {new NullWriter()}, true);
 					model.initSpin();
 					view.setModel(model);
 					view.initImage();

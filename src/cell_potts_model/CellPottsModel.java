@@ -50,6 +50,9 @@ public class CellPottsModel extends SpinModel implements Runnable {
 	//seed for generating random numbers
 	private int seed;
 	private Random rand;
+	
+	//whether to notify or not the observers about spin updates
+	private boolean notify = false;
 
 	//data writers
 	private DataWriter [] writers;
@@ -60,7 +63,8 @@ public class CellPottsModel extends SpinModel implements Runnable {
 	//constructors
 	public CellPottsModel(int nx, int ny, int q, double temp, 
 			double lambda, double alpha, double beta, 
-			double motility, int seed, int n, int nequil, DataWriter [] writers){
+			double motility, int seed, int n, int nequil, DataWriter [] writers,
+			boolean notify){
 		this.nx = nx;
 		this.ny = ny;
 		this.q = q;
@@ -73,9 +77,7 @@ public class CellPottsModel extends SpinModel implements Runnable {
 		this.numOfSweeps = n;
 		this.nequil = nequil;
 		this.writers = writers;
-		area = new double [q+1];
-		areaTarget = new double [q+1];
-		init();
+		this.notify = notify;
 	}
 
 	//constructor used for unit testing only!
@@ -91,10 +93,14 @@ public class CellPottsModel extends SpinModel implements Runnable {
 		this.beta = beta;
 		this.motility = motility;
 		this.seed = seed;
-		init();
 	}
 
 	public void init(){
+		acceptRate = 0.0;
+		
+		area = new double [q+1];
+		areaTarget = new double [q+1];
+		
 		xcm = new double [q+1];
 		ycm = new double [q+1];
 		xcmNew = new double [q+1];
@@ -128,6 +134,8 @@ public class CellPottsModel extends SpinModel implements Runnable {
 	
 	//init random spins
 	public void initSpin(){
+		init();
+		
 		spin = new int [nx][ny];
 		
 		//initialising each of the Q cells as a square with length delta
@@ -158,11 +166,12 @@ public class CellPottsModel extends SpinModel implements Runnable {
 	
 	//init spins specified by user
 	public void initSpin(int [][] spin){
+		init();
+		
 		if (spin.length == nx && spin[0].length == ny){
-			area = new double [q+1];
+			
 			//deep copy the spin
 			this.spin = new int [nx][ny];
-			//update the area and the spin positions (x,y)
 			for (int i = 0; i < nx; i++){
 				for (int j = 0; j < ny; j++){
 					this.spin[i][j] = spin[i][j];
@@ -171,9 +180,23 @@ public class CellPottsModel extends SpinModel implements Runnable {
 					spinYPos.get(spin[i][j]).add(j);
 				}
 			}
-		}
+			
+			/*
+			 * set the target area for each cell (exclude cells with zero area),
+			 * which is the same for all cells
+			 */
+			int cellsAlive = 0;
+			for (int i = 1; i <= q; i++){
+				if (area[i] > 0.000001){
+					cellsAlive++;
+				}
+			}
+			double target = (double) (nx*ny) / (double) cellsAlive;
+			for (int i = 0; i <= q; i++){
+				areaTarget[i] = target;
+			}
+		}		
 	}
-
 	
 	@Override
 	public void run(){
@@ -185,15 +208,14 @@ public class CellPottsModel extends SpinModel implements Runnable {
 			}
 			
 			//only start measuring CM right before equilibrium is reached
-			if (n >= nequil-1){
+			if (n >= nequil){
 				calculateCM();
-			}
-			
-			if (n >= nequil && n < numOfSweeps-1){
-				updateR();
 				writeData(n);
 			}
-			//System.out.println(n);
+			if (n > nequil && n < numOfSweeps-1){
+				updateR();
+			}
+			
 		}
 		acceptRate /= (double) (numOfSweeps * nx * ny);
 		writeData(numOfSweeps-1);
@@ -268,8 +290,10 @@ public class CellPottsModel extends SpinModel implements Runnable {
 				
 				acceptRate = acceptRate + 1.0;
 				
-				this.setChanged();
-				this.notifyObservers(new Object [] {i,j});
+				if (notify){
+					this.setChanged();
+					this.notifyObservers(new Object [] {i,j});
+				}
 			}
 		}
 	}
@@ -721,6 +745,7 @@ public class CellPottsModel extends SpinModel implements Runnable {
 		}
 	}
 	
+	//for notifying the listeners when the model has finished running
 	public void addThreadCompleteListener(ThreadCompleteListener l){
 		threadListeners.add(l);
 	}
@@ -761,7 +786,7 @@ public class CellPottsModel extends SpinModel implements Runnable {
 		CellPottsModel model = new CellPottsModel(
 				nx, ny, q, temp, lambda, alpha, beta, motility, seed,
 				numOfSweeps, nequil, 
-				new DataWriter [] {r2Writer, ergWriter, spinWriter});
+				new DataWriter [] {r2Writer, ergWriter, spinWriter}, false);
 		model.initSpin();
 		model.run();
 		r2Writer.closeWriter();

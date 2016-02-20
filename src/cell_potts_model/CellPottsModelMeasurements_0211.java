@@ -55,7 +55,7 @@ public class CellPottsModelMeasurements_0211 {
 				statsWriter.openWriter("stats_" + filename);
 				CellPottsModel model = new CellPottsModel(
 						nx, ny, q, temp, lambda, alpha, beta, motility, seed,
-						numOfSweeps, nequil, writers);
+						numOfSweeps, nequil, writers, false);
 				model.initSpin(spin);
 				model.run();
 				

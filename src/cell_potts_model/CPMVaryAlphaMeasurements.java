@@ -23,7 +23,6 @@ public class CPMVaryAlphaMeasurements implements ThreadCompleteListener {
 	
 	private DataWriter [][] writers;
 	private DataWriter nullWriter = new NullWriter();
-	private DataWriter cmWriter = new CMWriter();
 	
 	private boolean completeAllTrials = false;
 	
@@ -66,21 +65,12 @@ public class CPMVaryAlphaMeasurements implements ThreadCompleteListener {
 		models = new ArrayList<CellPottsModel>();
 		
 		for (int i = 0; i < numOfThreads; i++){		
-			if (trial == 1){
-				writers[i][0] = new CMWriter();
-			} else {
-				writers[i][0] = nullWriter;
-			}
-			writers[i][1] = new R2Writer();
-			writers[i][2] = new EnergyWriter();	
-			writers[i][3] = new StatisticsWriter(numOfSweeps, nequil);
-			
 			openWriters(i);
 			
 			CellPottsModel model = new CellPottsModel(
 					nx, ny, q, temp, lambda, alpha, beta, motility, seed,
-					numOfSweeps, nequil, writers[i]);
-			model.initSpin();
+					numOfSweeps, nequil, writers[i], false);
+			model.initSpin(spin);
 			model.addThreadCompleteListener(this);
 			models.add(model);
 			
@@ -96,6 +86,14 @@ public class CPMVaryAlphaMeasurements implements ThreadCompleteListener {
 	
 	public void openWriters(int index){
 		String name = getOutputFileName();
+		if (trial == 1){
+			writers[index][0] = new CMWriter();
+		} else {
+			writers[index][0] = nullWriter;
+		}
+		writers[index][1] = new R2Writer();
+		writers[index][2] = new EnergyWriter();	
+		writers[index][3] = new StatisticsWriter(numOfSweeps, nequil);
 		writers[index][0].openWriter(Paths.get(outputFilePath, "cm_" + name).toString());
 		writers[index][1].openWriter(Paths.get(outputFilePath, "r2_" + name).toString());
 		writers[index][2].openWriter(Paths.get(outputFilePath, "energy_" + name).toString());
@@ -122,19 +120,13 @@ public class CPMVaryAlphaMeasurements implements ThreadCompleteListener {
 	
 	@Override
 	public void notifyThreadComplete(Runnable r) {
+		CellPottsModel model = (CellPottsModel) r;
+		int index = models.indexOf(model);	
+		closeWriters(index);
+		
 		if (!completeAllTrials){
-			CellPottsModel model = (CellPottsModel) r;
-			int index = models.indexOf(model);	
-			closeWriters(index);
-			
 			model.setAlpha(alpha);
-			model.initSpin();
-			
-			if (trial == 1){
-				writers[index][0] = cmWriter;
-			} else {
-				writers[index][0] = nullWriter;
-			}
+			model.initSpin(spin);
 			
 			openWriters(index);
 			
