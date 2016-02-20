@@ -1,28 +1,19 @@
 package cell_potts_model;
 
-import java.util.ArrayList;
-import java.nio.file.Paths;
-
 public class CPMVaryAlphaMeasurements implements ThreadCompleteListener {
 	
-	private ArrayList<CellPottsModel> models;
 	private int nx, ny, q;
 	private double temp, lambda, alpha, beta, motility;
-	private int seed = -1;
 	
 	private double inc, maxAlpha;
 	private int numOfSweeps, nequil;
 	
 	private int trial = 1;
 	private int maxTrial = 1;
-	private int numOfThreads = 1;
 	
 	private String outputFilePath;
 	
 	private int [][] spin;
-	
-	private DataWriter [][] writers;
-	private DataWriter nullWriter = new NullWriter();
 	
 	private boolean completeAllTrials = false;
 	
@@ -47,91 +38,45 @@ public class CPMVaryAlphaMeasurements implements ThreadCompleteListener {
 		this.numOfSweeps = n;
 		this.nequil = nequil;
 		this.maxTrial = maxTrial;
-		this.numOfThreads = numOfThreads;
 		this.outputFilePath = filepath;
 		
 		SpinReader reader = new SpinReader();
 		reader.openReader(spinFile);
 		spin = reader.readSpins();
 		
-		if (spin.length != nx || spin[0].length != ny){
-			throw new IllegalArgumentException(
-					"Inconsistent spin data dimension. Expect " + nx + " x " + 
-					ny + " but was " + spin.length + " x " + spin[0].length);
-		}
-		
-		writers = new DataWriter [numOfThreads][4];		
-		
-		models = new ArrayList<CellPottsModel>();
-		
-		for (int i = 0; i < numOfThreads; i++){		
-			openWriters(i);
-			
-			CellPottsModel model = new CellPottsModel(
-					nx, ny, q, temp, lambda, alpha, beta, motility, seed,
-					numOfSweeps, nequil, writers[i], false);
-			model.initSpin(spin);
-			model.addThreadCompleteListener(this);
-			models.add(model);
-			
-			runNewThread(i);
+		for (int i = 0; i < numOfThreads; i++){
+			if (completeAllTrials){
+				break;
+			}
+			runNewThread();
 			if (trial < maxTrial){
 				trial++;
 			} else {
 				trial = 1;
 				alpha = alpha + inc;
+				if (alpha > maxAlpha){
+					completeAllTrials = true;
+				}
 			}
 		}
 	}	
 	
-	public void openWriters(int index){
-		String name = getOutputFileName();
-		if (trial == 1){
-			writers[index][0] = new CMWriter();
-		} else {
-			writers[index][0] = nullWriter;
-		}
-		writers[index][1] = new R2Writer();
-		writers[index][2] = new EnergyWriter();	
-		writers[index][3] = new StatisticsWriter(numOfSweeps, nequil);
-		writers[index][0].openWriter(Paths.get(outputFilePath, "cm_" + name).toString());
-		writers[index][1].openWriter(Paths.get(outputFilePath, "r2_" + name).toString());
-		writers[index][2].openWriter(Paths.get(outputFilePath, "energy_" + name).toString());
-		writers[index][3].openWriter(Paths.get(outputFilePath, "stats_" + name).toString());
-	}
-	
-	public void closeWriters(int index){
-		for (int i = 0; i < 4; i++){
-			writers[index][i].closeWriter();
-		}
-	}
-	
-	public String getOutputFileName(){
-		return String.format("%d_%d_%d_a_%.1f_lam_%.1f_P_%.1f_t_%d_run_%d.dat",
-				nx, ny, q, alpha, lambda, motility, numOfSweeps, trial);
-	}
-	
-	public void runNewThread(int index){
-		Thread t = new Thread(models.get(index));
+	public void runNewThread(){
+		boolean writeCM = false;
+		if (trial == 1) writeCM = true;
+		Measurement experiment = new Measurement(nx, ny, q, temp, lambda, 
+				alpha, beta, motility, numOfSweeps, nequil, trial, 
+				spin, outputFilePath, writeCM);
+		experiment.addThreadCompleteListener(this);
+		Thread t = new Thread(experiment);
 		t.start();
-		System.out.println("Running: a = " + alpha + "\ttrial " + trial);
 	}
 	
 	
 	@Override
-	public synchronized void notifyThreadComplete(Runnable r) {
-		CellPottsModel model = (CellPottsModel) r;
-		int index = models.indexOf(model);	
-		closeWriters(index);
-		
+	public synchronized void notifyThreadComplete(Runnable r) {		
 		if (!completeAllTrials){
-			model.setAlpha(alpha);
-			model.initSpin(spin);
-			
-			openWriters(index);
-			
-			runNewThread(index);
-			
+			runNewThread();
 			if (trial < maxTrial){
 				trial++;
 			} else {

@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-public class CellPottsModel extends SpinModel implements Runnable {
+public class CellPottsModel extends SpinModel {
 
 	private int nx, ny;
 	private int q;	
@@ -198,7 +198,6 @@ public class CellPottsModel extends SpinModel implements Runnable {
 		}		
 	}
 	
-	@Override
 	public void run(){
 		acceptRate = 0.0;
 		
@@ -221,7 +220,6 @@ public class CellPottsModel extends SpinModel implements Runnable {
 		}
 		acceptRate /= (double) (numOfSweeps * nx * ny);
 		writeData(numOfSweeps-1);
-		notifyThreadCompleteListener();
 	}
 
 	public void nextStep(int n){
@@ -753,21 +751,6 @@ public class CellPottsModel extends SpinModel implements Runnable {
 					System.out.print("0 ");
 				}
 			}
-		}
-	}
-	
-	//for notifying the listeners when the model has finished running
-	public void addThreadCompleteListener(ThreadCompleteListener l){
-		threadListeners.add(l);
-	}
-	
-	public void removeThreadCompleteListener(ThreadCompleteListener l){
-		threadListeners.remove(l);
-	}
-	
-	public void notifyThreadCompleteListener(){
-		for (ThreadCompleteListener l : threadListeners){
-			l.notifyThreadComplete(this);
 		}
 	}
 
