@@ -783,17 +783,19 @@ public class CellPottsModel extends SpinModel implements Runnable {
 		int numOfSweeps = 100000;
 		int nequil = 10000;
 		int seed = -1;
-		int run = 1;
+		int run = 2;
 		SpinReader reader = new SpinReader();
-		reader.openReader("init_spin.dat");
+		reader.openReader("init_spin_1000_2.dat");
 		String filename = String.format("%d_%d_%d_a_%.1f_lam_%.1f_P_%.1f_n_%d_run_%d.dat",
 				nx, ny, q, alpha, lambda, motility, numOfSweeps, run);
 		DataWriter r2Writer = new R2Writer();
 		DataWriter ergWriter = new EnergyWriter();
 		DataWriter spinWriter = new SpinWriter(numOfSweeps);
+		DataWriter statsWriter = new StatisticsWriter(numOfSweeps, nequil);
 		r2Writer.openWriter("r2_" + filename);
 		ergWriter.openWriter("energy_" + filename);
 		spinWriter.openWriter("spin_" + filename);
+		statsWriter.openWriter("stats_" + filename);
 		CellPottsModel model = new CellPottsModel(
 				nx, ny, q, temp, lambda, alpha, beta, motility, seed,
 				numOfSweeps, nequil, 
@@ -803,6 +805,7 @@ public class CellPottsModel extends SpinModel implements Runnable {
 		r2Writer.closeWriter();
 		ergWriter.closeWriter();
 		spinWriter.closeWriter();
+		statsWriter.closeWriter();
 		reader.closeReader();
 	}
 }
