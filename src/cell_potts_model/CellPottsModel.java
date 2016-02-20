@@ -127,7 +127,7 @@ public class CellPottsModel extends SpinModel {
 			spinYPos.add(new ArrayList<Integer>());
 		}
 
-		rand = new Random(seed);
+		rand = new Random();
 	}
 	
 	//initialisation of the spins
