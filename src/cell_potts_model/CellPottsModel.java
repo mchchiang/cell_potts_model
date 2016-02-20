@@ -127,7 +127,7 @@ public class CellPottsModel extends SpinModel {
 			spinYPos.add(new ArrayList<Integer>());
 		}
 
-		rand = new Random();
+		rand = new Random(seed);
 	}
 	
 	//initialisation of the spins
@@ -218,7 +218,7 @@ public class CellPottsModel extends SpinModel {
 			}
 			//System.out.println(n);
 		}
-		acceptRate /= (double) (numOfSweeps * nx * ny);
+		acceptRate /= (double) ((long) numOfSweeps * nx * ny);//potentiall big
 		writeData(numOfSweeps-1);
 	}
 
@@ -760,7 +760,7 @@ public class CellPottsModel extends SpinModel {
 		int q = 1001;
 		double temp = 1.0;
 		double lambda = 1.0;
-		double alpha = 8.0;
+		double alpha = 3.2;
 		double beta = 16.0;
 		double motility = 0.0;
 		int numOfSweeps = 100000;
@@ -782,8 +782,8 @@ public class CellPottsModel extends SpinModel {
 		CellPottsModel model = new CellPottsModel(
 				nx, ny, q, temp, lambda, alpha, beta, motility, seed,
 				numOfSweeps, nequil, 
-				new DataWriter [] {r2Writer, ergWriter, spinWriter}, false);
-		model.initSpin();
+				new DataWriter [] {r2Writer, ergWriter, statsWriter}, false);
+		model.initSpin(reader.readSpins());
 		model.run();
 		r2Writer.closeWriter();
 		ergWriter.closeWriter();

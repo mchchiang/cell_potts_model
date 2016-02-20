@@ -12,7 +12,7 @@ public class PottsView extends JFrame {
 	
 	public PottsView(){
 		this.setSize(1000, 1000);
-		this.setTitle("Ising Model");
+		this.setTitle("Cellular Potts Model");
 		this.setDefaultCloseOperation(EXIT_ON_CLOSE);
 		this.setResizable(true);
 		
