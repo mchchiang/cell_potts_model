@@ -203,17 +203,19 @@ public class CellPottsModel extends SpinModel implements Runnable {
 		acceptRate = 0.0;
 		
 		for (int n = 0;  n < numOfSweeps; n++){
-			for (int k = 0; k < nx * ny; k++){
+			for (int k = 0; k < nx*ny; k++){
 				nextStep(n);	
 			}
 			
 			//only start measuring CM right before equilibrium is reached
 			if (n >= nequil){
 				calculateCM();
-				writeData(n);
 			}
 			if (n > nequil && n < numOfSweeps-1){
 				updateR();
+			}
+			if (n >= nequil && n < numOfSweeps-1){
+				writeData(n);
 			}
 			
 		}

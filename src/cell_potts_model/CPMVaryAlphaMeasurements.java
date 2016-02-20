@@ -119,7 +119,7 @@ public class CPMVaryAlphaMeasurements implements ThreadCompleteListener {
 	
 	
 	@Override
-	public void notifyThreadComplete(Runnable r) {
+	public synchronized void notifyThreadComplete(Runnable r) {
 		CellPottsModel model = (CellPottsModel) r;
 		int index = models.indexOf(model);	
 		closeWriters(index);
