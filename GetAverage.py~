@@ -21,7 +21,7 @@ for rows in izip(*files):
     hasData = False
 
     for line in rows:
-        if (not line.startswith("#")):
+        if (line.startswith("#")):
             data = line.strip().split()
             if (data == []): #ignore any lines start with \n
                 break
