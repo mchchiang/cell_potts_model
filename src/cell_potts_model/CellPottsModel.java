@@ -65,7 +65,8 @@ public class CellPottsModel extends SpinModel {
 	//constructors
 	public CellPottsModel(int nx, int ny, int q, double temp, 
 			double lambda, double alpha, double beta, 
-			double motility, int seed, int n, int nequil, DataWriter [] writers,
+			double motility, double rotateDiff, int seed, 
+			int n, int nequil, DataWriter [] writers,
 			boolean notify){
 		this.nx = nx;
 		this.ny = ny;
@@ -76,6 +77,7 @@ public class CellPottsModel extends SpinModel {
 		this.motility = motility;
 		this.alpha = alpha;
 		this.beta = beta;
+		this.rotateDiff = rotateDiff;
 		this.numOfSweeps = n;
 		this.nequil = nequil;
 		this.writers = writers;
@@ -784,6 +786,7 @@ public class CellPottsModel extends SpinModel {
 		double alpha = 5.0;
 		double beta = 1.0;
 		double motility = 3.0;
+		double rotateDiff = 0.1;
 		int numOfSweeps = 10000;
 		int nequil = 0;
 		int seed = -1;
@@ -801,8 +804,8 @@ public class CellPottsModel extends SpinModel {
 		//spinWriter.openWriter("spin_" + filename);
 		statsWriter.openWriter("stats_" + filename);
 		CellPottsModel model = new CellPottsModel(
-				nx, ny, q, temp, lambda, alpha, beta, motility, seed,
-				numOfSweeps, nequil, 
+				nx, ny, q, temp, lambda, alpha, beta, motility, 
+				rotateDiff, seed, numOfSweeps, nequil, 
 				new DataWriter [] {r2Writer, ergWriter, statsWriter}, false);
 		model.initSpin(reader.readSpins());
 		model.run();

@@ -3,7 +3,7 @@ package cell_potts_model;
 public class CPMVaryPMeasurements implements ThreadCompleteListener {
 	
 	private int nx, ny, q;
-	private double temp, lambda, alpha, beta, motility;
+	private double temp, lambda, alpha, beta, motility, rotateDiff;
 	
 	private double inc, maxMotility;
 	private int numOfSweeps, nequil;
@@ -22,7 +22,7 @@ public class CPMVaryPMeasurements implements ThreadCompleteListener {
 			double temp, double lambda,
 			double alpha, double beta,
 			double motility, double maxMotility, double inc,
-			int n, int nequil, int maxTrial, int numOfThreads,
+			double rotateDiff, int n, int nequil, int maxTrial, int numOfThreads,
 			String spinFile, String filepath){	
 		
 		this.nx = nx;
@@ -65,7 +65,7 @@ public class CPMVaryPMeasurements implements ThreadCompleteListener {
 		boolean writeCM = false;
 		if (trial == 1) writeCM = true;
 		Measurement experiment = new Measurement(nx, ny, q, temp, lambda, 
-				alpha, beta, motility, numOfSweeps, nequil, trial, 
+				alpha, beta, motility, rotateDiff, numOfSweeps, nequil, trial, 
 				spin, outputFilePath, writeCM);
 		experiment.addThreadCompleteListener(this);
 		Thread t = new Thread(experiment);
@@ -100,15 +100,16 @@ public class CPMVaryPMeasurements implements ThreadCompleteListener {
 		double startMotility = Double.parseDouble(args[7]);
 		double maxMotility = Double.parseDouble(args[8]);
 		double incMotility = Double.parseDouble(args[9]);
-		int numOfSweeps = Integer.parseInt(args[10]);
-		int nequil = Integer.parseInt(args[11]);
-		int maxTrial = Integer.parseInt(args[12]);
-		int numOfThreads = Integer.parseInt(args[13]);
-		String spinFile = args[14];
-		String outputFilePath = args[15];
+		double rotateDiff = Double.parseDouble(args[10]);
+		int numOfSweeps = Integer.parseInt(args[11]);
+		int nequil = Integer.parseInt(args[12]);
+		int maxTrial = Integer.parseInt(args[13]);
+		int numOfThreads = Integer.parseInt(args[14]);
+		String spinFile = args[15];
+		String outputFilePath = args[16];
 		new CPMVaryPMeasurements(nx, ny, q, temp, lambda,
 				alpha, beta, startMotility, maxMotility, incMotility,
-				numOfSweeps, nequil, maxTrial, numOfThreads,
+				rotateDiff, numOfSweeps, nequil, maxTrial, numOfThreads,
 				spinFile, outputFilePath);
 	}
 }

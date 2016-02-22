@@ -12,6 +12,7 @@ public class CellPottsModelMeasurements_0211 {
 		double alpha = 0.5;
 		double beta = 16.0;
 		double motility = 0.0;
+		double rotateDiff = 0.1;
 		int seed = -1;
 		
 		double inc = 0.5;
@@ -54,8 +55,8 @@ public class CellPottsModelMeasurements_0211 {
 				energyWriter.openWriter("energy_" + filename);
 				statsWriter.openWriter("stats_" + filename);
 				CellPottsModel model = new CellPottsModel(
-						nx, ny, q, temp, lambda, alpha, beta, motility, seed,
-						numOfSweeps, nequil, writers, false);
+						nx, ny, q, temp, lambda, alpha, beta, motility, 
+						rotateDiff, seed, numOfSweeps, nequil, writers, false);
 				model.initSpin(spin);
 				model.run();
 				

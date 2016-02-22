@@ -3,7 +3,7 @@ package cell_potts_model;
 public class CPMVaryAlphaMeasurements implements ThreadCompleteListener {
 	
 	private int nx, ny, q;
-	private double temp, lambda, alpha, beta, motility;
+	private double temp, lambda, alpha, beta, motility, rotateDiff;
 	
 	private double inc, maxAlpha;
 	private int numOfSweeps, nequil;
@@ -21,7 +21,7 @@ public class CPMVaryAlphaMeasurements implements ThreadCompleteListener {
 			int nx, int ny, int q,
 			double temp, double lambda,
 			double startAlpha, double maxAlpha, double alphaInc,
-			double beta, double motility,
+			double beta, double motility, double rotateDiff, 
 			int n, int nequil, int maxTrial, int numOfThreads,
 			String spinFile, String filepath){	
 		
@@ -32,6 +32,7 @@ public class CPMVaryAlphaMeasurements implements ThreadCompleteListener {
 		this.lambda = lambda;
 		this.beta = beta;
 		this.motility = motility;
+		this.rotateDiff = rotateDiff;
 		this.alpha = startAlpha;
 		this.maxAlpha = maxAlpha;
 		this.inc = alphaInc;
@@ -65,7 +66,7 @@ public class CPMVaryAlphaMeasurements implements ThreadCompleteListener {
 		boolean writeCM = false;
 		if (trial == 1) writeCM = true;
 		Measurement experiment = new Measurement(nx, ny, q, temp, lambda, 
-				alpha, beta, motility, numOfSweeps, nequil, trial, 
+				alpha, beta, motility, rotateDiff, numOfSweeps, nequil, trial, 
 				spin, outputFilePath, writeCM);
 		experiment.addThreadCompleteListener(this);
 		Thread t = new Thread(experiment);
@@ -100,15 +101,16 @@ public class CPMVaryAlphaMeasurements implements ThreadCompleteListener {
 		double inc = Double.parseDouble(args[7]);
 		double beta = Double.parseDouble(args[8]);
 		double motility = Double.parseDouble(args[9]);
-		int numOfSweeps = Integer.parseInt(args[10]);
-		int nequil = Integer.parseInt(args[11]);
-		int maxTrial = Integer.parseInt(args[12]);
-		int numOfThreads = Integer.parseInt(args[13]);
-		String spinFile = args[14];
-		String outputFilePath = args[15];
+		double rotateDiff = Double.parseDouble(args[10]);
+		int numOfSweeps = Integer.parseInt(args[11]);
+		int nequil = Integer.parseInt(args[12]);
+		int maxTrial = Integer.parseInt(args[13]);
+		int numOfThreads = Integer.parseInt(args[14]);
+		String spinFile = args[15];
+		String outputFilePath = args[16];
 		new CPMVaryAlphaMeasurements(nx, ny, q, temp, lambda,
 				startAlpha, maxAlpha, inc, beta, motility,
-				numOfSweeps, nequil, maxTrial, numOfThreads,
+				rotateDiff, numOfSweeps, nequil, maxTrial, numOfThreads,
 				spinFile, outputFilePath);
 	}
 }

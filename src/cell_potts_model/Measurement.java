@@ -16,7 +16,7 @@ public class Measurement implements Runnable {
 
 	public Measurement(int nx, int ny, int q,
 			double temp, double lambda,
-			double alpha, double beta, double motility,
+			double alpha, double beta, double motility, double rotateDiff,
 			int n, int nequil, int trial, int [][] spin, String filepath, 
 			boolean writeCM){
 		
@@ -42,13 +42,14 @@ public class Measurement implements Runnable {
 		
 		//initialise the model
 		model = new CellPottsModel(nx, ny, q, temp, lambda, 
-				alpha, beta, motility, -1, n, nequil, writers, false);
+				alpha, beta, motility, rotateDiff, -1, n, nequil, writers, false);
 		model.initSpin(spin);
 	}
 
 	@Override
 	public void run() {
-		System.out.printf("Running: p = %.2f\ttrial %d\n", model.getMotility(), trial);
+		System.out.printf("Running: a = %.1f\tp = %.1f\ttrial %d\n", 
+				model.getAlpha(), model.getMotility(), trial);
 		model.run();
 		
 		for (int i = 0; i < writers.length; i++){

@@ -97,6 +97,7 @@ public class PottsControlPanel extends JPanel implements ActionListener {
 					double alpha = 3.0;
 					double beta = 16.0;
 					double motility = 4.0;
+					double rotateDiff = 1.0;
 					int seed = -1;
 					int numOfSweeps = 10000;
 					int nequil = 0;
@@ -108,8 +109,8 @@ public class PottsControlPanel extends JPanel implements ActionListener {
 							nx, ny, q, alpha, lambda, motility, numOfSweeps, 1);
 					cmWriter.openWriter("cm_" + filename);
 					CellPottsModel model = new CellPottsModel(
-							nx, ny, q, temp, lambda, alpha, beta, motility, seed,
-							numOfSweeps, nequil, new DataWriter [] {cmWriter}, true);
+							nx, ny, q, temp, lambda, alpha, beta, motility, rotateDiff,
+							seed, numOfSweeps, nequil, new DataWriter [] {cmWriter}, true);
 					model.initSpin(reader.readSpins());
 					view.setModel(model);
 					view.initImage();
