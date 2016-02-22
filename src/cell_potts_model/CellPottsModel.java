@@ -41,6 +41,8 @@ public class CellPottsModel extends SpinModel {
 	//variables for motility
 	private double [] px;
 	private double [] py;
+	private double [] theta;
+	private double rotateDiff = 0.1;
 	private List<ArrayList<Integer>> spinXPos;
 	private List<ArrayList<Integer>> spinYPos;
 	
@@ -111,6 +113,7 @@ public class CellPottsModel extends SpinModel {
 
 		px = new double [q+1];
 		py = new double [q+1];
+		theta = new double [q+1];
 
 		double n = -1.0 / Math.sqrt(2);
 
@@ -198,6 +201,22 @@ public class CellPottsModel extends SpinModel {
 		}		
 	}
 	
+	public void initPolarity(){
+		for (int i = 1; i<= q; i++){
+			theta[i] = rand.nextDouble() * 2 * Math.PI;
+			px[i] = Math.cos(theta[i]);
+			py[i] = Math.sin(theta[i]);
+		}
+	}
+	
+	public void updatePolarity(){
+		for (int i = 1; i <= q; i++){
+			theta[i] += Math.sqrt(2 * rotateDiff) * (rand.nextDouble()*2-1);
+			px[i] = Math.cos(theta[i]);
+			py[i] = Math.sin(theta[i]);
+		}
+	}
+	
 	public void run(){
 		acceptRate = 0.0;
 		
@@ -205,6 +224,8 @@ public class CellPottsModel extends SpinModel {
 			for (int k = 0; k < nx*ny; k++){
 				nextStep(n);	
 			}
+			
+			updatePolarity();
 			
 			//only start measuring CM right before equilibrium is reached
 			if (n >= nequil){
@@ -218,7 +239,7 @@ public class CellPottsModel extends SpinModel {
 			}
 			//System.out.println(n);
 		}
-		acceptRate /= (double) ((long) numOfSweeps * nx * ny);//potentiall big
+		acceptRate /= (double) ((long) numOfSweeps * nx * ny);//potentially big
 		writeData(numOfSweeps-1);
 	}
 
@@ -274,8 +295,8 @@ public class CellPottsModel extends SpinModel {
 			
 			double totalEnergy = negDeltaE;
 			
-			//only introduce motility once system reaches equilibrium
-			if (n > 200 && motility > 0.000001){
+			//only run the motility calculation if it is non-zero
+			if (motility > 0.000001){
 				totalEnergy += motilityE(i, j, newSpin, motility);
 			} 
 			
@@ -760,13 +781,13 @@ public class CellPottsModel extends SpinModel {
 		int q = 1000;
 		double temp = 1.0;
 		double lambda = 1.0;
-		double alpha = 3.0;
+		double alpha = 5.0;
 		double beta = 1.0;
-		double motility = 0.0;
+		double motility = 3.0;
 		int numOfSweeps = 10000;
 		int nequil = 0;
 		int seed = -1;
-		int run = 2;
+		int run = 3;
 		SpinReader reader = new SpinReader();
 		reader.openReader("init_spin_1000_2.dat");
 		String filename = String.format("%d_%d_%d_a_%.1f_lam_%.1f_P_%.1f_n_%d_run_%d.dat",

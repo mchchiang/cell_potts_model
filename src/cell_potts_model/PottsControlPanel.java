@@ -89,17 +89,17 @@ public class PottsControlPanel extends JPanel implements ActionListener {
 					double temperature = Double.parseDouble(txtTemperature.getText());
 					double energy = Double.parseDouble(txtEnergy.getText());
 					int steps = Integer.parseInt(txtNumOfSteps.getText());*/
-					int nx = 50;
-					int ny = 50;
-					int q = 10;
+					int nx = 100;
+					int ny = 100;
+					int q = 200;
 					double temp = 1.0;
 					double lambda = 1.0;
-					double alpha = 2.0;
+					double alpha = 3.0;
 					double beta = 16.0;
-					double motility = 0.0;
+					double motility = 4.0;
 					int seed = -1;
-					int numOfSweeps = 1000;
-					int nequil = 500;
+					int numOfSweeps = 10000;
+					int nequil = 0;
 					SpinReader reader = new SpinReader();
 					reader.openReader("init_spin.dat");
 					btnRun.setEnabled(false);
@@ -110,7 +110,7 @@ public class PottsControlPanel extends JPanel implements ActionListener {
 					CellPottsModel model = new CellPottsModel(
 							nx, ny, q, temp, lambda, alpha, beta, motility, seed,
 							numOfSweeps, nequil, new DataWriter [] {cmWriter}, true);
-					model.initSpin();
+					model.initSpin(reader.readSpins());
 					view.setModel(model);
 					view.initImage();
 					model.run();

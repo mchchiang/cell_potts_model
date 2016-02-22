@@ -48,7 +48,7 @@ public class Measurement implements Runnable {
 
 	@Override
 	public void run() {
-		System.out.printf("Running: a = %.2f\ttrial %d", model.getAlpha(), trial);
+		System.out.printf("Running: p = %.2f\ttrial %d\n", model.getMotility(), trial);
 		model.run();
 		
 		for (int i = 0; i < writers.length; i++){
