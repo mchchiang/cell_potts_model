@@ -122,7 +122,7 @@ public class CellPottsModelTest {
 		xPos.add(2);
 		xPos.add(2);
 		assertEquals("Returned wrong xcm value for spin 2",
-				2.5, model.calculateCM(xPos, 4), tol);
+				2.0, model.calculateCM(xPos, 4), tol);
 		
 	}
 	
@@ -142,7 +142,7 @@ public class CellPottsModelTest {
 		
 		model.initSpin(spin);
 		assertEquals("Returned wrong xcm value for spin 2",
-				2.5, model.calculateCM(model.getSpinXPos(2), 4), tol);
+				2.0, model.calculateCM(model.getSpinXPos(2), 4), tol);
 	}
 	
 	
@@ -161,7 +161,7 @@ public class CellPottsModelTest {
 		
 		model.initSpin(spin);
 		assertEquals("Returned wrong xcm value for spin 3",
-				1.0, model.calculateCM(model.getSpinXPos(3), 4), tol);
+				0.5, model.calculateCM(model.getSpinXPos(3), 4), tol);
 	}
 	
 	@Test
@@ -179,7 +179,7 @@ public class CellPottsModelTest {
 		
 		model.initSpin(spin);
 		assertEquals("Returned wrong ycm value for spin 3",
-				2.25, model.calculateCM(model.getSpinYPos(3), 4), tol);
+				1.75, model.calculateCM(model.getSpinYPos(3), 4), tol);
 	}
 
 	@Test
@@ -197,7 +197,7 @@ public class CellPottsModelTest {
 		
 		model.initSpin(spin);
 		assertEquals("Returned wrong xcm value for spin 4",
-				11.0/3.0, model.calculateCM(model.getSpinXPos(4), 4), tol);
+				19.0/6.0, model.calculateCM(model.getSpinXPos(4), 4), tol);
 	}
 	
 	@Test
@@ -215,7 +215,207 @@ public class CellPottsModelTest {
 		
 		model.initSpin(spin);
 		assertEquals("Returned wrong ycm value for spin 4",
-				2.0/3.0, model.calculateCM(model.getSpinYPos(4), 4), tol);
+				1.0/6.0, model.calculateCM(model.getSpinYPos(4), 4), tol);
+	}
+	
+	@Test
+	public void testCalculateCM3a(){
+		int [][] spin = new int [][]{
+				{3,2,2,2,4,3},
+				{3,2,2,2,4,4},
+				{1,5,5,2,4,1},
+				{1,5,5,5,1,1},
+				{3,3,5,5,1,1},
+				{3,3,3,4,4,3}
+		};
+		
+		double [] areaTarget = new double [] {7.0, 7.0, 7.0, 7.0, 7.0};
+		CellPottsModel model = new CellPottsModel(6, 6, 5, areaTarget, 
+				temperature, lambda, alpha, beta, motility, seed);
+		
+		model.initSpin(spin);
+		assertEquals("Returned wrong ycm value for spin 1",
+				3.5, model.calculateCM(model.getSpinXPos(1), 6), tol);
+	}
+	
+	@Test
+	public void testCalculateCM3b(){
+		int [][] spin = new int [][]{
+				{3,2,2,2,4,3},
+				{3,2,2,2,4,4},
+				{1,5,5,2,4,1},
+				{1,5,5,5,1,1},
+				{3,3,5,5,1,1},
+				{3,3,3,4,4,3}
+		};
+		
+		double [] areaTarget = new double [] {7.0, 7.0, 7.0, 7.0, 7.0};
+		CellPottsModel model = new CellPottsModel(6, 6, 5, areaTarget, 
+				temperature, lambda, alpha, beta, motility, seed);
+		
+		model.initSpin(spin);
+		assertEquals("Returned wrong ycm value for spin 1",
+				5.5, model.calculateCM(model.getSpinYPos(1), 6), tol);
+	}
+	
+	@Test
+	public void testCalculateCM3c(){
+		int [][] spin = new int [][]{
+				{3,2,2,2,4,3},
+				{3,2,2,2,4,4},
+				{1,5,5,2,4,1},
+				{1,5,5,5,1,1},
+				{3,3,5,5,1,1},
+				{3,3,3,4,4,3}
+		};
+		
+		double [] areaTarget = new double [] {7.0, 7.0, 7.0, 7.0, 7.0};
+		CellPottsModel model = new CellPottsModel(6, 6, 5, areaTarget, 
+				temperature, lambda, alpha, beta, motility, seed);
+		
+		model.initSpin(spin);
+		assertEquals("Returned wrong ycm value for spin 1",
+				17.0/14.0, model.calculateCM(model.getSpinXPos(2), 6), tol);
+	}
+	
+	@Test
+	public void testCalculateCM3d(){
+		int [][] spin = new int [][]{
+				{3,2,2,2,4,3},
+				{3,2,2,2,4,4},
+				{1,5,5,2,4,1},
+				{1,5,5,5,1,1},
+				{3,3,5,5,1,1},
+				{3,3,3,4,4,3}
+		};
+		
+		double [] areaTarget = new double [] {7.0, 7.0, 7.0, 7.0, 7.0};
+		CellPottsModel model = new CellPottsModel(6, 6, 5, areaTarget, 
+				temperature, lambda, alpha, beta, motility, seed);
+		
+		model.initSpin(spin);
+		assertEquals("Returned wrong ycm value for spin 1",
+				37.0/14.0, model.calculateCM(model.getSpinYPos(2), 6), tol);
+	}
+	
+	@Test
+	public void testCalculateCM3e(){
+		int [][] spin = new int [][]{
+				{3,2,2,2,4,3},
+				{3,2,2,2,4,4},
+				{1,5,5,2,4,1},
+				{1,5,5,5,1,1},
+				{3,3,5,5,1,1},
+				{3,3,3,4,4,3}
+		};
+		
+		double [] areaTarget = new double [] {7.0, 7.0, 7.0, 7.0, 7.0};
+		CellPottsModel model = new CellPottsModel(6, 6, 5, areaTarget, 
+				temperature, lambda, alpha, beta, motility, seed);
+		
+		model.initSpin(spin);
+		assertEquals("Returned wrong ycm value for spin 1",
+				103.0/18.0, model.calculateCM(model.getSpinXPos(3), 6), tol);
+	}
+	
+	@Test
+	public void testCalculateCM3f(){
+		int [][] spin = new int [][]{
+				{3,2,2,2,4,3},
+				{3,2,2,2,4,4},
+				{1,5,5,2,4,1},
+				{1,5,5,5,1,1},
+				{3,3,5,5,1,1},
+				{3,3,3,4,4,3}
+		};
+		
+		double [] areaTarget = new double [] {7.0, 7.0, 7.0, 7.0, 7.0};
+		CellPottsModel model = new CellPottsModel(6, 6, 5, areaTarget, 
+				temperature, lambda, alpha, beta, motility, seed);
+		
+		model.initSpin(spin);
+		assertEquals("Returned wrong ycm value for spin 1",
+				13.0/18.0, model.calculateCM(model.getSpinYPos(3), 6), tol);
+	}
+	
+	@Test
+	public void testCalculateCM3g(){
+		int [][] spin = new int [][]{
+				{3,2,2,2,4,3},
+				{3,2,2,2,4,4},
+				{1,5,5,2,4,1},
+				{1,5,5,5,1,1},
+				{3,3,5,5,1,1},
+				{3,3,3,4,4,3}
+		};
+		
+		double [] areaTarget = new double [] {7.0, 7.0, 7.0, 7.0, 7.0};
+		CellPottsModel model = new CellPottsModel(6, 6, 5, areaTarget, 
+				temperature, lambda, alpha, beta, motility, seed);
+		
+		model.initSpin(spin);
+		assertEquals("Returned wrong ycm value for spin 1",
+				5.0/6.0, model.calculateCM(model.getSpinXPos(4), 6), tol);
+	}
+	
+	@Test
+	public void testCalculateCM3h(){
+		int [][] spin = new int [][]{
+				{3,2,2,2,4,3},
+				{3,2,2,2,4,4},
+				{1,5,5,2,4,1},
+				{1,5,5,5,1,1},
+				{3,3,5,5,1,1},
+				{3,3,3,4,4,3}
+		};
+		
+		double [] areaTarget = new double [] {7.0, 7.0, 7.0, 7.0, 7.0};
+		CellPottsModel model = new CellPottsModel(6, 6, 5, areaTarget, 
+				temperature, lambda, alpha, beta, motility, seed);
+		
+		model.initSpin(spin);
+		assertEquals("Returned wrong ycm value for spin 1",
+				4.5, model.calculateCM(model.getSpinYPos(4), 6), tol);
+	}
+	
+	@Test
+	public void testCalculateCM3i(){
+		int [][] spin = new int [][]{
+				{3,2,2,2,4,3},
+				{3,2,2,2,4,4},
+				{1,5,5,2,4,1},
+				{1,5,5,5,1,1},
+				{3,3,5,5,1,1},
+				{3,3,3,4,4,3}
+		};
+		
+		double [] areaTarget = new double [] {7.0, 7.0, 7.0, 7.0, 7.0};
+		CellPottsModel model = new CellPottsModel(6, 6, 5, areaTarget, 
+				temperature, lambda, alpha, beta, motility, seed);
+		
+		model.initSpin(spin);
+		assertEquals("Returned wrong ycm value for spin 1",
+				3.5, model.calculateCM(model.getSpinXPos(5), 6), tol);
+	}
+	
+	@Test
+	public void testCalculateCM3j(){
+		int [][] spin = new int [][]{
+				{3,2,2,2,4,3},
+				{3,2,2,2,4,4},
+				{1,5,5,2,4,1},
+				{1,5,5,5,1,1},
+				{3,3,5,5,1,1},
+				{3,3,3,4,4,3}
+		};
+		
+		double [] areaTarget = new double [] {7.0, 7.0, 7.0, 7.0, 7.0};
+		CellPottsModel model = new CellPottsModel(6, 6, 5, areaTarget, 
+				temperature, lambda, alpha, beta, motility, seed);
+		
+		model.initSpin(spin);
+		assertEquals("Returned wrong ycm value for spin 1",
+				2.5, model.calculateCM(model.getSpinYPos(5), 6), tol);
 	}
 	
 	@Test

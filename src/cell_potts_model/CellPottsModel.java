@@ -426,10 +426,10 @@ public class CellPottsModel extends SpinModel {
 				x = pos.get(i);
 				if (x < length / 2){
 					leftCount++;
-					leftSum += (x+1);//to ensure that the cm starts from 0 but not -1
+					leftSum += (x+0.5);//to ensure that the cm starts from 0 but not -1
 				} else {
 					rightCount++;
-					rightSum += (x+1);
+					rightSum += (x+0.5);
 				}
 			}
 			
@@ -454,7 +454,7 @@ public class CellPottsModel extends SpinModel {
 			
 		} else {
 			for (int i = 0; i < n; i++){
-				cm += pos.get(i) + 1;
+				cm += pos.get(i) + 0.5;
 			}
 			cm /= (double) n;
 		}
@@ -757,14 +757,14 @@ public class CellPottsModel extends SpinModel {
 	public static void main (String [] args){
 		int nx = 200;
 		int ny = 200;
-		int q = 1001;
+		int q = 1000;
 		double temp = 1.0;
 		double lambda = 1.0;
-		double alpha = 3.2;
-		double beta = 16.0;
+		double alpha = 3.0;
+		double beta = 1.0;
 		double motility = 0.0;
-		int numOfSweeps = 100000;
-		int nequil = 10000;
+		int numOfSweeps = 10000;
+		int nequil = 0;
 		int seed = -1;
 		int run = 2;
 		SpinReader reader = new SpinReader();
@@ -777,7 +777,7 @@ public class CellPottsModel extends SpinModel {
 		DataWriter statsWriter = new StatisticsWriter(numOfSweeps, nequil);
 		r2Writer.openWriter("r2_" + filename);
 		ergWriter.openWriter("energy_" + filename);
-		spinWriter.openWriter("spin_" + filename);
+		//spinWriter.openWriter("spin_" + filename);
 		statsWriter.openWriter("stats_" + filename);
 		CellPottsModel model = new CellPottsModel(
 				nx, ny, q, temp, lambda, alpha, beta, motility, seed,
@@ -787,7 +787,7 @@ public class CellPottsModel extends SpinModel {
 		model.run();
 		r2Writer.closeWriter();
 		ergWriter.closeWriter();
-		spinWriter.closeWriter();
+		//spinWriter.closeWriter();
 		statsWriter.closeWriter();
 		reader.closeReader();
 	}
