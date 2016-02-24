@@ -35,6 +35,7 @@ public class CPMVaryPMeasurements implements ThreadCompleteListener {
 		this.alpha = alpha;
 		this.maxMotility = maxMotility;
 		this.inc = inc;
+		this.rotateDiff = rotateDiff;
 		this.numOfSweeps = n;
 		this.nequil = nequil;
 		this.maxTrial = maxTrial;
