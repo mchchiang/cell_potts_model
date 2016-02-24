@@ -689,6 +689,10 @@ public class CellPottsModel extends SpinModel {
 	public double getMotility(){
 		return motility;
 	}
+	
+	public double getRotateDiff(){
+		return rotateDiff;
+	}
 
 	@Override
 	public int getSpin(int i, int j){
