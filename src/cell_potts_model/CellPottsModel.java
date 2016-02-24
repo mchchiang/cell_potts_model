@@ -1,6 +1,7 @@
 package cell_potts_model;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 import java.util.Random;
 
@@ -14,10 +15,10 @@ public class CellPottsModel extends SpinModel {
 	private double temperature;
 	private double lambda;
 	private double motility;
-	
+
 	private int numOfSweeps = 0;
 	private int nequil = 0;
-	
+
 	//parameters for cell adhesion energy
 	private double alpha;
 	private double beta;
@@ -45,23 +46,23 @@ public class CellPottsModel extends SpinModel {
 	private double rotateDiff = 0.1;
 	private List<ArrayList<Integer>> spinXPos;
 	private List<ArrayList<Integer>> spinYPos;
-	
+
 	//variables for calculating acceptance rate
 	private double acceptRate;
 
 	//seed for generating random numbers
 	private int seed;
 	private Random rand;
-	
+
 	//whether to notify or not the observers about spin updates
 	private boolean notify = false;
 
 	//data writers
 	private DataWriter [] writers;
-	
+
 	private ArrayList<ThreadCompleteListener> threadListeners = 
 			new ArrayList<ThreadCompleteListener>();
-	
+
 	//constructors
 	public CellPottsModel(int nx, int ny, int q, double temp, 
 			double lambda, double alpha, double beta, 
@@ -101,10 +102,10 @@ public class CellPottsModel extends SpinModel {
 
 	public void init(){
 		acceptRate = 0.0;
-		
+
 		area = new double [q+1];
 		areaTarget = new double [q+1];
-		
+
 		xcm = new double [q+1];
 		ycm = new double [q+1];
 		xcmNew = new double [q+1];
@@ -117,13 +118,6 @@ public class CellPottsModel extends SpinModel {
 		py = new double [q+1];
 		theta = new double [q+1];
 
-		double n = -1.0 / Math.sqrt(2);
-
-		for (int i = 0; i <= q; i++){
-			px[i] = n;
-			py[i] = n;
-		}
-
 		spinXPos = new ArrayList<ArrayList<Integer>>();
 		spinYPos = new ArrayList<ArrayList<Integer>>();
 
@@ -134,15 +128,15 @@ public class CellPottsModel extends SpinModel {
 
 		rand = new Random();
 	}
-	
+
 	//initialisation of the spins
-	
+
 	//init random spins
 	public void initSpin(){
 		init();
-		
+
 		spin = new int [nx][ny];
-		
+
 		//initialising each of the Q cells as a square with length delta
 		delta = (int) (Math.sqrt((nx*ny)/ (double) q));
 
@@ -168,13 +162,13 @@ public class CellPottsModel extends SpinModel {
 			}
 		}
 	}
-	
+
 	//init spins specified by user
 	public void initSpin(int [][] spin){
 		init();
-		
+
 		if (spin.length == nx && spin[0].length == ny){
-			
+
 			//deep copy the spin
 			this.spin = new int [nx][ny];
 			for (int i = 0; i < nx; i++){
@@ -185,7 +179,7 @@ public class CellPottsModel extends SpinModel {
 					spinYPos.get(spin[i][j]).add(j);
 				}
 			}
-			
+
 			/*
 			 * set the target area for each cell (exclude cells with zero area),
 			 * which is the same for all cells
@@ -202,7 +196,7 @@ public class CellPottsModel extends SpinModel {
 			}
 		}		
 	}
-	
+
 	public void initPolarity(){
 		for (int i = 1; i<= q; i++){
 			theta[i] = rand.nextDouble() * 2 * Math.PI;
@@ -210,7 +204,7 @@ public class CellPottsModel extends SpinModel {
 			py[i] = Math.sin(theta[i]);
 		}
 	}
-	
+
 	public void updatePolarity(){
 		for (int i = 1; i <= q; i++){
 			theta[i] += Math.sqrt(2 * rotateDiff) * (rand.nextDouble()*2-1);
@@ -218,20 +212,20 @@ public class CellPottsModel extends SpinModel {
 			py[i] = Math.sin(theta[i]);
 		}
 	}
-	
+
 	public void run(){
 		acceptRate = 0.0;
-		
+
 		for (int n = 0;  n < numOfSweeps; n++){
 			for (int k = 0; k < nx*ny; k++){
 				nextStep(n);	
 			}
-			
+
 			updatePolarity();
-			
+
 			//only start measuring CM right before equilibrium is reached
 			if (n >= nequil){
-				calculateCM();
+				calculateCM(n);
 			}
 			if (n > nequil && n < numOfSweeps-1){
 				updateR();
@@ -294,14 +288,14 @@ public class CellPottsModel extends SpinModel {
 			//implement the metropolis algorithm
 			double negDeltaE = negDeltaE(i, j, newSpin, 
 					area[oldSpin], area[newSpin], newAreaOldSpin, newAreaNewSpin);
-			
+
 			double totalEnergy = negDeltaE;
-			
+
 			//only run the motility calculation if it is non-zero
 			if (motility > 0.000001){
 				totalEnergy += motilityE(i, j, newSpin, motility);
 			} 
-			
+
 			if (Math.log(rand.nextDouble()) <= totalEnergy / temperature){
 				area[spin[i][j]] = newAreaOldSpin;
 				area[newSpin] = newAreaNewSpin;
@@ -310,9 +304,9 @@ public class CellPottsModel extends SpinModel {
 				spinYPos.get(oldSpin).remove(new Integer(j));
 				spinXPos.get(newSpin).add(new Integer(i));
 				spinYPos.get(newSpin).add(new Integer(j));
-				
+
 				acceptRate = acceptRate + 1.0;
-				
+
 				if (notify){
 					this.setChanged();
 					this.notifyObservers(new Object [] {i,j});
@@ -320,22 +314,22 @@ public class CellPottsModel extends SpinModel {
 			}
 		}
 	}
-	
+
 	public boolean hasSameNeighbours(int i, int j){
 		int cellSpin = spin[i][j];
 		if (cellSpin == spin[iup(i)][j] &&
-			cellSpin == spin[idown(i)][j] &&
-			cellSpin == spin[i][jup(j)] &&
-			cellSpin == spin[i][jdown(j)] &&
-			cellSpin == spin[iup(i)][jup(j)] &&
-			cellSpin == spin[idown(i)][jup(j)] &&
-			cellSpin == spin[iup(i)][jdown(j)] &&
-			cellSpin == spin[idown(i)][jdown(j)]){
+				cellSpin == spin[idown(i)][j] &&
+				cellSpin == spin[i][jup(j)] &&
+				cellSpin == spin[i][jdown(j)] &&
+				cellSpin == spin[iup(i)][jup(j)] &&
+				cellSpin == spin[idown(i)][jup(j)] &&
+				cellSpin == spin[iup(i)][jdown(j)] &&
+				cellSpin == spin[idown(i)][jdown(j)]){
 			return true;
 		}
 		return false;
 	}
-	
+
 	//calculate the energy 
 	public double motilityE(int i, int j, int newSpin, double p){
 		double energy = 0.0;
@@ -406,17 +400,17 @@ public class CellPottsModel extends SpinModel {
 
 		return energy;
 	}
-	
+
 	public double [] calculateDeltaCM(int x, int y, int spin, boolean remove){
 		ArrayList<Integer> xPos = spinXPos.get(spin);
 		ArrayList<Integer> yPos = spinYPos.get(spin);
 		double xcm = calculateCM(xPos, nx);
 		double ycm = calculateCM(yPos, ny);
 		double xcmNew, ycmNew;
-		
+
 		Integer xint = new Integer(x);
 		Integer yint = new Integer(y);
-		
+
 		if (remove){
 			xPos.remove(xint);
 			yPos.remove(yint);
@@ -434,63 +428,100 @@ public class CellPottsModel extends SpinModel {
 		}
 		return new double []{xDiff(xcmNew, xcm), yDiff(ycmNew, ycm)};
 	}
-	
+
 	public double calculateCM(ArrayList<Integer> pos, int length){
 		int n = pos.size();
 		double cm = 0;
-		if (pos.contains(length-1) && pos.contains(0)){
-			double leftCount = 0;
-			double rightCount = 0;
-			double leftSum = 0;
-			double rightSum = 0;
-			double total = 0;
-			int x;
-			for (int i = 0; i < n; i++){
-				x = pos.get(i);
-				if (x < length / 2){
-					leftCount++;
-					leftSum += (x+0.5);//to ensure that the cm starts from 0 but not -1
-				} else {
-					rightCount++;
-					rightSum += (x+0.5);
-				}
-			}
-			
-			if (leftCount > rightCount){
-				total = leftSum + rightSum - rightCount * length;
-			} else {
-				total = rightSum + leftSum + leftCount * length;
-			}
-			
-			/*
-			 * correction for cases if leftCount == rightCount that there 
-			 * is a chance the addition above will yield a result outside the
-			 * boundary
-			 */
-			if (total < 0){
-				total = leftSum + leftCount * length + rightSum;
-			} else if (total > length * n){
-				total = leftSum + rightSum - rightCount * length;
-			}
-			
-			cm = (double) total / (double) n;
-			
-		} else {
-			for (int i = 0; i < n; i++){
-				cm += pos.get(i) + 0.5;
-			}
-			cm /= (double) n;
+
+		int width = (int) Math.ceil(0.05 * length);
+
+		int x = 0;
+		boolean inCriticalRegion = false;
+		for (int i = 0; i < n; i++){
+			x = pos.get(i);
+			cm += x;
+			if (x > length-1-width || x < width){
+				inCriticalRegion = true;
+				break;
+			}	
 		}
+
+		if (!inCriticalRegion){
+			cm /= (double) n;
+			return cm + 0.5;
+		}
+
+		cm = 0;
+
+		double leftCount = 0;
+		double rightCount = 0;
+		double leftSum = 0;
+		double rightSum = 0;
+		double total = 0;
+		
+		for (int i = 0; i < n; i++){
+			x = pos.get(i);
+			if (x < length / 2){
+				leftCount++;
+				leftSum += (x+0.5);//shift to centre of cell
+			} else {
+				rightCount++;
+				rightSum += (x+0.5);
+			}
+		}
+
+		if (leftCount > rightCount){
+			total = leftSum + rightSum - rightCount * length;
+		} else {
+			total = rightSum + leftSum + leftCount * length;
+		}
+
+		/*
+		 * correction for cases if leftCount == rightCount that there 
+		 * is a chance the addition above will yield a result outside the
+		 * boundary
+		 */
+
+		if (total < 0){
+			total = leftSum + leftCount * length + rightSum;
+		} else if (total > length * n){
+			total = leftSum + rightSum - rightCount * length;
+		}
+
+		cm = (double) total / (double) n;
+
 		return cm;
 	}
-	
-	public void calculateCM(){
+
+	public void calculateCM(int n){
 		for (int i = 0; i <= q; i++){
 			xcm[i] = xcmNew[i];
 			ycm[i] = ycmNew[i];
-			
+
 			xcmNew[i] = calculateCM(spinXPos.get(i), nx);
 			ycmNew[i] = calculateCM(spinYPos.get(i), ny);
+
+			double dx = xDiff(xcmNew[i], xcm[i]);
+			double dy = yDiff(ycmNew[i], ycm[i]);
+
+			if ((Math.abs(dx) > nx * 0.05 ||
+					Math.abs(dy) > ny * 0.05) && n != 0){
+				Calendar cal = Calendar.getInstance();
+		        System.out.println(cal.getTime());
+				System.out.printf("Cell %d\tdxcm %.4f\tdycm %.4f\tt = %d\n",
+						i, dx, dy, n);
+				System.out.println("xcm");
+				ArrayList<Integer> xpos = spinXPos.get(i);
+				for (int j = 0; j < xpos.size(); j++){
+					System.out.print(xpos.get(j) + " ");
+				}
+				System.out.println("\nycm");
+				ArrayList<Integer> ypos = spinYPos.get(i);
+				for (int j = 0; j < ypos.size(); j++){
+					System.out.print(ypos.get(j) + " ");
+				}
+				System.out.println();
+			}
 		}
 	}
 
@@ -516,11 +547,11 @@ public class CellPottsModel extends SpinModel {
 		}
 		r2 /= (double) count;
 		r2Sq /= (double) count;
-		
+
 		//use unbiased estimate for errors
 		return new double [] 
 				{r2, Math.sqrt((r2Sq - r2 * r2) * ((double) count / (double) (count-1)))};
-		
+
 	}
 
 	//vector related operations
@@ -590,75 +621,75 @@ public class CellPottsModel extends SpinModel {
 	protected ArrayList<Integer> getSpinYPos(int spin){
 		return spinYPos.get(spin);
 	}
-	
+
 	public void setNumOfSweeps(int n){
 		if (n >= 0){
 			numOfSweeps = n;
 		}
 	}
-	
+
 	public int getNumOfSweeps(){
 		return numOfSweeps;
 	}
-	
+
 	public void setNEquil(int n){
 		if (n >= 0){
 			nequil = n;
 		}
 	}
-	
+
 	public int getNEquil(){
 		return nequil;
 	}
-	
+
 	public double getAcceptRate(){
 		return acceptRate;
 	}
-	
+
 	public double getXCM(int q){
 		return xcmNew[q];
 	}
-	
+
 	public double getYCM(int q){
 		return ycmNew[q];
 	}
-	
+
 	public void setAlpha(double a){
 		this.alpha = a;
 	}
-	
+
 	public double getAlpha(){
 		return alpha;
 	}
-	
+
 	public void setBeta(double b){
 		this.beta = b;
 	}
-	
+
 	public double getBeta(){
 		return beta;
 	}
-	
+
 	public void setLambda(double l){
 		if (l >= 0){
 			this.lambda = l;
 		}
 	}
-	
+
 	public double getLambda(){
 		return lambda;
 	}
-	
+
 	public void setMotility(double m){
 		if (m >= 0){
 			this.motility = m;
 		}
 	}
-	
+
 	public double getMotility(){
 		return motility;
 	}
-	
+
 	@Override
 	public int getSpin(int i, int j){
 		return spin[i][j];
@@ -680,7 +711,7 @@ public class CellPottsModel extends SpinModel {
 			temperature = t;
 		}
 	}
-	
+
 	@Override
 	public double getTemp(){
 		return temperature;
@@ -724,7 +755,7 @@ public class CellPottsModel extends SpinModel {
 	public int getTypesOfSpin(){
 		return q+1;
 	}
-	
+
 	public int getNumOfCellsAlive(){
 		int cellsAlive = 0;
 		for (int i = 1; i <= q; i++){
@@ -783,18 +814,18 @@ public class CellPottsModel extends SpinModel {
 		int q = 1000;
 		double temp = 1.0;
 		double lambda = 1.0;
-		double alpha = 5.0;
-		double beta = 1.0;
-		double motility = 3.0;
+		double alpha = 4.0;
+		double beta = 16.0;
+		double motility = 4.0;
 		double rotateDiff = 0.1;
 		int numOfSweeps = 10000;
 		int nequil = 0;
 		int seed = -1;
-		int run = 3;
+		int run = 1;
 		SpinReader reader = new SpinReader();
 		reader.openReader("init_spin_1000_2.dat");
-		String filename = String.format("%d_%d_%d_a_%.1f_lam_%.1f_P_%.1f_n_%d_run_%d.dat",
-				nx, ny, q, alpha, lambda, motility, numOfSweeps, run);
+		String filename = String.format("%d_%d_%d_a_%.1f_lam_%.1f_P_%.1f_D_%.1f_t_%d_run_%d.dat",
+				nx, ny, q, alpha, lambda, motility, rotateDiff, numOfSweeps, run);
 		DataWriter r2Writer = new R2Writer();
 		DataWriter ergWriter = new EnergyWriter();
 		DataWriter spinWriter = new SpinWriter(numOfSweeps);
@@ -808,6 +839,7 @@ public class CellPottsModel extends SpinModel {
 				rotateDiff, seed, numOfSweeps, nequil, 
 				new DataWriter [] {r2Writer, ergWriter, statsWriter}, false);
 		model.initSpin(reader.readSpins());
+		model.initPolarity();
 		model.run();
 		r2Writer.closeWriter();
 		ergWriter.closeWriter();

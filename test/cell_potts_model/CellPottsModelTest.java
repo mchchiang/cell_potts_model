@@ -419,7 +419,7 @@ public class CellPottsModelTest {
 				2.5, model.calculateCM(model.getSpinYPos(5), 6), tol);
 	}
 	
-	@Test
+	/*@Test
 	public void testCalculateDeltaCM1a(){
 		int [][] spin = new int [][]{
 				{1,3,3,1},
@@ -455,7 +455,7 @@ public class CellPottsModelTest {
 		
 		assertEquals("Returned wrong delta ycm value",
 				17.0/6.0-3.0, model.calculateDeltaCM(1, 1, 2, false)[1], tol);
-	}
+	}*/
 	
 	@Test
 	public void testCalculateDeltaCM2a(){

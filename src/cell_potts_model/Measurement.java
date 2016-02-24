@@ -2,6 +2,7 @@ package cell_potts_model;
 
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Calendar;
 
 public class Measurement implements Runnable {
 	
@@ -32,8 +33,8 @@ public class Measurement implements Runnable {
 		writers[2] = new EnergyWriter();
 		writers[3] = new StatisticsWriter(n, nequil);
 		
-		String name = String.format("%d_%d_%d_a_%.1f_lam_%.1f_P_%.1f_t_%d_run_%d.dat",
-				nx, ny, q, alpha, lambda, motility, n, trial);
+		String name = String.format("%d_%d_%d_a_%.1f_lam_%.1f_P_%.1f_D_%.1f_t_%d_run_%d.dat",
+				nx, ny, q, alpha, lambda, motility, rotateDiff, n, trial);
 		
 		writers[0].openWriter(Paths.get(filepath, "cm_" + name).toString());
 		writers[1].openWriter(Paths.get(filepath, "r2_" + name).toString());
@@ -44,11 +45,12 @@ public class Measurement implements Runnable {
 		model = new CellPottsModel(nx, ny, q, temp, lambda, 
 				alpha, beta, motility, rotateDiff, -1, n, nequil, writers, false);
 		model.initSpin(spin);
+		model.initPolarity();
 	}
 
 	@Override
 	public void run() {
-		System.out.printf("Running: a = %.1f\tp = %.1f\ttrial %d\n", 
+		System.out.printf(Calendar.getInstance().getTime() + "\t - Running: a = %.1f\tp = %.1f\ttrial %d\n", 
 				model.getAlpha(), model.getMotility(), trial);
 		model.run();
 		

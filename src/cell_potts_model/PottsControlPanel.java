@@ -89,34 +89,38 @@ public class PottsControlPanel extends JPanel implements ActionListener {
 					double temperature = Double.parseDouble(txtTemperature.getText());
 					double energy = Double.parseDouble(txtEnergy.getText());
 					int steps = Integer.parseInt(txtNumOfSteps.getText());*/
-					int nx = 100;
-					int ny = 100;
-					int q = 200;
+					int nx = 200;
+					int ny = 200;
+					int q = 1000;
 					double temp = 1.0;
 					double lambda = 1.0;
-					double alpha = 3.0;
+					double alpha = 1.0;
 					double beta = 16.0;
 					double motility = 4.0;
-					double rotateDiff = 1.0;
+					double rotateDiff = 0.1;
 					int seed = -1;
 					int numOfSweeps = 10000;
 					int nequil = 0;
 					SpinReader reader = new SpinReader();
-					reader.openReader("init_spin.dat");
+					reader.openReader("init_spin_1000_2.dat");
 					btnRun.setEnabled(false);
 					DataWriter cmWriter = new CMWriter();
+					DataWriter r2Writer = new R2Writer();
 					String filename = String.format("%d_%d_%d_a_%.1f_lam_%.1f_P_%.1f_n_%d_run_%d.dat",
-							nx, ny, q, alpha, lambda, motility, numOfSweeps, 1);
-					cmWriter.openWriter("cm_" + filename);
+							nx, ny, q, alpha, lambda, motility, numOfSweeps, 3);
+					//cmWriter.openWriter("cm_" + filename);
+					//r2Writer.openWriter("r2_" + filename);
 					CellPottsModel model = new CellPottsModel(
 							nx, ny, q, temp, lambda, alpha, beta, motility, rotateDiff,
-							seed, numOfSweeps, nequil, new DataWriter [] {cmWriter}, true);
+							seed, numOfSweeps, nequil, new DataWriter [] {new NullWriter()}, true);
 					model.initSpin(reader.readSpins());
+					model.initPolarity();
 					view.setModel(model);
 					view.initImage();
 					model.run();
 					view.stopDrawingImage();
-					cmWriter.closeWriter();
+					//cmWriter.closeWriter();
+					//r2Writer.closeWriter();
 					btnRun.setEnabled(true);
 				}
 			};
