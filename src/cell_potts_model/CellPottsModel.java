@@ -557,7 +557,6 @@ public class CellPottsModel extends SpinModel {
 	public double [] alpha2(){
 		double r2 = 0.0;
 		double r4 = 0.0;
-		double r4Sq = 0.0;
 		double value = 0.0;
 		int count = 0;
 		for (int i = 1; i <= q; i++){
@@ -566,20 +565,17 @@ public class CellPottsModel extends SpinModel {
 				r2 += value;
 				value = value * value;
 				r4 += value;
-				r4Sq = value * value;
 				count++;
 			}
 		}
 		
 		r2 /= (double) count;
 		r4 /= (double) count;
-		r4Sq /= (double) count;
 		
-		double a2 = (3.0 / 5.0 * r4 / (r2 * r2)) - 1.0;
+		double a2 = ((3.0 / 5.0) * r4 / (r2 * r2)) - 1.0;
 		
 		//use unbiased estimate for errors
-		return new double [] 
-				{a2, r4, Math.sqrt((r4Sq - r4 * r4) * ((double) count / (double) (count-1)))};
+		return new double [] {a2, r4};
 	}
 
 	//vector related operations
