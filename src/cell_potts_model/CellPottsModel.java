@@ -813,19 +813,19 @@ public class CellPottsModel extends SpinModel {
 	}
 
 	public static void main (String [] args){
-		int nx = 200;
-		int ny = 200;
-		int q = 1000;
+		int nx = 100;
+		int ny = 100;
+		int q = 200;
 		double temp = 1.0;
 		double lambda = 1.0;
-		double alpha = 4.0;
+		double alpha = 2.0;
 		double beta = 16.0;
-		double motility = 4.0;
-		double rotateDiff = 0.1;
+		double motility = 0.0;
+		double rotateDiff = 0.0;
 		int numOfSweeps = 10000;
 		int nequil = 0;
 		int seed = -1;
-		int run = 1;
+		int run = 3;
 		SpinReader reader = new SpinReader();
 		reader.openReader("init_spin_1000_2.dat");
 		String filename = String.format("%d_%d_%d_a_%.1f_lam_%.1f_P_%.1f_D_%.1f_t_%d_run_%d.dat",
@@ -842,7 +842,7 @@ public class CellPottsModel extends SpinModel {
 				nx, ny, q, temp, lambda, alpha, beta, motility, 
 				rotateDiff, seed, numOfSweeps, nequil, 
 				new DataWriter [] {r2Writer, ergWriter, statsWriter}, false);
-		model.initSpin(reader.readSpins());
+		model.initSpin();
 		model.initPolarity();
 		model.run();
 		r2Writer.closeWriter();

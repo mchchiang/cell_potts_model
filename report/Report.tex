@@ -27,7 +27,7 @@
 \renewcommand{\vec}[1]{\mathbf{#1}}
 \newcommand{\abs}[1]{\left|#1\right|}
 \newcommand{\inc}{\Delta}
-\newcommand{\etal}{\textit{et. al.}}
+\newcommand{\etal}{\textit{et al.} }
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %
@@ -155,7 +155,7 @@ Numerical modelling and computer simulations have been performed to describe the
 \subsection{Cellular Potts Model}
 Developed by Glazier and Graner\cite{graner1992}, the Cellular Potts Model (CPM) is a stochastic model widely used in simulating the motion of closely packed cells. The model is an extension of the Potts model used in statistical physics that takes into account of the physical characteristics and dynamics of biological cells. The model has successfully explained cellular processes such as cell sorting \cite{graner1992} and collective streaming\cite{szabo2010}.
 
-In the CPM, biological cells are represented on a two dimensional lattice. Each lattice site is assigned with a non-negative integer spin $\sigma$, where $\sigma \in [0,N]$ and $N$ is the total number of cells. Two lattice sites which share a side or a corner are considered as neighbours. A biological cell is simply represented by a set of connected sites with the same spin. $\sigma = 0$ is reserved for enumerating sites that are not part of any cell.
+In the CPM, biological cells are represented on a two dimensional lattice. Each lattice site is assigned with a non-negative integer spin $\sigma$, where $\sigma \in [0,n]$ and $n$ is the total number of cells. Two lattice sites which share a side or a corner are considered as neighbours. A biological cell is simply represented by a set of connected sites with the same spin. $\sigma = 0$ is reserved for enumerating sites that are not part of any cell.
 
 
 The dynamics of the cells are simulated using a modified version of the Metropolis algorithm, which is a Markov Chain Monte-Carlo (MCMC) method for sampling configurations in the Potts model according to their Boltzmann probabilities. In the simulation, a series of elementary steps are taken. Each step is an attempt to change the spin of a random lattice site $\bm{a}$, denoted as $\sigma(\bm{a})$, to that of a randomly chosen neighbour site $\bm{b}$, denoted as $\sigma(\bm{b})$. The probability of accepting the spin change, $p\left(\bm{a} \rightarrow \bm{b}\right)$, is given by the relation:
@@ -163,12 +163,12 @@ The dynamics of the cells are simulated using a modified version of the Metropol
 \label{eqn:prob}
 \ln p (\bm{a} \rightarrow \bm{b}) = \min \left[0, \frac{-\inc H (\bm{a} \rightarrow \bm{b}) + w (\bm{a} \rightarrow \bm{b})}{kT} \right],
 \end{eqnarray}
-where $w$ is a function to take into account of active cell motion, $H$ is an effective Hamiltonian which the system tries to minimise,  $\inc H (\bm{a} \rightarrow \bm{b})$ represents its change in the considered step, $T$ is the effective temperature, and $k$ is the Boltzmann constant. The functional form of $H$ and $w$ would be discussed further below. This elementary step is also known as a spin-copy attempt. Since changing $k$ and $T$ is equivalent to multiplying both the $H$ and $w$ function by a constant, it is conventional to set $k$ and $T$ to 1 and rescale parameters in $H$ and $w$ accordingly. As the typical time for all lattice sites to have experienced an attempt depends on the lattice size, it is it is conventional to define a unit time as $N$ number of spin-copy attempts. This is known as one Monte-Carlo step (MCS). One also defines the acceptance rate as the ratio of the number of spin copies accepted to the number of attempts made. This is important for an accurate comparison between the time scales in the simulations and those used in experiments \cite{sanz2010}.
+where $w$ is a function to take into account of active cell motion, $H$ is an effective Hamiltonian which the system tries to minimise,  $\inc H (\bm{a} \rightarrow \bm{b})$ represents its change in the considered step, $T$ is the effective temperature, and $k$ is the Boltzmann constant. The functional form of $H$ and $w$ would be discussed further below. This elementary step is also known as a spin-copy attempt. Since changing $k$ and $T$ is equivalent to multiplying both the $H$ and $w$ function by a constant, it is conventional to set $k$ and $T$ to 1 and rescale parameters in $H$ and $w$ accordingly. As the typical time for all lattice sites to have experienced an attempt depends on the lattice size, one can define a unit time as $N$ number of spin-copy attempts. This is known as one Monte-Carlo step (MCS). One also defines the acceptance rate as the ratio of the number of spin copies accepted to the number of attempts made. This is important for an accurate comparison between the time scales in the simulations and those used in experiments \cite{sanz2010}.
  
 Equation \ref{eqn:prob} shows that the CPM dynamics is governed by an effective Hamiltonian that models the physical characteristics of a biological cell. It has the form of 
 \begin{eqnarray}
 \label{eqn:hamiltonian}
-H = \sum_{\langle{\bm{x}, \bm{x'}\rangle}} J\left(\sigma(\bm{x}), \sigma(\bm{x'})\right) + \lambda \sum_{q\,=\,1}^{N} \left(a_q - A_q\right)^2,
+H = \sum_{\langle{\bm{x}, \bm{x'}\rangle}} J\left(\sigma(\bm{x}), \sigma(\bm{x'})\right) + \lambda \sum_{q\,=\,1}^{n} \left(a_q - A_q\right)^2,
 \end{eqnarray}
 The first term in equation \ref{eqn:hamiltonian} accounts for interfacial effects such as cell-cell adhesion strength and the active cortical tension. It is a sum over the interfacial energy for all pairs of neighbours in the lattice. $J$ describes the specific interfacial energy between two sites $\bm{x}$ and $\bm{x'}$. For simulating an ensemble of homogenous cells, $J$ is specified by the following values:
 \begin{eqnarray}
