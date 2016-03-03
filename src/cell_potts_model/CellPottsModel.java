@@ -553,6 +553,34 @@ public class CellPottsModel extends SpinModel {
 				{r2, Math.sqrt((r2Sq - r2 * r2) * ((double) count / (double) (count-1)))};
 
 	}
+	
+	public double [] alpha2(){
+		double r2 = 0.0;
+		double r4 = 0.0;
+		double r4Sq = 0.0;
+		double value = 0.0;
+		int count = 0;
+		for (int i = 1; i <= q; i++){
+			if (area[i] > 0.000001){
+				value = mag2(rx[i], ry[i]);
+				r2 += value;
+				value = value * value;
+				r4 += value;
+				r4Sq = value * value;
+				count++;
+			}
+		}
+		
+		r2 /= (double) count;
+		r4 /= (double) count;
+		r4Sq /= (double) count;
+		
+		double a2 = (3.0 / 5.0 * r4 / (r2 * r2)) - 1.0;
+		
+		//use unbiased estimate for errors
+		return new double [] 
+				{a2, r4, Math.sqrt((r4Sq - r4 * r4) * ((double) count / (double) (count-1)))};
+	}
 
 	//vector related operations
 	//calculate the difference between two points in periodic B.C.
@@ -813,42 +841,45 @@ public class CellPottsModel extends SpinModel {
 	}
 
 	public static void main (String [] args){
-		int nx = 100;
-		int ny = 100;
-		int q = 200;
+		int nx = 200;
+		int ny = 200;
+		int q = 1000;
 		double temp = 1.0;
 		double lambda = 1.0;
-		double alpha = 2.0;
+		double alpha = 8.0;
 		double beta = 16.0;
 		double motility = 0.0;
 		double rotateDiff = 0.0;
 		int numOfSweeps = 10000;
 		int nequil = 0;
 		int seed = -1;
-		int run = 3;
+		int run = 5;
 		SpinReader reader = new SpinReader();
 		reader.openReader("init_spin_1000_2.dat");
 		String filename = String.format("%d_%d_%d_a_%.1f_lam_%.1f_P_%.1f_D_%.1f_t_%d_run_%d.dat",
 				nx, ny, q, alpha, lambda, motility, rotateDiff, numOfSweeps, run);
 		DataWriter r2Writer = new R2Writer();
 		DataWriter ergWriter = new EnergyWriter();
-		DataWriter spinWriter = new SpinWriter(numOfSweeps);
+		//DataWriter spinWriter = new SpinWriter(numOfSweeps);
 		DataWriter statsWriter = new StatisticsWriter(numOfSweeps, nequil);
+		DataWriter a2Writer = new A2Writer();
 		r2Writer.openWriter("r2_" + filename);
 		ergWriter.openWriter("energy_" + filename);
 		//spinWriter.openWriter("spin_" + filename);
+		a2Writer.openWriter("a2_" + filename);
 		statsWriter.openWriter("stats_" + filename);
 		CellPottsModel model = new CellPottsModel(
 				nx, ny, q, temp, lambda, alpha, beta, motility, 
 				rotateDiff, seed, numOfSweeps, nequil, 
-				new DataWriter [] {r2Writer, ergWriter, statsWriter}, false);
-		model.initSpin();
+				new DataWriter [] {r2Writer, a2Writer, ergWriter, statsWriter}, false);
+		model.initSpin(reader.readSpins());
 		model.initPolarity();
 		model.run();
 		r2Writer.closeWriter();
 		ergWriter.closeWriter();
 		//spinWriter.closeWriter();
 		statsWriter.closeWriter();
+		a2Writer.closeWriter();
 		reader.closeReader();
 	}
 }
