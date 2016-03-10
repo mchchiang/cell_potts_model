@@ -96,7 +96,18 @@ Signature:\hspace*{8cm}Date: 25 March 2015
 
 \break
 \section{Introduction}
-The study of cellular monolayers has been an active field in biological physics. Cellular monolayers can be used as a simple model of a tissue. 
+Cell monolayers is a widely studied biophysical system as they are a simple model of a tissue. A common application of cell monolayers is to model the epithelial tissue, which is responsible for forming the lining of the internal and external body surfaces. A particular active research focus is on understanding the collective motion of closely packed cells in the monolayer, as they play a pivotal role in important biological processes such as embryonic development, tumour invasion, wound healing, and tissue repairs [Friedl2009].  
+
+Multiple computational models have been developed to describe the intercellular interactions to explain phenomena associated with collective dynamics of cells. An example is the self-propelled particle (SPP) model, where cells are represented as individual disks or spheres like colloidal particles. The dynamics of the cells are governed by an interaction potential. Another example is the vertex model, where cells are represented by a set of interconnecting vertices and their dynamics are governed by force equations on the vertices. 
+
+A further model is the cellular Potts Model. This is
+
+Recent studies have found that dense biological tissues exhibit 
+
+The aim of this project is to implement the cellular Potts model and to study whether varying
+
+Section 2 provides a brief introduction to the theory of the CPM and the jamming transitions in biological tissues with high cell density. Section 3 outlines the implementation of the model and the experimental methods for investigating whether CPM can induce the phase transition. Section 4 and 5 present and discuss the results obtained from the simulations.
+
 
 %The introduction section of the report should introduce the project in
 %more detail than in the abstract. In particular it should present the
@@ -109,7 +120,7 @@ The study of cellular monolayers has been an active field in biological physics.
 %employed and the results obtained. A typical introduction should be
 %about 1 page, (300-450 words). 
 
-\pagebreak
+
 \section{Background and Theory}
 
 %This section should cover the theory of the material in the project
@@ -186,7 +197,7 @@ where $\alpha$ and $\beta$ are parameters for modelling the intercellular surfac
 The second term is an elastic constraint on the volume of each cell, since a physical cell has finite volume. $a_q$ and $A_q$ are the current and target volume of the $q$th cell. $
 \lambda$ sets the strength of this elastic constraint and governs the area fluctuation of each cell.
 
-The w term in equation \ref{eqn:hamiltonian} is proposed by Szabo \etal in their study of collective cell motion\cite{szabo2010}. It introduces a bias in the evolution of the system to favour spin changes that result in the cells moving in their desired direction. In particular, they proposed that individual cell motility can be modelled using the expression 
+The $w$ term in equation \ref{eqn:hamiltonian} is proposed by Szabo \etal in their study of collective cell motion\cite{szabo2010}. It introduces a bias in the evolution of the system to favour spin changes that result in the cells moving in their desired direction. In particular, they proposed that individual cell motility can be modelled using the expression 
 \begin{eqnarray}
 w (\bm{a} \rightarrow \bm{b}) = P \sum_{k \;=\; \sigma(a),\,\sigma(b)} \frac{\inc \bm{X}_k \cdot \bm{p}_k}{\abs{\bm{p}_k}},
 \end{eqnarray}
@@ -204,10 +215,29 @@ This project investigates whether the CPM can describe the jamming transition. T
 
 
 
-%\pagebreak
-%\section{Methodology}
-%
-%\subsection{Statistical Quantities for Classifying Transitions}
+\section{Methodology}
+As discussed in the previous section, the project is divided into two section. The first part of the project focuses on implementing the cellular Potts model on the computer; the second part is devoted to the experimentation of the model parameters to investigate whether the model exhibits the jamming phase transition that is observed in cell monolayers.
+
+\subsection{Implementation of the Cellular Potts Model}
+\subsubsection{Programming Language and Software Used}
+The program is written in Java as it is a robust, agnostic language. It also provides an easy-to-use framework for developing graphical user interfaces, which is needed in this project to visualise the cell motions. To facilitate the development process, the Eclipse integrated development environment (IDE) is used as it has a comprehensive code browsing and debugging toolkit. In addition, the version control system, git, is used to maintain the history of the development and facilitate the synchronisation of the code across multiple platforms. The ANT automated build system is also used in this project to allow rapid compilation of the code.
+
+\subsubsection{Code Design and Structure}
+
+\subsection{Experimental Methods}
+\subsubsection{Statistical Measures of Glassy Dynamics}
+\paragraph{Mean Square Displacmeent}
+
+\begin{equation}
+\langle{\vec{R}^2(t)\rangle} = \langle{\left(\vec{R}_i(t) - \vec{R}_i(t_0)\right)^2\rangle}
+\end{equation}
+
+\paragraph{Non-Gaussian Parameter}
+
+\begin{equation}
+\alpha_2 = \frac{3}{5}\,\frac{\langle{\vec{R}^4(t)\rangle}}{\langle{\vec{R}^2(t)\rangle}} - 1
+\end{equation}
+
 %
 %\subsection{Code Structure}
 %

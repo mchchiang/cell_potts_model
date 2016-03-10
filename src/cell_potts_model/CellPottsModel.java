@@ -60,9 +60,6 @@ public class CellPottsModel extends SpinModel {
 	//data writers
 	private DataWriter [] writers;
 
-	private ArrayList<ThreadCompleteListener> threadListeners = 
-			new ArrayList<ThreadCompleteListener>();
-
 	//constructors
 	public CellPottsModel(int nx, int ny, int q, double temp, 
 			double lambda, double alpha, double beta, 
@@ -191,7 +188,7 @@ public class CellPottsModel extends SpinModel {
 				}
 			}
 			double target = (double) (nx*ny) / (double) cellsAlive;
-			for (int i = 0; i <= q; i++){
+			for (int i = 1; i <= q; i++){
 				areaTarget[i] = target;
 			}
 		}		
@@ -227,7 +224,7 @@ public class CellPottsModel extends SpinModel {
 			if (n >= nequil){
 				calculateCM(n);
 			}
-			if (n > nequil && n < numOfSweeps-1){
+			if (n > nequil && n < numOfSweeps){
 				updateR();
 			}
 			if (n >= nequil && n < numOfSweeps-1){
@@ -458,7 +455,7 @@ public class CellPottsModel extends SpinModel {
 		double leftSum = 0;
 		double rightSum = 0;
 		double total = 0;
-		
+
 		for (int i = 0; i < n; i++){
 			x = pos.get(i);
 			if (x < length / 2){
@@ -507,7 +504,7 @@ public class CellPottsModel extends SpinModel {
 			if ((Math.abs(dx) > nx * 0.05 ||
 					Math.abs(dy) > ny * 0.05) && n != 0){
 				Calendar cal = Calendar.getInstance();
-		        System.out.println(cal.getTime());
+				System.out.println(cal.getTime());
 				System.out.printf("Cell %d\tdxcm %.4f\tdycm %.4f\tt = %d\n",
 						i, dx, dy, n);
 				System.out.println("xcm");
@@ -553,7 +550,7 @@ public class CellPottsModel extends SpinModel {
 				{r2, Math.sqrt((r2Sq - r2 * r2) * ((double) count / (double) (count-1)))};
 
 	}
-	
+
 	public double [] alpha2(){
 		double r2 = 0.0;
 		double r4 = 0.0;
@@ -568,12 +565,12 @@ public class CellPottsModel extends SpinModel {
 				count++;
 			}
 		}
-		
+
 		r2 /= (double) count;
 		r4 /= (double) count;
-		
+
 		double a2 = ((3.0 / 5.0) * r4 / (r2 * r2)) - 1.0;
-		
+
 		//use unbiased estimate for errors
 		return new double [] {a2, r4};
 	}
@@ -713,7 +710,7 @@ public class CellPottsModel extends SpinModel {
 	public double getMotility(){
 		return motility;
 	}
-	
+
 	public double getRotateDiff(){
 		return rotateDiff;
 	}
@@ -849,7 +846,8 @@ public class CellPottsModel extends SpinModel {
 		int numOfSweeps = 10000;
 		int nequil = 0;
 		int seed = -1;
-		int run = 5;
+		int run = 1;
+
 		SpinReader reader = new SpinReader();
 		reader.openReader("init_spin_1000_2.dat");
 		String filename = String.format("%d_%d_%d_a_%.1f_lam_%.1f_P_%.1f_D_%.1f_t_%d_run_%d.dat",
@@ -877,5 +875,33 @@ public class CellPottsModel extends SpinModel {
 		statsWriter.closeWriter();
 		a2Writer.closeWriter();
 		reader.closeReader();
+		/*reader.openReader("single_cell.dat");
+		int [][] spin = reader.readSpins();
+
+		reader.closeReader();
+
+		for (int i = 1; i <= 1000; i++){
+			System.out.println("Running trial " + i);
+			String filename = String.format("%d_%d_%d_a_%.1f_lam_%.1f_P_%.1f_D_%.1f_t_%d_run_%d.dat",
+					nx, ny, q, alpha, lambda, motility, rotateDiff, numOfSweeps, i+2000);
+			DataWriter r2Writer = new R2Writer();
+			//DataWriter ergWriter = new EnergyWriter();
+			DataWriter statsWriter = new StatisticsWriter(numOfSweeps, nequil);
+			r2Writer.openWriter("data/single_cell/r2_" + filename);
+			//ergWriter.openWriter("energy_" + filename);
+			statsWriter.openWriter("data/single_cell/stats_" + filename);
+			CellPottsModel model = new CellPottsModel(
+					nx, ny, q, temp, lambda, alpha, beta, motility, 
+					rotateDiff, seed, numOfSweeps, nequil, 
+					new DataWriter [] {r2Writer, statsWriter}, false);
+			model.initSpin(spin);
+			model.initPolarity();
+			model.run();
+			r2Writer.closeWriter();
+			//ergWriter.closeWriter();
+			statsWriter.closeWriter();
+
+		}*/
+
 	}
 }

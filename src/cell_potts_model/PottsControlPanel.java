@@ -7,7 +7,8 @@ import javax.swing.*;
 
 @SuppressWarnings("serial")
 public class PottsControlPanel extends JPanel implements ActionListener {
-	private JPanel paramsPanel;
+	private JPanel simParamsPanel;
+	private JPanel modelParamsPanel;
 	
 	private JLabel lblWidth;
 	private JTextField txtWidth;
@@ -15,19 +16,22 @@ public class PottsControlPanel extends JPanel implements ActionListener {
 	private JLabel lblHeight;
 	private JTextField txtHeight;
 	
-	private JLabel lblTemperature;
-	private JTextField txtTemperature;
+	private JLabel lblAlpha;
+	private JTextField txtAlpha;
 	
-	private JLabel lblEnergy;
-	private JTextField txtEnergy;
+	private JLabel lblMotility;
+	private JTextField txtMotility;
+	
+	private JLabel lblRotateDiff;
+	private JTextField txtRotateDiff;
+	
+	private JLabel lblLambda;
+	private JTextField txtLambda;
 	
 	private JLabel lblNumOfSteps;
 	private JTextField txtNumOfSteps;
 	
-	private JCheckBox chkGraphicsOn;
-	
 	private JButton btnRun;
-	private JButton btnStop;
 	
 	private PottsView view;
 	
@@ -40,40 +44,46 @@ public class PottsControlPanel extends JPanel implements ActionListener {
 		lblHeight = new JLabel("Height: ");
 		txtHeight = new JTextField(3);
 		
-		txtTemperature = new JTextField(3);
-		lblTemperature = new JLabel("Temperature (T): ");
+		txtLambda = new JTextField(3);
+		lblLambda = new JLabel("Lambda: ");
 		
-		txtEnergy = new JTextField(3);
-		lblEnergy = new JLabel("Energy (J): ");
+		txtAlpha = new JTextField(3);
+		lblAlpha = new JLabel("Alpha: ");
+		
+		txtMotility = new JTextField(3);
+		lblMotility = new JLabel("Motility: ");
+		
+		txtRotateDiff = new JTextField(3);
+		lblRotateDiff = new JLabel("Rotate Diff: ");		
 		
 		txtNumOfSteps = new JTextField(3);
 		lblNumOfSteps = new JLabel("Steps: ");
 		
-		chkGraphicsOn = new JCheckBox("Turn Graphics On", true);
-		
 		btnRun = new JButton("Run");
 		btnRun.addActionListener(this);
 		
-		btnStop = new JButton("Stop");
-		btnStop.addActionListener(this);
+		modelParamsPanel = new JPanel();
+		modelParamsPanel.add(lblAlpha);
+		modelParamsPanel.add(txtAlpha);
+		modelParamsPanel.add(lblLambda);
+		modelParamsPanel.add(txtLambda);
+		modelParamsPanel.add(lblMotility);
+		modelParamsPanel.add(txtMotility);
+		modelParamsPanel.add(lblRotateDiff);
+		modelParamsPanel.add(txtRotateDiff);
 		
-		paramsPanel = new JPanel();
-		paramsPanel.add(lblWidth);
-		paramsPanel.add(txtWidth);
-		paramsPanel.add(lblHeight);
-		paramsPanel.add(txtHeight);
-		paramsPanel.add(lblTemperature);
-		paramsPanel.add(txtTemperature);
-		paramsPanel.add(lblEnergy);
-		paramsPanel.add(txtEnergy);
-		paramsPanel.add(lblNumOfSteps);
-		paramsPanel.add(txtNumOfSteps);
-		paramsPanel.add(chkGraphicsOn);
-		paramsPanel.add(btnRun);
-		paramsPanel.add(btnStop);
+		simParamsPanel = new JPanel();
+		simParamsPanel.add(lblWidth);
+		simParamsPanel.add(txtWidth);
+		simParamsPanel.add(lblHeight);
+		simParamsPanel.add(txtHeight);
+		simParamsPanel.add(lblNumOfSteps);
+		simParamsPanel.add(txtNumOfSteps);
+		simParamsPanel.add(btnRun);
 		
 		setLayout(new BorderLayout());
-		add(paramsPanel, BorderLayout.CENTER);
+		add(modelParamsPanel, BorderLayout.NORTH);
+		add(simParamsPanel, BorderLayout.SOUTH);
 	}
 	
 	
@@ -82,51 +92,35 @@ public class PottsControlPanel extends JPanel implements ActionListener {
 		if (e.getSource() == btnRun){
 			Thread runthread = new Thread(){
 				@Override
-				public void run(){
-//					System.out.println("Clicked");
-					/*int width = Integer.parseInt(txtWidth.getText());
-					int height = Integer.parseInt(txtHeight.getText());
-					double temperature = Double.parseDouble(txtTemperature.getText());
-					double energy = Double.parseDouble(txtEnergy.getText());
-					int steps = Integer.parseInt(txtNumOfSteps.getText());*/
-					int nx = 200;
-					int ny = 200;
-					int q = 1000;
+				public void run(){					
+					int nx = Integer.parseInt(txtWidth.getText());
+					int ny = Integer.parseInt(txtHeight.getText());
+					int q = 1;
 					double temp = 1.0;
-					double lambda = 1.0;
-					double alpha = 1.0;
+					double lambda = Double.parseDouble(txtLambda.getText());
+					double alpha = Double.parseDouble(txtAlpha.getText());
 					double beta = 16.0;
-					double motility = 4.0;
-					double rotateDiff = 0.1;
+					double motility = Double.parseDouble(txtMotility.getText());
+					double rotateDiff = Double.parseDouble(txtRotateDiff.getText());
 					int seed = -1;
-					int numOfSweeps = 10000;
+					int numOfSweeps = Integer.parseInt(txtNumOfSteps.getText());
 					int nequil = 0;
 					SpinReader reader = new SpinReader();
 					reader.openReader("init_spin_1000_2.dat");
 					btnRun.setEnabled(false);
-					DataWriter cmWriter = new CMWriter();
-					DataWriter r2Writer = new R2Writer();
-					String filename = String.format("%d_%d_%d_a_%.1f_lam_%.1f_P_%.1f_n_%d_run_%d.dat",
-							nx, ny, q, alpha, lambda, motility, numOfSweeps, 3);
-					//cmWriter.openWriter("cm_" + filename);
-					//r2Writer.openWriter("r2_" + filename);
 					CellPottsModel model = new CellPottsModel(
 							nx, ny, q, temp, lambda, alpha, beta, motility, rotateDiff,
-							seed, numOfSweeps, nequil, new DataWriter [] {new NullWriter()}, true);
+							seed, numOfSweeps, nequil, new DataWriter [] {}, true);
 					model.initSpin(reader.readSpins());
 					model.initPolarity();
 					view.setModel(model);
 					view.initImage();
 					model.run();
 					view.stopDrawingImage();
-					//cmWriter.closeWriter();
-					//r2Writer.closeWriter();
 					btnRun.setEnabled(true);
 				}
 			};
 			runthread.start();
-		} else if (e.getSource() == btnStop){
-			
 		}
 	}
 }
