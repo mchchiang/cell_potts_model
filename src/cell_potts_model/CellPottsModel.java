@@ -188,7 +188,7 @@ public class CellPottsModel extends SpinModel {
 				}
 			}
 			double target = (double) (nx*ny) / (double) cellsAlive;
-			for (int i = 1; i <= q; i++){
+			for (int i = 0; i <= q; i++){
 				areaTarget[i] = target;
 			}
 		}		
