@@ -95,7 +95,7 @@ public class PottsControlPanel extends JPanel implements ActionListener {
 				public void run(){					
 					int nx = Integer.parseInt(txtWidth.getText());
 					int ny = Integer.parseInt(txtHeight.getText());
-					int q = 1;
+					int q = 1000;
 					double temp = 1.0;
 					double lambda = Double.parseDouble(txtLambda.getText());
 					double alpha = Double.parseDouble(txtAlpha.getText());

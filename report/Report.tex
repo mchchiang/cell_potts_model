@@ -19,6 +19,7 @@
 \usepackage{courier}
 \usepackage{epstopdf}
 \usepackage{placeins}
+\usepackage[font=footnotesize]{caption}
 \epstopdfsetup{update}
 \usepackage[]{cite}
 
@@ -27,7 +28,7 @@
 \renewcommand{\vec}[1]{\mathbf{#1}}
 \newcommand{\abs}[1]{\left|#1\right|}
 \newcommand{\inc}{\Delta}
-\newcommand{\etal}{\textit{et al.} }
+\newcommand{\etal}{\textit{et al.}}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %
@@ -53,7 +54,7 @@
 \begin{center}
         \Large\bf \Large\bf Senior Honours Project\\
         \Large\bf Physics 4\\[10pt]                     % Change to MP/CP/Astro
-        \LARGE\bf Simulating the Jamming Transitions of a Cellular Monolayer with the Cellular Potts Model        % Change to suit
+        \LARGE\bf Investigation of the \\Jamming Transition in Cellular Potts Model       % Change to suit
 \end{center}
 \vspace*{0.5cm}
 \begin{center}
@@ -96,17 +97,15 @@ Signature:\hspace*{8cm}Date: 25 March 2015
 
 \break
 \section{Introduction}
-Cell monolayers is a widely studied biophysical system as they are a simple model of a tissue. A common application of cell monolayers is to model the epithelial tissue, which is responsible for forming the lining of the internal and external body surfaces. A particular active research focus is on understanding the collective motion of closely packed cells in the monolayer, as they play a pivotal role in important biological processes such as embryonic development, tumour invasion, wound healing, and tissue repairs [Friedl2009].  
+Cell monolayers are widely studied biophysical systems as they are a simple model of a tissue. They provide an economic approach to study complex biological processes that take place in multi-cellular organisms. A particular research area where cell monolayers have been used as a model is in the study of dense biological tissues. These tissues, where cells are closely packed against each other with minimal spacing in between, are often found in important physiological and pathological processes such as embryonic development, wound healing, and cancer metastasis [Friedl2009].  
 
-Multiple computational models have been developed to describe the intercellular interactions to explain phenomena associated with collective dynamics of cells. An example is the self-propelled particle (SPP) model, where cells are represented as individual disks or spheres like colloidal particles. The dynamics of the cells are governed by an interaction potential. Another example is the vertex model, where cells are represented by a set of interconnecting vertices and their dynamics are governed by force equations on the vertices. 
+Recent in vitro experiments have demonstrated that these dense tissues exhibit both fluid and glass-like behaviours [Angelini, Schoetz]. This is reminiscent of the jamming transition observed in condensed matter, which describes the transition of matter with disordered structure from a fluid (unjammed) to rigid (jammed) state. This transition is widely studied in non-living systems such as colloidal dispersions, granular matter, foams, and emulsions. 
 
-A further model is the cellular Potts Model. This is
+Computer simulations have been conducted to further understand the mechanics behind the fluid and rigid behaviours of tissues. To this end, multiple models have been developed to describe the dynamics of cells in biological tissues. A particular successful model is the vertex model, where cells are represented as a polygonal tiling of space and their dynamics are governed by a set of force equations on the vertices of the polygons [Nagai2001]. A recent computational study indicates that model exhibits a jamming transition in accordance to the empirical observations, with the cell shape being a key parameter in determining the rigidity of the tissue [Bi2015].
 
-Recent studies have found that dense biological tissues exhibit 
+Another widely used model in simulating cell dynamics in tissues is the cellular Potts model. This model represents cells as domains on a lattice and their motions are governed by minimising an energy function that characterises the cellular interactions. There, however, has not been simulations conducted to verify whether the model has a fluid to rigid transition. With this in mind, the aim of this project is to implement the cellular Potts model and to investigate whether varying the model parameters would reproduce the jamming transition observed empirically in cell monolayers. 
 
-The aim of this project is to implement the cellular Potts model and to study whether varying
-
-Section 2 provides a brief introduction to the theory of the CPM and the jamming transitions in biological tissues with high cell density. Section 3 outlines the implementation of the model and the experimental methods for investigating whether CPM can induce the phase transition. Section 4 and 5 present and discuss the results obtained from the simulations.
+The remain sections of this paper is organised as follows: Section 2 provides a brief introduction to the cellular Potts model, the concept of jamming, and its connection to the dynamics of dense biological tissues. Section 3 outlines the implementation of the model and the experimental methods for investigating whether CPM can induce the jamming transition. Section 4 and 5 present and discuss the results obtained from the simulations. 
 
 
 %The introduction section of the report should introduce the project in
@@ -146,28 +145,17 @@ Section 2 provides a brief introduction to the theory of the CPM and the jamming
 %to have one {\bf Theory, Method, Results} section for each
 %experiment.
 
-\subsection{Jamming Transitions in Biological Tissues}
-%In condensed matter, jamming describes the transition from a flowing to a rigid state for a material with its structure remaining disordered in the process. This occurs in various form of soft matter such as emulsions, foams, granular materials, and colloidal dispersions \cite{hecke2010}. For example, colloidal particles can jam and form a glassy structure when the packing fraction is increased beyond a critical point, while foams can lose its ability to flow when the applied stress is lowered. These materials, however, can unjam and recover their fluid-like properties when the suitable control parameter is varied. The conditions for the transition between the fluid and rigid structure is commonly summarised by the ``jamming phase diagram''\cite{liu2010}.
-%
-%Recent experiments have indicated that jamming transitions can also occur in dense biological tissues. These tissues participate in complex biological processes such as wound healing, embryonic development, and cancer metastasis. During these processes, the tissues can undergo the Epithelial-Mesenchymal Transition (EMT), where rigid-like epithelial cells transit to fluid-like mesenchymal phenotypes (i.e. loosely associated cells), or the inverse process, the Mesenchymal-Epithelial-Transition (MET). These transitions are analogous to jamming. In addition, experiments have shown that these tissues exhibit typical glass behaviours such as caging\cite{schoetz2013}, dynamical heterogeneity (i.e. spatial and temporal differences of local cell dynamics)\cite{angelini2011}, and viscoelasticity (i.e. exhibiting both viscous and elastic behaviours)\cite{schoetz2013}. 
-%
-%
-%A deeper understanding on the jamming transition of biological tissues can be gained by numerical modelling and computer simulations. Various models have used to simulate cellular dynamics. They include self-propelled models, for which individual cells are represented as simple points. Amongst these, the Cellular Potts Model is one of the most widely used model and is the idea
-
-In condensed matter, jamming describes the transition from a flowing to rigid state of a material with its structure remaining disordered in the process. This occurs in various form of soft matter such as emulsions, foams, granular materials, and colloidal dispersions\cite{hecke2010}. For example, colloidal particles can jam and form a glassy structure when the packing fraction is increased beyond a critical point, while foams can lose its ability to flow when the applied stress is lowered. These materials, however, can unjam and recover their fluid-like properties when the suitable control parameter is varied. The conditions for the transition between the fluid and rigid structure is commonly summarised by the ``jamming phase diagram''\cite{liu2010}.
-
-Recent studies have indicated that jamming transitions also occur in dense biological tissues. Experiments have shown that these tissues exhibit typical glass-like behaviours such as caging, dynamical heterogeneity, and viscoelasticity \cite{schoetz2013,angelini2011}. In addition, these tissues participate in complex biological processes such as wound healing, embryonic development, and cancer metastasis. During these processes, the tissues can undergo the Epithelial-Mesenchymal Transition (EMT), where rigid-like epithelial cells become fluid-like mesenchymal phenotypes (i.e. loosely associated cells), or the inverse process, the Mesenchymal-Epithelial-Transition (MET). These transitions are very similar to jamming of soft materials. 
-
-There have been suggestions that the collective motion of cells plays a role in explaining this transition process. Researchers have found that the transition point is closely related to the cell shapes\cite{bi-density2015}. The shapes can be affected by factors such as cell-cell adhesion strength and active cortical tension, which is an effective surface tension.
-
-Numerical modelling and computer simulations have been performed to describe the collective motion of cells with various degrees of success. An example is the self-propelled particle (SPP) model, where cells are represented as disks or spheres like colloidal particles. Another example is the vertex model, where cells are represented by a set of interconnecting vertices and their dynamics are governed by a set of force equations. A further example, which is also the model implemented in this project, is the Cellular Potts Model.  
-
-
 \subsection{Cellular Potts Model}
-Developed by Glazier and Graner\cite{graner1992}, the Cellular Potts Model (CPM) is a stochastic model widely used in simulating the motion of closely packed cells. The model is an extension of the Potts model used in statistical physics that takes into account of the physical characteristics and dynamics of biological cells. The model has successfully explained cellular processes such as cell sorting \cite{graner1992} and collective streaming\cite{szabo2010}.
+Developed by Glazier and Graner\cite{graner1992}, the Cellular Potts Model (CPM)\footnote{The CPM is also known as the GGH model, naming after Glazier and Graner who first proposed it and Hogeweg who extended it for various biological modelling.} is a stochastic model widely used in simulating the motion of closely packed cells. The model is an extension of the Potts model used in statistical physics that takes into account of the physical characteristics and dynamics of biological cells. The model has successfully explained cellular processes such as cell sorting \cite{graner1992} and collective streaming\cite{szabo2010}.
 
 In the CPM, biological cells are represented on a two dimensional lattice. Each lattice site is assigned with a non-negative integer spin $\sigma$, where $\sigma \in [0,n]$ and $n$ is the total number of cells. Two lattice sites which share a side or a corner are considered as neighbours. A biological cell is simply represented by a set of connected sites with the same spin. $\sigma = 0$ is reserved for enumerating sites that are not part of any cell.
 
+\begin{figure}[h]
+\centering
+\includegraphics[width=7.0cm]{figure/CPMDiagram.png}
+\caption{A pictorial representation of the cellular Potts model. A cell is represented by a domain in the lattice, which is a set of interconnecting sites with the same spin value. Diagram taken from Glazier \etal, Single Cell Based Models in Biology and Medicine [cite].}
+\label{fig:CPMDiagram}
+\end{figure}
 
 The dynamics of the cells are simulated using a modified version of the Metropolis algorithm, which is a Markov Chain Monte-Carlo (MCMC) method for sampling configurations in the Potts model according to their Boltzmann probabilities. In the simulation, a series of elementary steps are taken. Each step is an attempt to change the spin of a random lattice site $\bm{a}$, denoted as $\sigma(\bm{a})$, to that of a randomly chosen neighbour site $\bm{b}$, denoted as $\sigma(\bm{b})$. The probability of accepting the spin change, $p\left(\bm{a} \rightarrow \bm{b}\right)$, is given by the relation:
 \begin{eqnarray}
@@ -197,11 +185,37 @@ where $\alpha$ and $\beta$ are parameters for modelling the intercellular surfac
 The second term is an elastic constraint on the volume of each cell, since a physical cell has finite volume. $a_q$ and $A_q$ are the current and target volume of the $q$th cell. $
 \lambda$ sets the strength of this elastic constraint and governs the area fluctuation of each cell.
 
-The $w$ term in equation \ref{eqn:hamiltonian} is proposed by Szabo \etal in their study of collective cell motion\cite{szabo2010}. It introduces a bias in the evolution of the system to favour spin changes that result in the cells moving in their desired direction. In particular, they proposed that individual cell motility can be modelled using the expression 
+The $w$ term in equation \ref{eqn:hamiltonian} is proposed by Szabo \etal in their study of collective cell motion\cite{szabo201in0}. It introduces a bias in the evolution of the system to favour sp changes that result in the cells moving in their desired direction. In particular, they proposed that individual cell motility can be modelled using the expression 
 \begin{eqnarray}
 w (\bm{a} \rightarrow \bm{b}) = P \sum_{k \;=\; \sigma(a),\,\sigma(b)} \frac{\inc \bm{X}_k \cdot \bm{p}_k}{\abs{\bm{p}_k}},
 \end{eqnarray}
-where $\inc \bm{X}_k$ is the change in the centre of cell labelled by spin $k$ in an elementary step, $\bm{p}_k$ is a polarity vector that describes the preferred direction of the cell, and $P$ is a free parameter associated with the strength of the motility that is proportional to the cell's speed. The sum takes into account that a spin change affects the centre of two cells. The motivation for this expression based on their research on the mechanisms behind individual cell motion. 
+where $\inc \bm{X}_k$ is the change in the centre of cell labelled by spin $k$ in an elementary step, $\bm{p}_k$ is a polarity vector that describes the preferred direction of the cell, and $P$ is a free parameter associated with the strength of the motilityccouon  that is proportional to the cell's speed. The sum takes into afor this expression based on their research on the mechanisms behind individual cell motion. nt that a spin change affects the centre of two cells. The motivati
+
+The underlying mechanisms for generate a polarised motion in cells and how the polarity changes over time remain poorly understood and are subject to intense investigations [cite]. A simple model for updating the polarity vector, as suggested by Bi \etal, is to assume that it undergoes rotational diffusion. If one defines the polarity angle of the ith cell as the angle between the cell’s polarity vector with respect to a reference axis, this diffusion process is governed by the following equations:
+\begin{eqnarray}
+\partial_i\theta_i(t) & = & \eta_i(t)\\
+\langle{\eta_i(t)\eta_j(t')\rangle} & = & 2D_r\delta(t-t')\delta_{ij}
+\end{eqnarray}
+
+\begin{eqnarray}
+\theta_i(t+\Delta t) = \theta_i(t) + \sqrt{2D_r\Delta t}\,\tilde\eta
+\end{eqnarray}
+
+\subsection{Jamming Transitions in Biological Tissues}
+In condensed matter, jamming describes the transition from a flowing to rigid state of a material with its structure remaining disordered in the process. This occurs in various form of soft matter such as emulsions, foams, granular materials, and colloidal dispersions\cite{hecke2010}. For example, colloidal particles can jam and form a glassy structure when the packing fraction is increased beyond a critical point, while foams can lose its ability to flow when the applied stress is lowered. These materials, however, can unjam and recover their fluid-like properties when the suitable control parameter is varied. The conditions for the transition between the fluid and rigid structure is commonly summarised by the ``jamming phase diagram''\cite{liu2010}.
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=9.0cm]{figure/JammingPhaseDiagram.jpeg}
+\caption{The jamming phase diagram proposed by Liu and Nigel.}
+\label{fig:JammingPhaseDiagram}
+\end{figure}
+
+Recent studies have indicated that jamming transitions also occur in dense biological tissues. Experiments have shown that these tissues exhibit typical glass-like behaviours such as caging, dynamical heterogeneity, and viscoelasticity \cite{schoetz2013,angelini2011}. In addition, these tissues participate in complex biological processes such as wound healing, embryonic development, and cancer metastasis. During these processes, the tissues can undergo the Epithelial-Mesenchymal Transition (EMT), where rigid-like epithelial cells become fluid-like mesenchymal phenotypes (i.e. loosely associated cells), or the inverse process, the Mesenchymal-Epithelial-Transition (MET). These transitions are very similar to jamming of soft materials. 
+
+There have been suggestions that the collective motion of cells plays a role in explaining this transition process. Researchers have found that the transition point is closely related to the cell shapes\cite{bi-density2015}. The shapes can be affected by factors such as cell-cell adhesion strength and active cortical tension, which is an effective surface tension.
+
+Numerical modelling and computer simulations have been performed to describe the collective motion of cells with various degrees of success. An example is the self-propelled particle (SPP) model, where cells are represented as disks or spheres like colloidal particles. Another example is the vertex model, where cells are represented by a set of interconnecting vertices and their dynamics are governed by a set of force equations. A further example, which is also the model implemented in this project, is the Cellular Potts Model.
 
 
 \subsection{Motivation of the Study}
@@ -223,6 +237,15 @@ As discussed in the previous section, the project is divided into two section. T
 The program is written in Java as it is a robust, agnostic language. It also provides an easy-to-use framework for developing graphical user interfaces, which is needed in this project to visualise the cell motions. To facilitate the development process, the Eclipse integrated development environment (IDE) is used as it has a comprehensive code browsing and debugging toolkit. In addition, the version control system, git, is used to maintain the history of the development and facilitate the synchronisation of the code across multiple platforms. The ANT automated build system is also used in this project to allow rapid compilation of the code.
 
 \subsubsection{Code Design and Structure}
+
+
+
+\begin{figure}[h]
+\includegraphics[width=\textwidth]{figure/ClassDiagram.pdf}
+\caption{A UML class diagram of the computer program developed which implements the CPM. Notice the program is divided into three groups of classes: the model classes, the visualisation classes, and the I/O classes. Notice the implementation of the observer design pattern between the view and the model classes as a mean to reduce their coupling. The arrows represent the association and navigability between classes: the class at the tail of the arrow has a pointer to the class at the arrow head.}
+\label{fig:ClassDiagram}
+\end{figure}
+
 
 \subsection{Experimental Methods}
 \subsubsection{Statistical Measures of Glassy Dynamics}
@@ -265,8 +288,9 @@ The program is written in Java as it is a robust, agnostic language. It also pro
 %%to maintain good structure you may have to present the experiments
 %%in a different order from the one in which you carried them out.
 %
-%\pagebreak
-%\section{Results and Discussion}
+
+
+\section{Results}
 %
 %This section should detail the obtained results in a clear,
 %easy-to-follow manner. Remember long tables of numbers are just as boring to
@@ -303,9 +327,11 @@ The program is written in Java as it is a robust, agnostic language. It also pro
 %comparison with the predictions of the background and theory underlying
 %the techniques used. This section should highlight particular strengths
 %and/or weaknesses of the methods used.
-%
+
+
+\section{Discussion}
 % 
-%\section{Conclusion}
+\section{Conclusion}
 %This section should summarise the results obtained, detail
 %conclusions reached, suggest future work, and changes that you would make if you repeated the
 %experiment. This section should in general be short, 100 to 150 words
