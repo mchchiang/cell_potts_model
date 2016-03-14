@@ -28,7 +28,7 @@
 \renewcommand{\vec}[1]{\mathbf{#1}}
 \newcommand{\abs}[1]{\left|#1\right|}
 \newcommand{\inc}{\Delta}
-\newcommand{\etal}{\textit{et al.}}
+\newcommand{\etal}{\textit{et al. }}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %
@@ -146,9 +146,9 @@ The remain sections of this paper is organised as follows: Section 2 provides a 
 %experiment.
 
 \subsection{Cellular Potts Model}
-Developed by Glazier and Graner\cite{graner1992}, the Cellular Potts Model (CPM)\footnote{The CPM is also known as the GGH model, naming after Glazier and Graner who first proposed it and Hogeweg who extended it for various biological modelling.} is a stochastic model widely used in simulating the motion of closely packed cells. The model is an extension of the Potts model used in statistical physics that takes into account of the physical characteristics and dynamics of biological cells. The model has successfully explained cellular processes such as cell sorting \cite{graner1992} and collective streaming\cite{szabo2010}.
+Developed by Glazier and Graner\cite{graner1992}, the cellular Potts model (CPM)\footnote{The CPM is also known as the GGH model, naming after Glazier and Graner who first proposed it and Hogeweg who extended it for various biological modelling applications.} is a stochastic model widely used in simulating the motion of closely packed cells in a monolayer. The model is an extension of the Potts model used in statistical physics and takes into account of the physical characteristics and dynamics of biological cells. The model has successfully explained collective behaviours such as cell sorting \cite{graner1992} and streaming\cite{szabo2010}.
 
-In the CPM, biological cells are represented on a two dimensional lattice. Each lattice site is assigned with a non-negative integer spin $\sigma$, where $\sigma \in [0,n]$ and $n$ is the total number of cells. Two lattice sites which share a side or a corner are considered as neighbours. A biological cell is simply represented by a set of connected sites with the same spin. $\sigma = 0$ is reserved for enumerating sites that are not part of any cell.
+In the CPM, a cell monolayer is represented on a two dimensional lattice. Each lattice site is assigned with a non-negative integer spin $\sigma$ known as the cell index, where $\sigma \in [0,N]$ and $N$ is the total number of cells. Two lattice sites which share a side or a corner are considered as neighbours. A biological cell is denoted by a set of connected sites with the same spin. $\sigma = 0$ is reserved for enumerating sites that are not part of any cell. Throughout this project, periodic boundary condition is applied such that the boundaries have no influence on the cells dynamics.
 
 \begin{figure}[h]
 \centering
@@ -157,49 +157,49 @@ In the CPM, biological cells are represented on a two dimensional lattice. Each 
 \label{fig:CPMDiagram}
 \end{figure}
 
-The dynamics of the cells are simulated using a modified version of the Metropolis algorithm, which is a Markov Chain Monte-Carlo (MCMC) method for sampling configurations in the Potts model according to their Boltzmann probabilities. In the simulation, a series of elementary steps are taken. Each step is an attempt to change the spin of a random lattice site $\bm{a}$, denoted as $\sigma(\bm{a})$, to that of a randomly chosen neighbour site $\bm{b}$, denoted as $\sigma(\bm{b})$. The probability of accepting the spin change, $p\left(\bm{a} \rightarrow \bm{b}\right)$, is given by the relation:
+The dynamics of the cells are evolved using a modified version of the Metropolis algorithm: In the simulation, a series of elementary steps are taken with the goal of minimising an effective Hamiltonian H that characterises the properties of cells and their interactions. Each step is an attempt to change the spin of a random lattice site $\bm{a}$ to that of a randomly chosen neighbour site $\bm{b}$, where $\sigma(\bm{a}) \neq \sigma(\bm{b})$. The probability of accepting a spin change, $p\left(\sigma(\bm{a}) \rightarrow \sigma(\bm{b})\right)$, is determined by the associated change in energy ($\inc H$): if $\inc H \leq 0$, the spin change is always accepted; if $\inc H > 0$, the spin change is accepted with a probability of $\exp⁡(-\inc H / kT)$, where $k$ is the Boltzmann constant and $T$ is the effective temperature. These relations can be conveniently summarised by the following expression:
 \begin{eqnarray}
-\label{eqn:prob}
-\ln p (\bm{a} \rightarrow \bm{b}) = \min \left[0, \frac{-\inc H (\bm{a} \rightarrow \bm{b}) + w (\bm{a} \rightarrow \bm{b})}{kT} \right],
+\ln p\left(\sigma(\bm{a}) \rightarrow \sigma(\bm{b})\right) = \min\left[0,-\frac{\inc H}{kT}\right].
 \end{eqnarray}
-where $w$ is a function to take into account of active cell motion, $H$ is an effective Hamiltonian which the system tries to minimise,  $\inc H (\bm{a} \rightarrow \bm{b})$ represents its change in the considered step, $T$ is the effective temperature, and $k$ is the Boltzmann constant. The functional form of $H$ and $w$ would be discussed further below. This elementary step is also known as a spin-copy attempt. Since changing $k$ and $T$ is equivalent to multiplying both the $H$ and $w$ function by a constant, it is conventional to set $k$ and $T$ to 1 and rescale parameters in $H$ and $w$ accordingly. As the typical time for all lattice sites to have experienced an attempt depends on the lattice size, one can define a unit time as $N$ number of spin-copy attempts. This is known as one Monte-Carlo step (MCS). One also defines the acceptance rate as the ratio of the number of spin copies accepted to the number of attempts made. This is important for an accurate comparison between the time scales in the simulations and those used in experiments \cite{sanz2010}.
- 
-Equation \ref{eqn:prob} shows that the CPM dynamics is governed by an effective Hamiltonian that models the physical characteristics of a biological cell. It has the form of 
+The exact form of the Hamiltonian will be discussed below. Since changing $k$ and $T$ is equivalent to multiplying the energy function by an irrelevant constant, it is conventional to set $k$ and $T$ to $1$ and express the energy in units of $kT$. As updating the entire lattice takes more steps with a larger system, the number of elementary steps taken is not a proper measure of time. It is conventional to define a unit time as $L^2$ number of spin change attempts, where $L$ is the linear dimension of the lattice. This is known as one Monte-Carlo step (MCS). One also defines the acceptance rate as the ratio of the number of spin copies accepted to the number of attempts made. This is important for an accurate comparison between the time scales used in simulations and those used in experiments\cite{sanz2010}.
+
+As mentioned above, the dynamics of the cells are governed by an effective Hamiltonian that describes the physical behaviours of cells in tissues. In particular, the CPM captures the following three aspects of cellular behaviours observed empirically:
+\begin{enumerate}
+\item Cells adhere with each other and have surface tension.
+\item Cells are approximately the same size due to incompressibility and resistance to height fluctuations.
+\item Cells are capable of generating a motile force and move along a polarised direction that changes over time.
+\end{enumerate}
+These aspects are encoded in the model by the following Hamiltonian:
 \begin{eqnarray}
 \label{eqn:hamiltonian}
-H = \sum_{\langle{\bm{x}, \bm{x'}\rangle}} J\left(\sigma(\bm{x}), \sigma(\bm{x'})\right) + \lambda \sum_{q\,=\,1}^{n} \left(a_q - A_q\right)^2,
+H = \sum_{\langle{\bm{x}, \bm{x'}\rangle}} J\left(\sigma(\bm{x}), \sigma(\bm{x'})\right) + \lambda \sum_{i\,=\,1}^{N} \left(a_i - A_i\right)^2 - P \;\sum_{i\,=\,1}^{N} \bm{n}_i \cdot \bm{r}_i.
 \end{eqnarray}
-The first term in equation \ref{eqn:hamiltonian} accounts for interfacial effects such as cell-cell adhesion strength and the active cortical tension. It is a sum over the interfacial energy for all pairs of neighbours in the lattice. $J$ describes the specific interfacial energy between two sites $\bm{x}$ and $\bm{x'}$. For simulating an ensemble of homogenous cells, $J$ is specified by the following values:
+The first term accounts for the overall interfacial behaviours of cells. This includes cell-cell adhesion and the surface tension of each cell. The term is a sum over the interfacial energy for all pairs of neighbours in the lattice. $J$ describes the specific interfacial energy between two sites $\bm{x}$ and $\bm{x}'$. For simulating an ensemble of homogenous cells, $J$ is specified by the following values:
 \begin{eqnarray}
 \label{eqn:interfacial_energy}
 J(\sigma,\sigma') = \left\{
 	\begin {array}{ll}
 		0 & \textrm{for $\sigma = \sigma'$}\\
 		\alpha & \textrm{for $\sigma, \sigma' > 0$ and $\sigma \neq \sigma'$}\\
-		\beta & \textrm{for $\sigma$ or $\sigma' = 0$}
+		\beta & \textrm{for $\sigma$ or $\sigma' = 0$},
 	\end{array}
 \right.
 \end{eqnarray}
-where $\alpha$ and $\beta$ are parameters for modelling the intercellular surface energy and the boundary surface energy, respectively. Previous studies have found that the magnitudes of these parameters have the effect on the cell shape and the flexibility of the cell boundaries: small magnitudes produce longer and rougher boundaries with more active cell dynamics, while large magnitudes result in straight boundaries and reduce the activeness of the cells \cite{szabo2010}.
+where $\alpha$ and $\beta$ are parameters for modelling the interfacial energy between two cells and the free boundary energy, respectively. Previous studies have found that the magnitudes of these parameters have the effect on the cell shape and the flexibility of the cell boundaries: small magnitudes produce long and rough boundaries with more active cell dynamics, while large magnitudes result in straight boundaries with less motions in the cells\cite{szabo2010}.
 
-The second term is an elastic constraint on the volume of each cell, since a physical cell has finite volume. $a_q$ and $A_q$ are the current and target volume of the $q$th cell. $
-\lambda$ sets the strength of this elastic constraint and governs the area fluctuation of each cell.
+The second term characterises the incompressibility of cells and their resistance to height fluctuations. This is modelled as an elastic constraint in the Hamiltonian. $a_i$ and $A_i$ are the current and target area of the $i$th cell. $\lambda$ sets the strength of this constraint and governs the magnitude of the area fluctuation of each cell. 
 
-The $w$ term in equation \ref{eqn:hamiltonian} is proposed by Szabo \etal in their study of collective cell motion\cite{szabo201in0}. It introduces a bias in the evolution of the system to favour sp changes that result in the cells moving in their desired direction. In particular, they proposed that individual cell motility can be modelled using the expression 
+The third term is proposed by Szabo \etal in their study of the streaming behaviours in cell monolayers\cite{szabo2010}. It introduces a bias in the evolution of the system to favour spin changes that result in the cells moving in their desired direction. In this term, $\bm{n}_i$ is a polarity vector that describes the preferred direction of the cell,  $\bm{r}_i$ is the centre of mass of the cell, and $P$ is a free parameter associated with the strength of the motility, which is related to the cell's speed (taken to be homogenous). The specific mechanisms of how a cell generates a polarized motion and how the polarity changes over time remain poorly understood and are subject to intense investigations [cite]. A simple model, as suggested by Bi \etal and is implemented in this work, is to assume that the polarity vector undergoes rotational diffusion over time. If one defines the polarity angle of the $i$th cell ($\theta_i$) as the angle between the cell's polarity vector ($\bm{n}_i$) and a reference axis (taken to be the $x$-axis herein), this diffusion process is governed by the following equations:
 \begin{eqnarray}
-w (\bm{a} \rightarrow \bm{b}) = P \sum_{k \;=\; \sigma(a),\,\sigma(b)} \frac{\inc \bm{X}_k \cdot \bm{p}_k}{\abs{\bm{p}_k}},
-\end{eqnarray}
-where $\inc \bm{X}_k$ is the change in the centre of cell labelled by spin $k$ in an elementary step, $\bm{p}_k$ is a polarity vector that describes the preferred direction of the cell, and $P$ is a free parameter associated with the strength of the motilityccouon  that is proportional to the cell's speed. The sum takes into afor this expression based on their research on the mechanisms behind individual cell motion. nt that a spin change affects the centre of two cells. The motivati
-
-The underlying mechanisms for generate a polarised motion in cells and how the polarity changes over time remain poorly understood and are subject to intense investigations [cite]. A simple model for updating the polarity vector, as suggested by Bi \etal, is to assume that it undergoes rotational diffusion. If one defines the polarity angle of the ith cell as the angle between the cell’s polarity vector with respect to a reference axis, this diffusion process is governed by the following equations:
-\begin{eqnarray}
-\partial_i\theta_i(t) & = & \eta_i(t)\\
+\partial_t\theta_i(t) & = & \eta_i(t)\\
 \langle{\eta_i(t)\eta_j(t')\rangle} & = & 2D_r\delta(t-t')\delta_{ij}
 \end{eqnarray}
-
+where $\eta_i$ is a noise function with zero mean and a variance of $2D_r$ with $D_r$ specifying the magnitude of the angular fluctuations. On a computer, this can be represented by:
 \begin{eqnarray}
+\label{eqn:computerRotateDiff}
 \theta_i(t+\Delta t) = \theta_i(t) + \sqrt{2D_r\Delta t}\,\tilde\eta
 \end{eqnarray}
+where $\tilde\eta$ is a random number generated in the range $[-1,1)$. The last term in equation \ref{eqn:computerRotateDiff} reproduces the statistical properties of the noise function. 
 
 \subsection{Jamming Transitions in Biological Tissues}
 In condensed matter, jamming describes the transition from a flowing to rigid state of a material with its structure remaining disordered in the process. This occurs in various form of soft matter such as emulsions, foams, granular materials, and colloidal dispersions\cite{hecke2010}. For example, colloidal particles can jam and form a glassy structure when the packing fraction is increased beyond a critical point, while foams can lose its ability to flow when the applied stress is lowered. These materials, however, can unjam and recover their fluid-like properties when the suitable control parameter is varied. The conditions for the transition between the fluid and rigid structure is commonly summarised by the ``jamming phase diagram''\cite{liu2010}.
@@ -237,8 +237,7 @@ As discussed in the previous section, the project is divided into two section. T
 The program is written in Java as it is a robust, agnostic language. It also provides an easy-to-use framework for developing graphical user interfaces, which is needed in this project to visualise the cell motions. To facilitate the development process, the Eclipse integrated development environment (IDE) is used as it has a comprehensive code browsing and debugging toolkit. In addition, the version control system, git, is used to maintain the history of the development and facilitate the synchronisation of the code across multiple platforms. The ANT automated build system is also used in this project to allow rapid compilation of the code.
 
 \subsubsection{Code Design and Structure}
-
-
+The main structure and design of the code is described as follow: There are three main groups of classes in the program (see figure ??). Firstly, there are the model classes that handle the main computation as specified by the CPM. These include the CellPottsModel and the SpinModel class. CellPottsModel contains most of the logic of the model, including the Metropolis algorithm for updating spins and the evaluation of the various statistical quantities measured in the experiments. The SpinModel is an interface  . The second group is the visualisation classes which display the model to the user in a graphical user interface. These include the CPMView, CPMViewPanel, and the CPMControlPanel classes. The CPMView handles the operations related to the window frame. The CPMViewPanel visualises the model by . The CPMControlPanel handles the parameters supplied by the user for running the model.  A third group of classes is responsible for the I/O processes. 
 
 \begin{figure}[h]
 \includegraphics[width=\textwidth]{figure/ClassDiagram.pdf}
@@ -246,20 +245,34 @@ The program is written in Java as it is a robust, agnostic language. It also pro
 \label{fig:ClassDiagram}
 \end{figure}
 
+The dependency between the model and visualisation classes are kept at a minimum to reduce the potential impact or changes required when one of them is updated. This is achieved by means of the observer design pattern. The model class extends a native java class Observable, while the visualisation classes implements the Observer interface, which requires the class to implement a method update() that is called when the Observable has changed. 
+
+\subsubsection{Verification of the Implemented Model}
+It is important to verify that the program implements the model correctly before using it to perform experiments. This was achieved via two approaches: firstly, a set of unit test cases were developed to test individual methods of the model to ensure the calculations are correct. The specific test cases are included in the source code package which is available on GitHub (see appendix ?? for more information about accessing the source code). Secondly, the program was tested against results obtained results from other published papers that investigated the CPM. In particular, simulation data produced by the model are compared to those obtained by Szabo and coworkers in their study of the collective streaming behaviours of cells. By using the same set of parameters (i.e. a 200 x 200 lattice with 1000 cells and with α=2, λ=1.0, P=0.0) and repeating the experiments with 1000 trials, the root-mean-square displacement (which is explained below in section ??) for an individual cell after 600 MCS agree with that reported by Szabo et al within the error of the measurement. Hence, there is a very high degree of confidence that the written program has implemented the model accurately.
+
+
+
+
 
 \subsection{Experimental Methods}
 \subsubsection{Statistical Measures of Glassy Dynamics}
-\paragraph{Mean Square Displacmeent}
+To determine whether varying the parameters of the CPM will induce a jamming transition, suitable quantities are measured to determine whether the system is in the glassy regime. The two common indicators for glassy dynamics are the mean square displacement and the non-Gaussian parameter.
 
+\paragraph{Mean Square Displacmeent}
+The mean square displacement (MSD) of the system at a particular time $t$ is given by:
 \begin{equation}
-\langle{\vec{R}^2(t)\rangle} = \langle{\left(\vec{R}_i(t) - \vec{R}_i(t_0)\right)^2\rangle}
+\langle{\bm{r}^2(t)\rangle} = \langle{\left(\bm{r}_i(t) - \bm{r}_i(t_0)\right)^2\rangle}
 \end{equation}
+where $\bm{r}_i (t)$ is the centre of mass of the ith cell at the time $t$, $t_0$ is a reference time frame, and $\langle...\rangle$ denotes an average over all cells of the system. The MSD measures the variance of the displacement of all cells from their original position at $t_0$. 
 
 \paragraph{Non-Gaussian Parameter}
 
 \begin{equation}
-\alpha_2 = \frac{3}{5}\,\frac{\langle{\vec{R}^4(t)\rangle}}{\langle{\vec{R}^2(t)\rangle}} - 1
+\alpha_2 = \frac{3}{5}\,\frac{\langle{\bm{R}^4(t)\rangle}}{\langle{\bm{R}^2(t)\rangle}} - 1
 \end{equation}
+
+\subsubsection{Order Parameters to Characterise Transition}
+\paragraph{Diffusivity}
 
 %
 %\subsection{Code Structure}
