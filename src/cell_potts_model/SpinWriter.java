@@ -1,5 +1,10 @@
 package cell_potts_model;
 
+/**
+ * Write the lattice configuration after the final MCS to file
+ * @author Michael Chiang
+ *
+ */
 public class SpinWriter extends DataWriter {
 	
 	private int numOfSweeps;

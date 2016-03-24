@@ -1,5 +1,11 @@
 package cell_potts_model;
 
+
+/**
+ * Write the non-Gaussian parameter of the system at each MCS to file
+ * @author Michael Chiang
+ *
+ */
 public class A2Writer extends DataWriter {
 	
 	@Override

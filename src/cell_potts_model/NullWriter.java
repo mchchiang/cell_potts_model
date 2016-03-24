@@ -1,5 +1,11 @@
 package cell_potts_model;
 
+/**
+ * An empty writer that does nothing (to be passed to CellPottsModel 
+ * in the case when no data need to be recorded)
+ * @author Michael Chiang
+ *
+ */
 public class NullWriter extends DataWriter {
 	@Override
 	public void openWriter(String filename){}

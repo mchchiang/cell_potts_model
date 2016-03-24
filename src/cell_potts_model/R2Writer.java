@@ -1,5 +1,11 @@
 package cell_potts_model;
 
+/**
+ * Write the mean square displacement of the cells (from their initial
+ * positions) at each MCS to file
+ * @author Michael Chiang
+ *
+ */
 public class R2Writer extends DataWriter {
 	
 	@Override

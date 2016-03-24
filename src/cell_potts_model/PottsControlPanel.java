@@ -95,7 +95,7 @@ public class PottsControlPanel extends JPanel implements ActionListener {
 				public void run(){					
 					int nx = Integer.parseInt(txtWidth.getText());
 					int ny = Integer.parseInt(txtHeight.getText());
-					int q = 1000;
+					int q = 50;
 					double temp = 1.0;
 					double lambda = Double.parseDouble(txtLambda.getText());
 					double alpha = Double.parseDouble(txtAlpha.getText());
@@ -111,7 +111,7 @@ public class PottsControlPanel extends JPanel implements ActionListener {
 					CellPottsModel model = new CellPottsModel(
 							nx, ny, q, temp, lambda, alpha, beta, motility, rotateDiff,
 							seed, numOfSweeps, nequil, new DataWriter [] {}, true);
-					model.initSpin(reader.readSpins());
+					model.initSpin();
 					model.initPolarity();
 					view.setModel(model);
 					view.initImage();

@@ -1,5 +1,10 @@
 package cell_potts_model;
 
+/**
+ * Write the center of mass of each cell at each MCS to file
+ * @author Michael Chiang
+ *
+ */
 public class CMWriter extends DataWriter {
 
 	@Override

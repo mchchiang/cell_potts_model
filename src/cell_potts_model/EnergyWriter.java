@@ -1,5 +1,10 @@
 package cell_potts_model;
 
+/**
+ * Write the total energy of the system at each MCS to file
+ * @author Michael Chiang
+ *
+ */
 public class EnergyWriter extends DataWriter {
 
 	@Override

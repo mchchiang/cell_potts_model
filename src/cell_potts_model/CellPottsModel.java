@@ -498,7 +498,7 @@ public class CellPottsModel extends SpinModel {
 			xcmNew[i] = calculateCM(spinXPos.get(i), nx);
 			ycmNew[i] = calculateCM(spinYPos.get(i), ny);
 
-			double dx = xDiff(xcmNew[i], xcm[i]);
+			/*double dx = xDiff(xcmNew[i], xcm[i]);
 			double dy = yDiff(ycmNew[i], ycm[i]);
 
 			if ((Math.abs(dx) > nx * 0.05 ||
@@ -518,7 +518,7 @@ public class CellPottsModel extends SpinModel {
 					System.out.print(ypos.get(j) + " ");
 				}
 				System.out.println();
-			}
+			}*/
 		}
 	}
 
@@ -569,7 +569,7 @@ public class CellPottsModel extends SpinModel {
 		r2 /= (double) count;
 		r4 /= (double) count;
 
-		double a2 = ((3.0 / 5.0) * r4 / (r2 * r2)) - 1.0;
+		double a2 = ((1.0 / 2.0) * r4 / (r2 * r2)) - 1.0;
 
 		//use unbiased estimate for errors
 		return new double [] {a2, r4};
