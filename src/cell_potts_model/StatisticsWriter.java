@@ -1,9 +1,12 @@
 package cell_potts_model;
 
 /**
+ * StatisticsWriter.java
+ * 
  * Write the parameters used in the simulation and other overall statistics
  * of the simulation (e.g. the acceptance rate and the number of cells alive)
  * to file
+ * 
  * @author Michael Chiang
  *
  */

@@ -5,6 +5,15 @@ import java.util.Calendar;
 import java.util.List;
 import java.util.Random;
 
+
+/**
+ * CellPottsModel.java
+ * 
+ * The main kernel which implements the cellular Potts model.
+ * 
+ * @author MichaelChiang
+ *
+ */
 public class CellPottsModel extends SpinModel {
 
 	private int nx, ny;
@@ -194,6 +203,9 @@ public class CellPottsModel extends SpinModel {
 		}		
 	}
 
+	/**
+	 * Initialise random polarity vector to each cell
+	 */
 	public void initPolarity(){
 		for (int i = 1; i<= q; i++){
 			theta[i] = rand.nextDouble() * 2 * Math.PI;
@@ -201,7 +213,11 @@ public class CellPottsModel extends SpinModel {
 			py[i] = Math.sin(theta[i]);
 		}
 	}
-
+	
+	/**
+	 * Change the polarity vector for each cell by a rotation diffusion
+	 * process
+	 */
 	public void updatePolarity(){
 		for (int i = 1; i <= q; i++){
 			theta[i] += Math.sqrt(2 * rotateDiff) * (rand.nextDouble()*2-1);
@@ -210,6 +226,9 @@ public class CellPottsModel extends SpinModel {
 		}
 	}
 
+	/**
+	 * Run the model
+	 */
 	public void run(){
 		acceptRate = 0.0;
 
@@ -312,6 +331,12 @@ public class CellPottsModel extends SpinModel {
 		}
 	}
 
+	/**
+	 * Check if all neighbours of the specified lattice site have the same spin
+	 * @param i column index of the lattice site
+	 * @param j row index of the lattice site
+	 * @return return <code>true</code> if all neighbours have the same spin
+	 */
 	public boolean hasSameNeighbours(int i, int j){
 		int cellSpin = spin[i][j];
 		if (cellSpin == spin[iup(i)][j] &&
@@ -327,7 +352,14 @@ public class CellPottsModel extends SpinModel {
 		return false;
 	}
 
-	//calculate the energy 
+	/**
+	 * Calculate the energy from active cell motility
+	 * @param i
+	 * @param j
+	 * @param newSpin
+	 * @param p
+	 * @return
+	 */
 	public double motilityE(int i, int j, int newSpin, double p){
 		double energy = 0.0;
 		double [] dcmOld = calculateDeltaCM(i,j, spin[i][j], true);
@@ -384,7 +416,7 @@ public class CellPottsModel extends SpinModel {
 
 
 	/**
-	 * returns the pair-wise Potts energy between two spins
+	 * Return the pair-wise Potts energy between two spins
 	 * @param i spin 1
 	 * @param j spin 2
 	 * @return the pair-wise Potts energy between the two spins
@@ -426,6 +458,12 @@ public class CellPottsModel extends SpinModel {
 		return new double []{xDiff(xcmNew, xcm), yDiff(ycmNew, ycm)};
 	}
 
+	/**
+	 * Calculate a component of the centre of mass (CM) for a particular cell
+	 * @param pos an array storing the positions of lattice sites of the cell
+	 * @param length the length of the lattice
+	 * @return the specified component of the cell's CM
+	 */
 	public double calculateCM(ArrayList<Integer> pos, int length){
 		int n = pos.size();
 		double cm = 0;
@@ -490,6 +528,9 @@ public class CellPottsModel extends SpinModel {
 		return cm;
 	}
 
+	/**
+	 * Calculate the centre of mass (CM) for all cells
+	 */
 	public void calculateCM(int n){
 		for (int i = 0; i <= q; i++){
 			xcm[i] = xcmNew[i];
@@ -551,6 +592,12 @@ public class CellPottsModel extends SpinModel {
 
 	}
 
+	/**
+	 * Calculate the non-Gaussian parameter
+	 * @return an array of two elements storing the non-Gaussian parameter and
+	 * the fourth moment of the probability distribution of the cell's 
+	 * displacement
+	 */
 	public double [] alpha2(){
 		double r2 = 0.0;
 		double r4 = 0.0;
@@ -577,6 +624,13 @@ public class CellPottsModel extends SpinModel {
 
 	//vector related operations
 	//calculate the difference between two points in periodic B.C.
+	/**
+	 * Calculate the difference between the x components of two points in 
+	 * periodic boundary conditions
+	 * @param x1 x component of point 1
+	 * @param x2 x component of point 2
+	 * @return the difference between the x components of two points
+	 */
 	public double xDiff(double x1, double x2){
 		double dx = x1-x2;
 		if (dx > (double) nx / 2.0){
@@ -587,6 +641,13 @@ public class CellPottsModel extends SpinModel {
 		return dx;
 	}
 
+	/**
+	 * Calculate the difference between the y components of two points in 
+	 * periodic boundary conditions
+	 * @param y1 y component of point 1
+	 * @param y2 y component of point 2
+	 * @return the difference between the y components of two points
+	 */
 	public double yDiff(double y1, double y2){
 		double dy = y1-y2;
 		if (dy > (double) ny / 2.0){
@@ -597,17 +658,32 @@ public class CellPottsModel extends SpinModel {
 		return dy;
 	}
 
-	//return the magnitude square of the vector (x,y)
+	/**
+	 * Return the magnitude squared of the vector (x,y)
+	 * @param x x component of the vector
+	 * @param y y component of the vector
+	 * @return the magnitude squared of the vector
+	 */
 	public double mag2(double x, double y){
 		return x * x + y * y;
 	}
 
-	//return the dot product of two vectors
+	/**
+	 * Return the dot product of two vectors
+	 * @param x1 x component of vector 1
+	 * @param y1 y component of vector 1
+	 * @param x2 x component of vector 2
+	 * @param y2 y component of vector 2
+	 * @return the dot product of the two vectors
+	 */
 	public double dot(double x1, double y1, double x2, double y2){
 		return x1 * x2 + y1 * y2;
 	}
 
-
+	/**
+	 * Notify the data writers to write data to file
+	 * @param time the current Monte-Carlo Step of the simulation
+	 */
 	public void writeData(int time){
 		for (int i = 0; i < writers.length; i++){
 			writers[i].writeData(this, time);

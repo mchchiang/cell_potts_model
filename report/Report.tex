@@ -124,6 +124,7 @@ The remaining sections of this paper are organised as follows: Section 2 provide
 
 \section{Background and Theory}
 \subsection{Cellular Potts Model}
+\label{sec:CPM}
 Developed by Glazier and Graner\cite{graner1992}, the cellular Potts model (CPM)\footnote{The CPM is also known as the GGH model, naming after Glazier and Graner who first proposed it and Hogeweg who extended it for various biological modelling applications.} is a stochastic model widely used in simulating the motion of closely packed cells in a monolayer. The model is an extension of the Potts model used in statistical physics and takes into account of the physical characteristics and dynamics of biological cells. The model has successfully explained collective behaviours such as cell sorting \cite{graner1992} and streaming\cite{szabo2010}.
 
 In the CPM, a cell monolayer is represented on a two dimensional lattice. Each lattice site is assigned with a non-negative integer spin $\sigma$ known as the cell index, where $\sigma \in [0,N]$ and $N$ is the total number of cells. Two lattice sites which share a side or a corner are considered as neighbours. A biological cell is denoted by a set of connected sites with the same spin (see figure \ref{fig:CPM}). $\sigma = 0$ is reserved for enumerating sites that are not part of any cell. Throughout this project, periodic boundary conditions were applied such that the boundaries have no influence on the cells dynamics.
@@ -171,7 +172,7 @@ where $\eta_i$ is a noise function with zero mean and a variance of $2D_r$ with 
 \label{eqn:computerRotateDiff}
 \theta_i(t+\Delta t) = \theta_i(t) + \sqrt{2D_r\Delta t}\,\tilde\eta
 \end{eqnarray}
-where $\tilde\eta$ is a random number generated such that the last term reproduces the statistical mean and variance of the noise function. For simplicity, this can be achieved by generating a uniformly distributed random number between $\sqrt{3}\,[-1,1)$ , where the factor of $\sqrt{3}$ comes from normalisation\footnote{See Appendix \ref{} for a detailed derivation of this relation.}.
+where $\tilde\eta$ is a random number generated such that the last term reproduces the statistical mean and variance of the noise function. For simplicity, this can be achieved by generating a uniformly distributed random number between $\sqrt{3}\,[-1,1)$ , where the factor of $\sqrt{3}$ comes from normalisation\footnote{See Appendix \ref{app:rotatediff} for a detailed derivation of this relation.}.
 
 \subsection{Jamming Transitions in Biological Tissues}
 In condensed matter, jamming describes the transition from a fluid to a rigid state in which the structure of the material remains disordered. This occurs in various non-biological systems such as emulsions, foams, granular materials, and colloidal dispersions\cite{hecke2010}. For example, colloidal particles can jam and become rigid when the packing fraction is increased beyond a critical point, while foams can lose its ability to flow when the applied stress is lowered. The conditions for the transition are described by the ``jamming phase diagram,'' which was first proposed by Liu and Nagel (see figure \ref{fig:JammingPhaseDiagram}) \cite{liu1998}. The key parameters governing the transition are the temperature, the applied stress, and the density of the material. For instance, in the well-known glass transition, a fluid becomes solid-like but maintains a disordered structure when cooled. This corresponds to moving downwards along the temperature -- 1/density plane in the diagram. 
@@ -190,8 +191,6 @@ The exhibition of both fluid and glass-like behaviours in dense tissues have pro
 \subsection{Motivation of the Study}
 Recently, Bi and co-workers demonstrated that the vertex model and its variant, the Self-Propelled Voronoi (SPV) model, exhibit the jamming transition observed in confluent cell monolayers, where there are no gaps between cells \cite{bi2015density, bi2015motility}. These models represent individual cells as polygons that fill a two dimensional space. The dynamics are controlled by a set of force equations on the vertices or, in the case of SPV, the centres of the polygons. Researchers have found that the system's rigidity is controlled by three properties: the cell shape, the cell motile strength, and the persistent time, which is the characteristic time a cell would travel before changing its direction. The cell shape is influenced by factors such as cell-cell adhesion and surface tension. A higher adhesion would lead to longer, more flexible cell shapes since it favours interfaces between cells. In the limit of zero motility, researchers have found that the cell shape alone can predict the transition point, with higher cell-cell adhesion, or longer interfaces, leads to fluid-like behaviours. When the cells are motile and have a longer persistent time, the rigidity is relaxed and less adhesion is required for cells to unjam.
 
-%the cell shape index, the strength of individual cell motile force, and the persistent time. The cell shape index is a dimensionless ratio of the preferred perimeter of the cell to (the square root of) its preferred cross-sectional area. A stronger cell-cell adhesion would increase the cell shape index as The persistent time is the characteristic time a cell would travel before changing its direction. In the limit of zero cell motility, the cell shape index alone can predict the transition point, with higher cell-cell adhesion leads to more fluid-like behaviours. When the cells are motile and have a longer persistent time, the rigidity is relaxed. 
-
 A less extensive effort, however, has been done on investigating whether the jamming transition exists in the CPM. Although the work by Kabla \cite{kabla2012} and Szab\'o \cite{szabo2010} have hinted such a possibility, there has not been a specific study conducted to analyse jamming in the CPM.  This project, thus, aims to provide this analysis. As suggested by Bi \emph{et al.}, cellular interactions, which affect the cell shape, and cell motility are two key quantities in determining the transition point. These correspond well to the CPM parameters $\alpha$ and $P$, respectively. In light of this, there are two objectives in this project: Firstly, to determine whether varying the parameter $\alpha$, which models the interfacial effects of cells such as surface tension and cell-cell adhesion, has the ability to induce a jamming transition. Secondly, to understand the effect of altering the strength of cell motility, $P$, has on the rigidity of the system.
 
 
@@ -203,17 +202,26 @@ The project is divided into two parts to achieve the objectives as discussed. Th
 The CPM was implemented in Java as it is a robust, platform-agnostic language. Java also provides an easy-to-use framework for developing a graphical user interface, which is needed in this project to visualise the cell motions. To facilitate the development process, the Eclipse integrated development environment was used, as it has a comprehensive code browsing and debugging toolkit. In addition, the version control system, Git, was used to maintain a history of the development and to facilitate the synchronisation of the code across multiple platforms. The ANT automated build system was also employed to allow rapid code compilation.
 
 \subsubsection{Code Design and Structure}
-The main structure and design of the code are described as follows: There are three main groups of classes in the program (see figure \ref{fig:ClassDiagram}). Firstly, there are the model classes that handle the main computation as specified by the CPM. These include the \texttt{CellPottsModel} and the \texttt{SpinModel} class. \texttt{CellPottsModel} contains most of the logic of the model, including the Metropolis algorithm for updating spins and the calculation of the various statistical quantities measured in the experiments. The \texttt{SpinModel} is the main interface by which other classes access data from the model. The second group is the visualisation classes which display the model to the user in a graphical user interface (see figure ?? for an image of the developed interface). These include the \texttt{CPMView}, \texttt{CPMViewPanel}, and the \texttt{CPMControlPanel} classes. The \texttt{CPMView} manages the operations related to the window frame. The \texttt{CPMViewPanel} visualises the model by drawing individual domains or cells on the screen with different colours as the simulation progresses. The \texttt{CPMControlPanel} handles the parameters supplied by the user for running the model.  A third group of classes is responsible for I/O processes. These include a set of \texttt{DataWriter} classes which record the statistical quantities measured at each time step of the simulation to text files. In addition, the \texttt{SpinReader} class is responsible for parsing any inital lattice configurations specified by the user to the program.  
-
+The main structure and design of the code are described as follows: There are three main groups of classes in the program (see figure \ref{fig:ClassDiagram}). Firstly, there are the model classes that handle the main computation as specified by the CPM. These include the \texttt{CellPottsModel} and the \texttt{SpinModel} class. \texttt{CellPottsModel} contains most of the logic of the model, including the Metropolis algorithm for updating spins and the calculation of the various statistical quantities measured in the experiments. The \texttt{SpinModel} is the main interface by which other classes access data from the model. The second group is the visualisation classes which display the model to the user in a graphical user interface (see figure \ref{fig:CPMGUI} for the developed interface). These include the \texttt{CPMView}, \texttt{CPMViewPanel}, and the \texttt{CPMControlPanel} classes. The \texttt{CPMView} manages the operations related to the window frame. The \texttt{CPMViewPanel} visualises the model by drawing individual domains or cells on the screen with different colours as the simulation progresses. The \texttt{CPMControlPanel} handles the parameters supplied by the user for running the model.  A third group of classes is responsible for I/O processes. These include a set of \texttt{DataWriter} classes which record the statistical quantities measured at each time step of the simulation to text files. In addition, the \texttt{SpinReader} class is responsible for parsing any inital lattice configurations specified by the user to the program.  
 \begin{figure}[h]
-\includegraphics[width=\textwidth]{figure/ClassDiagram.pdf}
+\centering
+\includegraphics[width=0.85\textwidth]{figure/ClassDiagram.pdf}
 \caption{A UML class diagram of the computer program developed which implements the CPM. Notice the program is divided into three groups of classes: the model classes, the visualisation classes, and the I/O classes. In addition, notice the implementation of the observer design pattern between the view and the model classes as a mean to reduce their coupling. The arrows in the diagram represent the association and navigability between classes: the class at the tail of the arrow has a pointer to the class at the arrow head.}
 \label{fig:ClassDiagram}
 \end{figure}
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.65\textwidth]{figure/CPMGUI.pdf}
+\caption{Developed Graphical User Interface for the Cellular Potts Model}
+\label{fig:CPMGUI}
+\end{figure}
+\FloatBarrier
 
 The dependency between the model and visualisation classes is kept at a minimum to reduce the potential impact or changes required when one of them is modified. This is achieved by means of the observer design pattern. The model class extends the native Java class \texttt{Observable}, while the visualisation classes implement the \texttt{Observer} interface, which requires classes to implement the method \texttt{update()} that is called when the \texttt{Observable} has changed (see figure \ref{fig:ClassDiagram}). The \texttt{Observable} class manages the entire process of notifying the classes which implement the \texttt{Observer} interface when the model has changed. The actual model classes, therefore, do not need to have specific knowledge about the visualisation classes, so the coupling between the model and visualisation classes is minimised.
 
 For more details about the responsibilities and functionalities of each class, please see the \texttt{Javadocs} included in the source code (see Appendix ?? for more information about accessing the source code). 
+
+
 
 \subsubsection{Verification of the Implemented Model}
 It is important to verify that the program implemented the model correctly before using it to perform experiments. This was achieved via two approaches: Firstly, a set of unit test cases were developed to test individual methods of the program to ensure the calculations are correct. These test cases are included in the source code package. Secondly, the program was tested against the results from other published papers which investigated the CPM. In particular, simulation data for a single cell suspended in a fluid are compared to those obtained by Szabo and coworkers \cite{szabo2010}. By using the same set of parameters (i.e. $\alpha = 2.0$, $\beta = 1.0$, $\lambda = 1.0$, $P = 0.0$, and cell target area $A = 50$) and averaging the results from 1000 trials, the root-mean-square displacement (see section 3.2.1) of the cell after 600 MCS was found to be $5 \pm 3$ pixels. This agrees, within the measurement error, to that reported by the researchers, which is approximately $3 \pm 1$ pixels. Therefore, there is a high degree of confidence that the written program has implemented the model accurately.
@@ -230,22 +238,19 @@ Two experiments were performed to determine if jamming exists in the CPM. The fi
 
 The second experiment investigates whether increasing the cell motility strength,, would relax the rigidity of the system as observed in the vertex model. The variation of  was explored in systems with different ?s ranging between 1.0 to 4.0 in intervals of 0.2. For each $\alpha$, $P$ was systematically increased from 0.0 to 5.0 in increments of 0.2. 10 simulation trials were conducted for each set of  $\{\alpha,P\}$, and each trial was run for 10000 MCS. The number of trials and simulation time were reduced for this experiment due to the substantial increase in computation required when motility is induced, as one needs to calculate the centre of mass of the affected cells in every elementary step (see equation ??). 
 
-\subsubsection{Statistical Measures of Glassy Dynamics}
+\subsubsection{Statistics Measured in Simulations}
 \label{sec:StatsMeasure}
-An important step towards determining if jamming exists in the CPM is to identify whether the system exhibits the rigid, glassy dynamics that has been observed empirically. Two statistical quantities widely used in studying glass-like behaviours are the mean square displacement and the non-Gaussian parameter. These were measured at every MCS for all simulation trials. 
+An important step towards determining the existence of jamming in the CPM is to identify whether the system exhibits rigid, glassy dynamics. Two statistical quantities widely used in studying glass-like behaviours are the mean square displacement and the non-Gaussian parameter. These were measured in all simulation trials. 
 
 \paragraph{Mean Square Displacment}
 The mean square displacement (MSD) of the system at a particular time $t$ is given by:
 \begin{equation}
 \langle{\bm{r}^2(t)\rangle} = \langle{\left(\bm{r}_i(t) - \bm{r}_i(0)\right)^2\rangle},
 \end{equation}
-where $\bm{r}_i (t)$ is the centre of mass of the $i$th cell at the time $t$ and $\langle...\rangle$ denotes an average over all possible cells of the system. The MSD measures the variance of the displacement of all cells from their original position at $t_0$. The MSD measures the deviation of the cells from their initial positions. In a pure fluid, particles undergo diffusion due to the random collisions with their neighbours. This mechanism is known as Brownian motion. According to Einstein?s theory in Brownian dynamics, the MSD is expected to vary linearly with time and is given by the relation:
-\begin{eqnarray}
+where $\bm{r}_i (t)$ is the centre of mass of the $i$th cell at the time $t$ and $\langle...\rangle$ denotes an ensemble average over all cell trajectories of the system. The MSD measures the deviation of the cells from their initial positions. In the fluid regime, the cells are diffusive and their MSD is expected to increase linearly with time:\begin{eqnarray}
 \langle{\bm{r}^2(t)\rangle} = 2dDt, 
 \end{eqnarray}
-where $D$ is the diffusion coefficient or the diffusivity and $d$ is the number of dimensions of the system, which is 2 in this case. In a glassy system, crowding effects alter the characteristic of the MSD. At short timescales, individual particles undergo normal diffusion as they have yet to fully explore the volume, or the ?cage?, bounded by their neighbours. At intermediate timescales, particles remain trapped within their cages as there has not been a sufficiently large energy fluctuation to facilitate a neighbour exchange event. This results in sub-diffusive behaviours, and the MSD has been observed to scale with a lower exponent with time [cite]. At large timescales, particles would have experienced many neighbour exchange events, so the overall dynamics return to a diffusive regime and the MSD becomes linear. The sub-diffusive behaviour results in the classic plateau region when plotting the MSD curve against time on logarithmic scale as shown in figure \ref{fig:MSDExpectedCurve}. 
-
-Although cells in confluent tissues are interconnected and not particulate, it is conventional to associate their behaviours to be fluid-like when they are diffusive or their MSD scales linearly with respect to time. Similarly, their dynamics are said to be glass-like when they are sub-diffusive or their MSD scaled with a lower exponent with respect to time.
+where $D$ is the diffusion coefficient or the diffusivity and $d$ is the number of dimensions of the system, which is 2 in this case. In the glass-like regime, cells movements are restricted due to the cage effect (section 2.2). This causes sub-diffusive behaviours at intermediate time scales when cells remain trapped in their cages, and the MSD typically shows a power-law relationship with time where the exponent is smaller than one [Hofling]. This effect is indicated by a plateauing region when plotting the MSD curve against time on a logarithmic scale (see figure 4).
 \begin{figure}[h]
 \centering
 \includegraphics[width=0.5\textwidth]{figure/MSDExpectedCurve.pdf}
@@ -254,77 +259,50 @@ Although cells in confluent tissues are interconnected and not particulate, it i
 \end{figure}
 
 \paragraph{Non-Gaussian Parameter}
-Another widely used indicator for glassy dynamics is the non-Gaussian parameter. It measures the deviation from a Gaussian-like behaviour in the cells' trajectories. Mathematically, it is dimensionless ratio of the kurtosis of the particle's displacement distribution to its variance. In two dimension, this parameter is expressed as:
+The non-Gaussian parameter $\alpha_2$ measures the deviation from a Gaussian form in the van Hove self-correlation function, which is related to the probability distribution of a particle's displacement from its original position after a specific time [Rahman1964] [Hofling]. Mathematically, the parameter is the kurtosis of the correlation function and, in two dimensions, is given by:
 \begin{equation}
 \alpha_2 = \frac{1}{2}\,\frac{\langle{\bm{r}^4(t)\rangle}}{\langle{\bm{r}^2(t)\rangle}^2} - 1,
 \end{equation}
-where $\langle{\bm{r}^4(t)\rangle} \equiv \langle{\left(\bm{r}_i(t) - \bm{r}_i(t_0)\right)^4\rangle}$ is the fourth moment of . 
+where $\langle{\bm{r}^4(t)\rangle} \equiv \langle{\left(\bm{r}_i(t) - \bm{r}_i(t_0)\right)^4\rangle}$. The parameter is zero when the probability distribution is Gaussian, which is the case when the system is diffusive in the fluid regime. The motivation for measuring this parameter is to detect the cage breaking events that occur in glass-like regime at intermediate time scales [Schotz]. These events would cause the probability distribution to become non-Gaussian as cells would have more directed motion when changing neighbours.
 
-For 
-
-\subsubsection{Dynamical Order Parameters}
-To determine whether the jamming behaviour, if observed, occurs as a phase transition or a smooth cross-over, the diffusivity and the diffusion exponent were considered as order parameters and were measured in the experiments. It should be noted that the order parameters are dynamical, or time dependent, as many systems with glassy dynamics are metastable and would relax slowly, sometimes beyond the measurable time range, into an equilibrium configuration, a phenomenon known as aging. Hence, the transition point would be different depending on the investigated timescale.
-
+\subsubsection{Classification of Fluid and Solid-Like Behaviour}
+To quantitatively distinguish the system?s behaviour between the fluid and solid regime, the diffusivity and the exponent of the MSD were measured. These quantities were also used to analyse whether the transition from fluid to solid, if exists, is a smooth crossover or a critical phenomenon. 
 
 \paragraph{Diffusivity}
- dynamical order parameter to characterise the jamming transition is the diffusion coefficient, or the diffusivity, or the cells. If the system is deep in the jammed and rigid-like regime, the cells would remain frozen for a long period of time. This result in a small diffusion coefficient. In the limit that the system is completely rigid, the diffusion coefficient would be zero as the cell remains at the same position. Therefore, one can argue that the fluid-to-solid transition occurs when the diffusion coefficient of the system becomes negligible. 
- 
-Two approaches were used to determine the diffusion coefficient of the system. The first approach was to perform a linear least squares fit at a timescale beyond the sub-diffusive regime when the mean square displacement is linear. The second approach used the definition of self-diffusivity, which, in two dimensions, is given by:
-\begin{eqnarray}
+The diffusivity $D$ measures the ability of the system to diffuse. In two dimensions, it is defined by:
+ \begin{eqnarray}
 D = \frac{1}{4}\, \lim_{t \rightarrow \infty} \frac{\langle{\bm{r}^2(t)\rangle}}{t}.
 \end{eqnarray}
-As the simulation time for each trial is at least $10^4$ MCS, one can approximate the diffusivity by using the final data point from the mean square displacement curve $\langle{\bm{r}^2(t_f)\rangle}$:
+If the system is deep in the jammed state, the cells would remain frozen for a long period of time due to confinement by their neighbours. This results in a low diffusivity. In the limit where the system is completely rigid and sub-diffusive behaviour (i.e. MSD scales sub-linearly with time) persists for infinitely long, the diffusivity is zero. Therefore, one can argue that the fluid-to-solid transition occurs when the system?s diffusivity falls below a certain threshold limit. This quantity was used by Bi et al. as part of their analysis in determining the transition point in the vertex model [Bi2015].
+
+There are two common approaches in calculating the diffusivity of the system. One approach is to perform a linear least squares fit at a timescale beyond the sub-diffusive interval where the mean square displacement is linear. Another approach uses the definition of diffusivity. As the simulation time for each trial is at least $10^4$ MCS, one can approximate the diffusivity by using the mean square displacement value from the final time step $t_f$:
 \begin{eqnarray}
 D \approx \frac{1}{4} \frac{\langle{\bm{r}^2(t_f)\rangle}}{t_f}.
 \end{eqnarray}
+Both methods were used in the project to find the diffusivity of the system. The obtained results are compared in the section 4.1.
 
 \paragraph{Diffusion Exponent}
-As discussed above, 
+As mentioned above, systems with glassy dynamics exhibit sub-diffusive behaviours at intermediate time scales during which the MSD has a power-law relationship with time. Therefore, a useful parameter to classify whether the system has a fluid or solid behaviour is the exponent $\gamma$ in the power law, which is given by:
 \begin{equation}
-\langle\bm{r}^2(t)\rangle = 4\tilde Dt^{\gamma}
+\langle\bm{r}^2(t)\rangle \sim t^{\gamma}
 \end{equation}
-One should note that $\tilde D$ is no longer a measure of the diffusivity of the system due to the exponent of $t$. At a suitable timescale when the system has not relaxed from the solid state, the diffusion
-
-%\subsubsection{Experiments Conducted}
-%The two parameters investigated are $\alpha$ and $P$, which, as discussed above, represent the strength of the interfacial effect between cells and the magnitude of a cell?s motility, respectively. 
-%
-%All simulations were run on a $200 \times 200$ lattice with 1000 cells.  $\lambda$ was set to 1.0 and  $D_r$ was set to 0.1. The target area of the cells were set to be the same with 
-%
-%These parameters were chosen as they produce a physical representation of cells in tissues, and they were also used in other CPM simulations \cite{szabo2010}. Notice the value for $\beta$  is irrelevant here since the focus is on confluent tissues, where there is no empty space between cells and hence no free boundaries. As mentioned above, periodic boundary conditions were assumed to eliminate the effects of external boundaries on the cell dynamics. 
-%
-%For practical reasons, the same initial condition is used for all simulation. This would not result in correlation between measurements obtained in different trials, as the spin-update process is randomised and a different seed is used in each trial for the random number generator. The initial condition was prepared such that the system begins in a steady-state condition. This ensures the measurements are not influenced by transient behaviours. This was done by first initialising the cells as squares with equal area. The system was then allowed to run for 200000 MCS to reach steady-state.   
-
+At a specific time, one can consider the system to be fluid-like if the cells are diffusive and $\gamma = 1$. On the other hand, one can classify the system to be in the solid, glassy regime if the cells are sub-diffusive and $\gamma < 1$.
 
 \section{Results}
 \subsection{Effects of Varying Cellular Interaction ($\alpha$)}
-Figure \ref{fig:r2alpha} shows the MSD of the cells versus time on a logarithmic scale for $\alpha$ values between 0.5 and 10.0 in increment of 0.5. As $\alpha$ increases, the displacement of the cells become suppressed. The MSD curves flatten substantially in the time interval between 10 and 1000 MCS for $\alpha > 5$. Furthermore, for $\alpha$ between 1.5 and 4, the curves start to bend when $t ~ 100$ MCS. This plateauing behaviour indicates sub-diffusive motion in the cells. It may be attributed to the cage effect where cells are confined by their neighbours and have difficulty to diffuse. The slope of the MSD curves also show that the system exhibits two types of behaviour. For $\alpha < 1.5$, the cells are diffusive as one can qualitatively see the MSD increases linearly with time (the actual exponents with time are measured and will be discussed below). For $\alpha > 1.5$, the system remains sub-diffusive even by the end of the simulation as indicated by the plateauing behaviour. It should also be noted that the final data points in the MSD for $\alpha = 1.0$ and 1.5 differ by more than a decade, which is much larger than the difference between the final MSD data points for higher $\alpha$ values. These observations suggest that there is a change in dynamics of the system at around $\alpha = 1.5$ with a fluid-like behaviour below this point. It is also possible to gain a better understanding on whether the system behaves like a fluid or a solid by comparing the average displacement of the cells to the typical separation between two cells (i.e. the intercellular distance). In the fluid state, one would expect the cells to have, on average, travelled more than one intercellular distance over the simulation period, as they would have experienced multiple neighbour exchange events. Since the target area of each cell is $40 \textrm{pixel}^2$, cells are likely to have changed neighbours when the MSD surpasses this threshold, which is drawn as a dashed line on the figure.  It can be seen that only the MSD curves for $\alpha$ between 0.5 and 1.5 go beyond this limit, suggesting that the system behaves like fluid in this ? range. This is consistent with the qualitative analysis of the MSD slopes as discussed above. 
-\begin{figure}[H]
+\begin{figure}[h]
 \centering
 \includegraphics[width=0.8\textwidth]{figure/R2_Alpha.pdf}
-\caption{The mean square displacement of the cells versus time on a log-log plot for $\alpha$ ranging from 0.5 (the green line at the top) to 10.0 (the yellow line at the bottom) in increments of 0.5. As $\alpha$ increases, the dynamics of the cells are slowed down.}
+\caption{Mean square displacement of the cells versus time on a log-log plot for $\alpha$ = 0.5 (top green curve) to 10 (bottom yellow curve) in increments of 0.5. The typical intercellular separation (squared) is also plotted as a dashed-line to indicate whether the cells have exchanged neighbours. Notice the difference between the final MSD value for $\alpha = 1.0$ (light blue curve) and that for  $\alpha = 1.5$ (orange curve) is more than decade, which is larger than the difference between the final MSD values for higher $\alpha$.
+}
 \label{fig:r2alpha}
 \end{figure}
-\begin{figure}[H]
-\centering
-\includegraphics[width=0.8\textwidth]{figure/A2_Alpha_All.pdf}
-\caption{The non-Gaussian parameter $\alpha_2$ of the cells versus time on a semi-log plot for $\alpha$ ranging from 0.5 (the green line at the top) to 10.0 (the yellow line at the bottom) in increments of 0.5. As $\alpha$ increases, the dynamics of the cells are slowed down.}
-\label{fig:r2alpha}
-\end{figure}
-\FloatBarrier
-Figure 6 shows the measured non-Gaussian parameter over time for the studied α values. It demonstrates that the level of non-Gaussianity in the probability distribution of the cells’ displacement increases with α. In particular, the parameter seems to peak at the time range in which sub-diffusive behaviour observed from the mean square displacement curves correspond well to that where the non-Gaussian parameter peaks. 
 
-The non-Gaussian nature in the probability distribution of the cells 
+Figure \ref{fig:r2alpha} shows the MSD of the cells versus time on a logarithmic scale for $\alpha$ between 0.5 and 10.0 in increments of 0.5. As $\alpha$ increases, the displacement of the cells become suppressed. The MSD curves flatten in the time interval between 10 and 1000 MCS for $\alpha > 5$. Furthermore, for $\alpha$ between 1.5 and 4, the curves start to bend when $t \sim 100$ MCS. The plateauing behaviour indicates the cells are sub-diffusive. This can be explained by the cage effect where cells are confined by their neighbours and have difficulty to diffuse. 
 
-A peculiar aspect in figure 6 is the fact that the parameter does not vanish at very short time scale, which is contrary to other studies that have used this parameter to study glassy dynamics. One would expect that the parameter to be near zero at very short time scale as the system should be diffusive in this timescale, so the distribution of the displacement should be Gaussian-like. However, since the cells are not particulate matter, it is suspected that the short time motion would not 
+The slopes of the MSD curves also suggest that the system exhibits two types of dynamics. For $\alpha < 1.5$, the cells are diffusive as one can qualitatively see the MSD increases linearly with time (the actual exponents are measured and will be discussed further below). For $\alpha > 1.5$, the system remains sub-diffusive even by the end of the simulation as indicated by the plateauing behaviour. It should also be noted that the difference between the final points of the MSD for $\alpha = 1.0$ and $\alpha = 1.5$ is more than a decade, which is much larger than the difference between those for higher $\alpha$ values. These observations suggest that there is a change in the dynamics of the system at around $\alpha = 1.5$, with the system behaving like a fluid below this point. 
 
-The observations from the mean square displacement and the non-Gaussian parameter are also consistent with the measured trajectories of the cells which are shown in figure 7. When α = 1.0, the trajectories of the cells overlap with each other, indicating a fluid-like dynamics. With α = 2.0, the trajectories have already become localised and reflect a hexagonal structure. This strong supports that the system The trajectories become further  High α values 
-
-
-Figure \ref{} shows the measured non-Gaussian parameter of the cells for the same set of $\alpha$ values. 
-
-This is consistent to the time region where the cells experience slow down due to the crowding effect. A pecularity of the graph is that all curves do not begin with $\alpha_2$ near zero within the first few Monte-Carlo steps. There could . Further investigation would be needed.
-
-
+It is also possible to estimate whether the system has a fluid or solid-like dynamics by comparing the average displacement of the cells to the typical separation between two cells (i.e. the intercellular distance). When the system is fluid-like, one would expect the cells to have travelled, on average, more than the intercellular distance over the simulation period, as they would have experienced multiple neighbour exchange events. Since the target area of each cell is 40 $\textrm{pixel}^2$, cells are likely to have changed neighbours when the MSD surpasses this threshold, which is indicated by a dashed line in the figure. 
 \begin{figure}[h]
 \centering
 \begin{subfigure}[h]{0.49\textwidth}
@@ -344,9 +322,34 @@ This is consistent to the time region where the cells experience slow down due t
 \caption*{$\alpha = 10.0$}
 \end{subfigure}
 \caption{The recorded trajectories of a sample of 100 cells in the simulation. }
+\label{fig:CM}
 \end{figure}
-\FloatBarrier
-With both the MSD and the non-Gaussian parameter indicating the presence of glass-like, solid regime in the model, the analysis is focused on understanding whether the change from the fluid to a solid regime is a smooth crossover or a critical phenomenon. This was done by analysing the diffusivity and the exponent of the MSD obtained for the ? values and invFigure 8 shows the diffusivity of the system for the investigated ? values using both methods as discussed in section 3.4. The results obtained are in agreement for ? below 1.0 when the cells the diffusivity is non-negligible (D > 0.02). Both methods show that the diffusivity decreases as ? increases, especially in the region between 0.5 to 2.0. This is consistent with the picture developed from analysing the mean square displacement curves, that there is a change from fluid to solid behaviour in this region. However, the lackBeyond ? = 1.5, the obtained diffusivity differs by around 50\% between the two approaches (see inset of figure 8). This is not surprising since the cell movements are sub-diffusive. The endpoint approach would definitely overestimate the diffusivity as it effectively measures the slope of a straight line from the origin to that point, which is clearly not the case as seen from the MSD figure. This suggest that the standard approach in determiA more accurate approach in quantifying the state behaviour of the system is to consider the exponent of the MSD (?), which directly describes the degree of sub-diffusiveness of the system. Figure 9 shows the exponents for the studied ? values, which were obtained by performing least squares fit on the MSD curves in the time interval from t = 10000 to 50000 MCS. It provides a much more conclusive indication that there is a critical behaviour between 1.0 to 2.0. ? is near 1.0 for both ? = 0.5 and 1.0. However, when ? increases to 1.5, ? drops rapidly to 0.5 and remains within the range between 0.3 to 0.7 for higher ? values. This supports the view that the system is in a fluid regime when ? is below 1.5 and in a rigid, glassy regime when ? is above this value. The sudden, non-monotonic decrease in the exponent also indicate The fact that ? settles at around 0.5 is an interesting behaviour, as it coincides with the exponent predicted for systems undergoing single-file diffusion (SFD). This is the phenomenon when the system is rigid but has a porous which allow the movements of a single stream of particles or elements of the system. 
+ It can be seen that only the MSDs for $\alpha$ between 0.5 and 1.5 go beyond this limit, suggesting that the system behaves like a fluid in this $\alpha$ range. This is consistent with the qualitative analysis on the slopes of the MSDs. 
+
+Moreover, the observations on the MSDs are in agreement with the measured trajectories of the cells, which are shown in figure \ref{fig:CM}. When $\alpha = 1.0$, the trajectories overlap with each other to the extent that it is difficult to identify any structural pattern. This indicates that the system is fluid-like. When $\alpha = 2.0$, most trajectories become localised and a hexagonal structure starts to emerge, suggesting the system has solid-like behaviours. This agrees with the conjecture that there is a change in the system?s dynamics at around $\alpha = 1.5$. For $\alpha = 5.0$ and $\alpha = 10.0$, the trajectories are further suppressed, supporting the view that the system becomes more solid-like as $\alpha$ increases.  
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.8\textwidth]{figure/A2_Alpha_All.pdf}
+\caption{The non-Gaussian parameter $\alpha_2$ of the cells versus time on a semi-log plot for $\alpha$ ranging from 0.5 (the green line at the top) to 10.0 (the yellow line at the bottom) in increments of 0.5. As $\alpha$ increases, the dynamics of the cells are slowed down.}
+\label{fig:a2alpha}
+\end{figure}
+
+Figure \ref{fig:a2alpha} shows the measured non-Gaussian parameters for the studied $\alpha$ values. The behaviours of the parameters over time are consistent with the MSD data. The maximum of the parameter for each ? occurs at the time interval when the corresponding MSD plateaus. This is expected since sub-diffusive motion would necessarily result in a non-Gaussian probability distribution for the cell?s displacement. Moreover, the parameter has a higher maximum as $\alpha$ increases. This is consistent with the observation that the system becomes more sub-diffusive as $\alpha$ rises. 
+
+As discussed in section 3.3, the motivation of measuring the non-Gaussian parameter is to identify the cage escape effect, which is a signature of glassy dynamics. However, as illustrated in figure \ref{fig:r2alpha}, the cells have moved an average distance that is less than the intercellular distance when $\alpha \ge 2.0$. This suggests that the non-Gaussian nature of the probability distribution cannot be attributed to the anticipated effect. Further investigation on individual cell trajectories would be needed to understand the origin of this non-Gaussian aspect. 
+
+
+
+With both the MSD and the non-Gaussian parameter indicating the presence of glass-like, solid regime in the model, the analysis is focused on understanding whether the change from the fluid to a solid regime is a smooth crossover or a critical phenomenon. This was done by analysing the diffusivity and the exponent of the MSD obtained for the ? values and inv
+
+Figure 8 shows the diffusivity of the system for the investigated ? values using both methods as discussed in section 3.4. The results obtained are in agreement for ? below 1.0 when the cells the diffusivity is non-negligible (D > 0.02). Both methods show that the diffusivity decreases as ? increases, especially in the region between 0.5 to 2.0. This is consistent with the picture developed from analysing the mean square displacement curves, that there is a change from fluid to solid behaviour in this region. However, the lack
+
+Beyond ? = 1.5, the obtained diffusivity differs by around 50\% between the two approaches (see inset of figure 8). This is not surprising since the cell movements are sub-diffusive. The endpoint approach would definitely overestimate the diffusivity as it effectively measures the slope of a straight line from the origin to that point, which is clearly not the case as seen from the MSD figure. This suggest that the standard approach in determi
+
+A more accurate approach in quantifying the state behaviour of the system is to consider the exponent of the MSD (?), which directly describes the degree of sub-diffusiveness of the system. Figure 9 shows the exponents for the studied ? values, which were obtained by performing least squares fit on the MSD curves in the time interval from t = 10000 to 50000 MCS. It provides a much more conclusive indication that there is a critical behaviour between 1.0 to 2.0. ? is near 1.0 for both ? = 0.5 and 1.0. However, when ? increases to 1.5, ? drops rapidly to 0.5 and remains within the range between 0.3 to 0.7 for higher ? values. This supports the view that the system is in a fluid regime when ? is below 1.5 and in a rigid, glassy regime when ? is above this value. The sudden, non-monotonic decrease in the exponent also indicate 
+
+The fact that ? settles at around 0.5 is an interesting behaviour, as it coincides with the exponent predicted for systems undergoing single-file diffusion (SFD). This is the phenomenon when the system is rigid but has a porous which allow the movements of a single stream of particles or elements of the system. 
 \begin{figure}[h]
 \centering
 \includegraphics[width=0.9\textwidth]{figure/Diffusivity_Combined_Alpha.pdf}
@@ -356,7 +359,7 @@ With both the MSD and the non-Gaussian parameter indicating the presence of glas
 
 \begin{figure}[h]
 \centering
-\includegraphics[width=0.9\textwidth]{figure/DiffusivityExp_Alpha.pdf}
+\includegraphics[width=0.9\textwidth]{figure/MSDExpAvg_Alpha.pdf}
 \caption{The measured diffusion exponent $\gamma$ for $\alpha$ ranging from 0.5 to 10.0 in an increment of 0.5. Error bars are plotted for the data points but are too small to be seen. Notice the abrupt decrease in the exponent between $\alpha = 1$ and $2$.  indicates that }
 \end{figure}
 \FloatBarrier
@@ -393,37 +396,8 @@ With both the MSD and the non-Gaussian parameter indicating the presence of glas
 \end{figure}
 \FloatBarrier
 
-%
-%This section should detail the obtained results in a clear,
-%easy-to-follow manner. Remember long tables of numbers are just as boring to
-%read as they are to type-in. Use graphs to present your results where
-%-ever practicable. When quoting results or measurements
-%{\bf DO NOT FORGET ABOUT ERRORS}. Remember there are two basic types
-%of errors, these being random and systematic, which you must consider.
-%Remember also the difference between an error and a mistake, computer
-%program bugs are mistakes.
-%
-% 
-%Again be selective in what you include. Half a dozen
-%tables that contain totally wrong data you collected while you forgot
-%to switch on the power supply are {\bf not relevant} and will frequently
-%mask the correct results. 
-%%
-%%                       Here is how to inserted a centered
-%%                       postscript file, this one is actually
-%%                       out of Maple, but it will work for other
-%%                       figures out of Xfig, Idraw and Xgraph
-%%
-%\begin{figure}[htb]     %Insert a figure as soon as possible
-%        \begin{center}
-%                \leavevmode             % Warn Latex a figure is comming
-%                \epsfxsize=90mm         % Horizontal size YOUR want
-%                                        % figure to be
-%                \epsffile{otf.eps}
-%\end{center}
-%\caption{This is an inserted Postscript file}
-%\end{figure}
-%
+
+\section{Discussion}
 %This section must contain a discussion of the results. This should
 %include a discussion of the experimental and/or numerical errors, and a
 %comparison with the predictions of the background and theory underlying
@@ -431,8 +405,7 @@ With both the MSD and the non-Gaussian parameter indicating the presence of glas
 %and/or weaknesses of the methods used.
 
 
-\section{Discussion}
-% 
+
 \section{Conclusion}
 %This section should summarise the results obtained, detail
 %conclusions reached, suggest future work, and changes that you would make if you repeated the
@@ -542,31 +515,60 @@ With both the MSD and the non-Gaussian parameter indicating the presence of glas
 		Anomalous transport in the crowded world of biological cells.
 		\emph{Rep. Prog. Phys.}
 		\textbf{76} 046602 (2013)
+	
+	
 
 \end{thebibliography}
 
 \appendix
 \section{Appendices}
+\subsection{Implementing Rotational Diffusion of the Cells on Computer}
+\label{app:rotatediff}
+In section \ref{sec:CPM}, the implementation for the rotational diffusion of the cell's polarity vector was discussed. The rotational diffusion process can be described by the following Langevin equations:
+\begin{eqnarray}
+\partial_t\theta_i(t) & = & \eta_i(t)\label{eqn:langevin}\\
+\langle{\eta_i(t)\eta_j(t')\rangle} & = & 2D_r\delta(t-t')\delta_{ij}.
+\end{eqnarray}
+One can integrate equation \ref{eqn:langevin} to give:
+\begin{eqnarray}
+\theta_i(t+\inc t) - \theta_i(t) = \int_{t}^{t+\inc t} \eta_i (t')\,dt'.
+\end{eqnarray}
+The mean of the change in $\theta_i$ is:
+\begin{eqnarray}
+\langle\theta_i(t+\inc t) - \theta_i(t)\rangle = \int_{t}^{t+\inc t} \langle\eta_i (t')\rangle\,dt' = 0.\\
+\end{eqnarray}
+Similarly, the variance is:
+\begin{eqnarray}
+\langle\left(\theta_i(t+\inc t) - \theta_i(t)\right)^2\rangle & = & \int_{t}^{t+\inc t}\int_{t}^{t+\inc t} \langle\eta_i (t')\eta_i(t'')\rangle\,dt'\,dt''\\
+& = & 2D_r \int_{t}^{t+\inc t}\int_{t}^{t+\inc t} \delta(t'-t'')\,dt'\,dt''\\
+& = & 2D_r\inc t\label{eqn:anglevar}.
+\end{eqnarray}
+To implement this rotational diffusion process on a computer, one can use a random generator to produce a distribution of values that gives the same statistical mean and variance when evaluating the change in the polarity angle for each cell over many times. The simplest way to achieve this is to generate a uniform distribution of random values between $[-a,a)$, as this will satisfy the requirement of the mean automatically. The value $a$ is yet to be determined to give the required variance. The polarity angles of the cells can be updated by the following expression on the computer:
+\begin{eqnarray}
+\theta_i (t + \inc t) = \theta_i (t) + \sqrt{2 D_r \inc t}\, \tilde\eta,
+\end{eqnarray}
+where $\tilde\eta$ is the random number generated and $\inc t$ can be taken as the number of Monto-Carlo steps between each update (which is taken to be one in the written program). With this expression, one can determine $a$ to give the correct variance for the distribution of the change in polarity angles as specified by equation \ref{eqn:anglevar}. Since the random values are uniformly distributed, normalisation requires the probability density for each random value ($p(\tilde\eta)$) to be:
+\begin{eqnarray}
+p(\tilde\eta) = \frac{1}{2a}.
+\end{eqnarray}
+One can evaluate the actual variance produced using this distribution of random values:
+\begin{eqnarray}
+\langle\left(\theta_i(t+\inc t) - \theta_i(t)\right)^2\rangle & = & 2D_r\inc t \int_{-a}^{a} \tilde\eta^2 p(\tilde\eta)\, d\tilde\eta\\
+& = & 2D_r\inc t\,\frac{1}{2a}\left[\frac{\tilde\eta^3}{3}\right]_{-a}^{a}\\
+& = & 2D_r\inc t\,\frac{a^2}{3}.\\
+\end{eqnarray}
+Equating this with the expected variance in the change in polarity angle (see equation \ref{eqn:anglevar}), one must have:
+\begin{eqnarray}
+2D_r \inc t & = & 2D_r\inc t\,\frac{a^2}{3}\\
+a & = & \sqrt{3},
+\end{eqnarray}
+so the random values must be between $\tilde\eta \in \sqrt{3}[-1,1)$.
 
-%Material that is useful background to the report, but is not essential,
-%or whose inclusion within the report  would detract from its
-%structure and readablity, should be included in appendices. Typical
-%material could be diagrams of electronic circuits built, specialist
-%data tables used to analyse results, details of computer programs
-%written for analysis and display of results, photographic plates,
-%and, for computational projects, a copy of all written code.
-%
-%Again be selective. The appendix is {\bf not} an excuse for you to add every
-%last detail and piece of data, but should be used to assist the reader
-%of the report by supplying additional material. Not all reports require
-%appendices and if the report is complete without this additional
-%material leave it out.
-
-\subsection{Implementing Rotational Diffusion of the Cells on Computer} 
+\subsection{Additional Figures}
 
 
 \subsection{Accessing the Source Code}
-Due to the substantial size of the program, a copy of the source code is not included in the appendix of the report. The source code is avaliable on GitHub with the following link: 
+Due to the substantial size of the program, a copy of the source code is not included in the appendix of the report. The source code is available on GitHub with the following link: 
 
 To download a copy of the source code, 
 

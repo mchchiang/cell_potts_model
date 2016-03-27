@@ -3,9 +3,12 @@ package cell_potts_model;
 import java.io.*;
 
 /**
+ * DataWriter.java
+ * 
  * An abstract data writer which handles the process of creating the 
  * output stream. The actual process of writing the data is delegated 
  * to the sub-classes
+ * 
  * @author Michael Chiang
  *
  */

@@ -1,7 +1,10 @@
 package cell_potts_model;
 
 /**
+ * CMWriter.java
+ * 
  * Write the center of mass of each cell at each MCS to file
+ * 
  * @author Michael Chiang
  *
  */

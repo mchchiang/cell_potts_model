@@ -1,7 +1,10 @@
 package cell_potts_model;
 
 /**
+ * EnergyWriter.java
+ * 
  * Write the total energy of the system at each MCS to file
+ * 
  * @author Michael Chiang
  *
  */

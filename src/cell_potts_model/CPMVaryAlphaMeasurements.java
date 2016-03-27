@@ -1,5 +1,15 @@
 package cell_potts_model;
 
+/**
+ * CPMVaryAlphaMeasurements.java
+ * 
+ * Main class for the varying alpha experiment. It allows user to specify
+ * the all the parameters of the model and the range of alpha values that
+ * should be tested.
+ * 
+ * @author Michael Chiang
+ *
+ */
 public class CPMVaryAlphaMeasurements implements ThreadCompleteListener {
 	
 	private int nx, ny, q;

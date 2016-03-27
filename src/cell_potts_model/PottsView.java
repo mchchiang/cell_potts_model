@@ -4,6 +4,16 @@ import java.awt.*;
 
 import javax.swing.*;
 
+/**
+ * PottsView.java
+ * 
+ * Handle the window operations for the GUI. Main class of the program
+ * for simulations with visualisation.
+ * 
+ * @author MichaelChiang
+ *
+ */
+
 @SuppressWarnings("serial")
 public class PottsView extends JFrame {
 	private SpinModel model = new NullModel();

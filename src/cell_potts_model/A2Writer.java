@@ -2,7 +2,10 @@ package cell_potts_model;
 
 
 /**
+ * A2Writer.java
+ * 
  * Write the non-Gaussian parameter of the system at each MCS to file
+ * 
  * @author Michael Chiang
  *
  */

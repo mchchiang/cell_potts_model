@@ -53,7 +53,8 @@ public class Measurement implements Runnable {
 
 	@Override
 	public void run() {
-		System.out.printf(Calendar.getInstance().getTime() + "\t - Running: a = %.1f\tp = %.1f\ttrial %d\n", 
+		System.out.printf(Calendar.getInstance().getTime() + 
+				"\t - Running: a = %.1f\tp = %.1f\ttrial %d\n", 
 				model.getAlpha(), model.getMotility(), trial);
 		model.run();
 		

@@ -1,8 +1,11 @@
 package cell_potts_model;
 
 /**
+ * NullWriter.java
+ * 
  * An empty writer that does nothing (to be passed to CellPottsModel 
  * in the case when no data need to be recorded)
+ * 
  * @author Michael Chiang
  *
  */
