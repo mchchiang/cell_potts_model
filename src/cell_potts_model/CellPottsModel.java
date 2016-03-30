@@ -1,7 +1,6 @@
 package cell_potts_model;
 
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.List;
 import java.util.Random;
 
@@ -11,11 +10,11 @@ import java.util.Random;
  * 
  * The main kernel which implements the cellular Potts model.
  * 
- * @author MichaelChiang
+ * @author Michael Chiang
  *
  */
 public class CellPottsModel extends SpinModel {
-
+	
 	private int nx, ny;
 	private int q;	
 	private int [][] spin;
@@ -59,7 +58,7 @@ public class CellPottsModel extends SpinModel {
 	//variables for calculating acceptance rate
 	private double acceptRate;
 
-	//seed for generating random numbers
+	//varaibles for generating random numbers
 	private int seed;
 	private Random rand;
 
@@ -70,6 +69,24 @@ public class CellPottsModel extends SpinModel {
 	private DataWriter [] writers;
 
 	//constructors
+	/**
+	 * Initialise the cellular Potts model
+	 * @param nx number of columns in the lattice
+	 * @param ny number of rows in the lattice
+	 * @param q number of cells
+	 * @param temp effective temperature
+	 * @param lambda strength on area constraint
+	 * @param alpha interfacial energy between cells
+	 * @param beta free boundary energy
+	 * @param motility cell motility strength (P)
+	 * @param rotateDiff rotational diffusion coefficient
+	 * @param seed seed for random generator
+	 * @param n number of Monte-Carlo steps (MCS) to take in the simulation
+	 * @param nequil number of MCS to take before making measurements
+	 * @param writers data writers to store measurements to file
+	 * @param notify whether or not to notify any observers when the spin 
+	 * at a lattice site is updated
+	 */
 	public CellPottsModel(int nx, int ny, int q, double temp, 
 			double lambda, double alpha, double beta, 
 			double motility, double rotateDiff, int seed, 
@@ -106,6 +123,9 @@ public class CellPottsModel extends SpinModel {
 		this.seed = seed;
 	}
 
+	/**
+	 * Initialise the model
+	 */
 	public void init(){
 		acceptRate = 0.0;
 
@@ -137,7 +157,9 @@ public class CellPottsModel extends SpinModel {
 
 	//initialisation of the spins
 
-	//init random spins
+	/**
+	 * Initialise the lattice with random spins
+	 */
 	public void initSpin(){
 		init();
 
@@ -169,7 +191,10 @@ public class CellPottsModel extends SpinModel {
 		}
 	}
 
-	//init spins specified by user
+	/**
+	 * Initialise the lattice with specified spin configuration
+	 * @param spin initial condition of the lattice
+	 */
 	public void initSpin(int [][] spin){
 		init();
 
@@ -215,12 +240,12 @@ public class CellPottsModel extends SpinModel {
 	}
 	
 	/**
-	 * Change the polarity vector for each cell by a rotation diffusion
+	 * Change the polarity vector of each cell via a rotation diffusion
 	 * process
 	 */
 	public void updatePolarity(){
 		for (int i = 1; i <= q; i++){
-			theta[i] += Math.sqrt(2 * rotateDiff) * (rand.nextDouble()*2-1);
+			theta[i] += Math.sqrt(6 * rotateDiff) * (rand.nextDouble()*2-1);
 			px[i] = Math.cos(theta[i]);
 			py[i] = Math.sin(theta[i]);
 		}
@@ -234,7 +259,7 @@ public class CellPottsModel extends SpinModel {
 
 		for (int n = 0;  n < numOfSweeps; n++){
 			for (int k = 0; k < nx*ny; k++){
-				nextStep(n);	
+				nextStep();	
 			}
 
 			updatePolarity();
@@ -249,13 +274,16 @@ public class CellPottsModel extends SpinModel {
 			if (n >= nequil && n < numOfSweeps-1){
 				writeData(n);
 			}
-			//System.out.println(n);
+			
 		}
 		acceptRate /= (double) ((long) numOfSweeps * nx * ny);//potentially big
 		writeData(numOfSweeps-1);
 	}
 
-	public void nextStep(int n){
+	/**
+	 * Take a single elementary step in the simulation
+	 */
+	public void nextStep(){
 		int i, j, p;
 		int newSpin = 0;
 
@@ -268,8 +296,8 @@ public class CellPottsModel extends SpinModel {
 		if (!hasSameNeighbours(i,j)){
 			/*
 			 * randomly pick one of its neighbour's spin (including 
-			 * the ones located along the diagonals with respect to
-			 * the lattice site
+			 * the ones located at the corners with respect to
+			 * the lattice site)
 			 */
 			p = rand.nextInt(8);
 			if (p == 0){
@@ -333,8 +361,8 @@ public class CellPottsModel extends SpinModel {
 
 	/**
 	 * Check if all neighbours of the specified lattice site have the same spin
-	 * @param i column index of the lattice site
-	 * @param j row index of the lattice site
+	 * @param i column index of the site
+	 * @param j row index of the site
 	 * @return return <code>true</code> if all neighbours have the same spin
 	 */
 	public boolean hasSameNeighbours(int i, int j){
@@ -354,11 +382,11 @@ public class CellPottsModel extends SpinModel {
 
 	/**
 	 * Calculate the energy from active cell motility
-	 * @param i
-	 * @param j
-	 * @param newSpin
-	 * @param p
-	 * @return
+	 * @param i column index of the lattice site considered in the spin copy attempt
+	 * @param j row index of the lattice site considered in the spin copy attempt
+	 * @param newSpin new spin value for the spin copy attempt
+	 * @param p cell motility strength
+	 * @return energy from active cell motility
 	 */
 	public double motilityE(int i, int j, int newSpin, double p){
 		double energy = 0.0;
@@ -369,7 +397,18 @@ public class CellPottsModel extends SpinModel {
 		return energy;
 	}
 
-	//calculate the negative of the change in energy due to spin change
+	/**
+	 * Calculate the negative of the change in energy due to spin change
+	 * @param i column index of the lattice site considered in the spin copy attempt
+	 * @param j row index of the lattice site considered in the spin copy attempt
+	 * @param newSpin new spin value for the spin copy attempt
+	 * @param oldAreaOldSpin current area of the cell with the current spin 
+	 * of the considered lattice site
+	 * @param oldAreaNewSpin current area of the cell with the proposed spin
+	 * @param newAreaOldSpin new area of the cell with the current spin
+	 * @param newAreaNewSpin new area of the cell with the proposed spin
+	 * @return
+	 */
 	public double negDeltaE(int i, int j, int newSpin, 
 			double oldAreaOldSpin, double oldAreaNewSpin,
 			double newAreaOldSpin, double newAreaNewSpin){
@@ -380,6 +419,7 @@ public class CellPottsModel extends SpinModel {
 		int jdown = jdown(j);
 
 		double eold, enew;
+		
 		//calculate the change in energy due to spin change
 		//energy changes due to pair-wise spin interaction
 		eold = -(pottsEnergy(spin[i][j], spin[iup][j]) + 
@@ -430,6 +470,15 @@ public class CellPottsModel extends SpinModel {
 		return energy;
 	}
 
+	/**
+	 * Calculate the change in the centre of mass (CM) of a cell when the spin 
+	 * copy attempt is accepted
+	 * @param x column index of the lattice site considered in the spin copy attempt
+	 * @param y row index of the lattice site considered in the spin copy attempt
+	 * @param spin the index of the cell of interest
+	 * @param remove whether the site is added to or removed from the specified cell
+	 * @return a vector storing the change in the CM
+	 */
 	public double [] calculateDeltaCM(int x, int y, int spin, boolean remove){
 		ArrayList<Integer> xPos = spinXPos.get(spin);
 		ArrayList<Integer> yPos = spinYPos.get(spin);
@@ -538,31 +587,12 @@ public class CellPottsModel extends SpinModel {
 
 			xcmNew[i] = calculateCM(spinXPos.get(i), nx);
 			ycmNew[i] = calculateCM(spinYPos.get(i), ny);
-
-			/*double dx = xDiff(xcmNew[i], xcm[i]);
-			double dy = yDiff(ycmNew[i], ycm[i]);
-
-			if ((Math.abs(dx) > nx * 0.05 ||
-					Math.abs(dy) > ny * 0.05) && n != 0){
-				Calendar cal = Calendar.getInstance();
-				System.out.println(cal.getTime());
-				System.out.printf("Cell %d\tdxcm %.4f\tdycm %.4f\tt = %d\n",
-						i, dx, dy, n);
-				System.out.println("xcm");
-				ArrayList<Integer> xpos = spinXPos.get(i);
-				for (int j = 0; j < xpos.size(); j++){
-					System.out.print(xpos.get(j) + " ");
-				}
-				System.out.println("\nycm");
-				ArrayList<Integer> ypos = spinYPos.get(i);
-				for (int j = 0; j < ypos.size(); j++){
-					System.out.print(ypos.get(j) + " ");
-				}
-				System.out.println();
-			}*/
 		}
 	}
 
+	/**
+	 * Update the position vector of all cells
+	 */
 	public void updateR(){
 		for (int i = 1; i <= q; i++){
 			rx[i] += xDiff(xcmNew[i], xcm[i]);
@@ -570,6 +600,11 @@ public class CellPottsModel extends SpinModel {
 		}
 	}
 
+	/**
+	 * Return the mean square displacement (MSD) at the current MCS
+	 * @return an array storing the MSD (1st element) 
+	 * and the error (2nd element)
+	 */
 	public double [] calculateR2(){
 		double r2 = 0.0;
 		double r2Sq = 0.0; //for computing the error of R^2
@@ -617,8 +652,7 @@ public class CellPottsModel extends SpinModel {
 		r4 /= (double) count;
 
 		double a2 = ((1.0 / 2.0) * r4 / (r2 * r2)) - 1.0;
-
-		//use unbiased estimate for errors
+		
 		return new double [] {a2, r4};
 	}
 
@@ -719,74 +753,130 @@ public class CellPottsModel extends SpinModel {
 		return spinYPos.get(spin);
 	}
 
+	/**
+	 * Set the total number of MCS to taken in the simulation
+	 * @param n number of MCS
+	 */
 	public void setNumOfSweeps(int n){
 		if (n >= 0){
 			numOfSweeps = n;
 		}
 	}
 
+	/**
+	 * Return the total number of MCS taken in the simulation
+	 */
 	public int getNumOfSweeps(){
 		return numOfSweeps;
 	}
 
+	/**
+	 * Set the number of MCS to take before making measurements
+	 * @param n number of MCS
+	 */
 	public void setNEquil(int n){
 		if (n >= 0){
 			nequil = n;
 		}
 	}
 
+	/**
+	 * Return the number of MCS taken before making measurements
+	 */
 	public int getNEquil(){
 		return nequil;
 	}
 
+	/**
+	 * Return the acceptance rate of the current simulation
+	 */
 	public double getAcceptRate(){
 		return acceptRate;
 	}
 
+	/**
+	 * Return the horizontal component of the center of mass for cell q
+	 * @param q cell index
+	 */
 	public double getXCM(int q){
 		return xcmNew[q];
 	}
-
+	
+	/**
+	 * Return the vertical component of the center of mass for cell q
+	 * @param q cell index
+	 */
 	public double getYCM(int q){
 		return ycmNew[q];
 	}
 
+	/**
+	 * Set the interfacial energy between cells (alpha)
+	 * @param a new interfacial energy
+	 */
 	public void setAlpha(double a){
 		this.alpha = a;
 	}
 
+	/**
+	 * Return the interfacial energy between cells (alpha)
+	 */
 	public double getAlpha(){
 		return alpha;
 	}
 
+	/**
+	 * Set the free boundary energy (beta)
+	 * @param b new free boundary energy
+	 */
 	public void setBeta(double b){
 		this.beta = b;
 	}
-
+	
+	/**
+	 * Return the free boundary energy (beta)
+	 */
 	public double getBeta(){
 		return beta;
 	}
 
+	/**
+	 * Set the strength of area constraint (lambda)
+	 * @param l new area constraint strength
+	 */
 	public void setLambda(double l){
 		if (l >= 0){
 			this.lambda = l;
 		}
 	}
 
+	/**
+	 * Return the strength of area constraint (lambda)
+	 */
 	public double getLambda(){
 		return lambda;
 	}
 
-	public void setMotility(double m){
-		if (m >= 0){
-			this.motility = m;
+	/**
+	 * Set the cell motility strength
+	 * @param p new cell motility value
+	 */
+	public void setMotility(double p){
+		if (p >= 0){
+			this.motility = p;
 		}
 	}
 
+	/**
+	 * Return the cell motility strength (P)
+	 */
 	public double getMotility(){
 		return motility;
 	}
 
+	/**
+	 * Return the rotational diffusion coefficient
+	 */
 	public double getRotateDiff(){
 		return rotateDiff;
 	}
@@ -856,7 +946,10 @@ public class CellPottsModel extends SpinModel {
 	public int getTypesOfSpin(){
 		return q+1;
 	}
-
+	
+	/**
+	 * Get the number of cells alive
+	 */
 	public int getNumOfCellsAlive(){
 		int cellsAlive = 0;
 		for (int i = 1; i <= q; i++){
@@ -868,6 +961,9 @@ public class CellPottsModel extends SpinModel {
 	}
 
 	//printing methods
+	/**
+	 * Print the current lattice configuration to the system console
+	 */
 	public void printSpins(){
 		System.out.println();
 		for (int i = 0; i < ny; i++){
@@ -878,6 +974,9 @@ public class CellPottsModel extends SpinModel {
 		}
 	}
 
+	/**
+	 * Print the boundaries of the cells to the system console
+	 */
 	public void printBoundaries(){
 		System.out.println();
 
@@ -930,12 +1029,10 @@ public class CellPottsModel extends SpinModel {
 				nx, ny, q, alpha, lambda, motility, rotateDiff, numOfSweeps, run);
 		DataWriter r2Writer = new R2Writer();
 		DataWriter ergWriter = new EnergyWriter();
-		//DataWriter spinWriter = new SpinWriter(numOfSweeps);
 		DataWriter statsWriter = new StatisticsWriter(numOfSweeps, nequil);
 		DataWriter a2Writer = new A2Writer();
 		r2Writer.openWriter("r2_" + filename);
 		ergWriter.openWriter("energy_" + filename);
-		//spinWriter.openWriter("spin_" + filename);
 		a2Writer.openWriter("a2_" + filename);
 		statsWriter.openWriter("stats_" + filename);
 		CellPottsModel model = new CellPottsModel(
@@ -947,37 +1044,8 @@ public class CellPottsModel extends SpinModel {
 		model.run();
 		r2Writer.closeWriter();
 		ergWriter.closeWriter();
-		//spinWriter.closeWriter();
 		statsWriter.closeWriter();
 		a2Writer.closeWriter();
 		reader.closeReader();
-		/*reader.openReader("single_cell.dat");
-		int [][] spin = reader.readSpins();
-
-		reader.closeReader();
-
-		for (int i = 1; i <= 1000; i++){
-			System.out.println("Running trial " + i);
-			String filename = String.format("%d_%d_%d_a_%.1f_lam_%.1f_P_%.1f_D_%.1f_t_%d_run_%d.dat",
-					nx, ny, q, alpha, lambda, motility, rotateDiff, numOfSweeps, i+2000);
-			DataWriter r2Writer = new R2Writer();
-			//DataWriter ergWriter = new EnergyWriter();
-			DataWriter statsWriter = new StatisticsWriter(numOfSweeps, nequil);
-			r2Writer.openWriter("data/single_cell/r2_" + filename);
-			//ergWriter.openWriter("energy_" + filename);
-			statsWriter.openWriter("data/single_cell/stats_" + filename);
-			CellPottsModel model = new CellPottsModel(
-					nx, ny, q, temp, lambda, alpha, beta, motility, 
-					rotateDiff, seed, numOfSweeps, nequil, 
-					new DataWriter [] {r2Writer, statsWriter}, false);
-			model.initSpin(spin);
-			model.initPolarity();
-			model.run();
-			r2Writer.closeWriter();
-			//ergWriter.closeWriter();
-			statsWriter.closeWriter();
-
-		}*/
-
 	}
 }

@@ -4,6 +4,16 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Calendar;
 
+/**
+ * Measurement.java
+ * 
+ * Run a single trial for a particular set of parameters in the experiment. It
+ * can be run in a separate thread for parallel computation
+ * 
+ * @author MichaelChiang
+ *
+ */
+
 public class Measurement implements Runnable {
 	
 	private int trial;
@@ -15,6 +25,24 @@ public class Measurement implements Runnable {
 	private ArrayList<ThreadCompleteListener> threadListeners = 
 			new ArrayList<ThreadCompleteListener>();
 
+	/**
+	 * Initialise the simulation trial
+	 * @param nx number of columns in the lattice
+	 * @param ny number of rows in the lattice
+	 * @param q number of cells
+	 * @param temp effective temperature
+	 * @param lambda strength on area constraint
+	 * @param alpha interfacial energy between cells
+	 * @param beta free boundary energy
+	 * @param motility cell motility strength (P)
+	 * @param rotateDiff rotational diffusion coefficient
+	 * @param n number of Monte-Carlo steps (MCS) to take in the simulation
+	 * @param nequil number of MCS to take before making measurements
+	 * @param trial trial number
+	 * @param spin initial condition of the lattice
+	 * @param filepath output file directory
+	 * @param writeCM whether or not to write centre of mass data to file
+	 */
 	public Measurement(int nx, int ny, int q,
 			double temp, double lambda,
 			double alpha, double beta, double motility, double rotateDiff,
@@ -34,7 +62,8 @@ public class Measurement implements Runnable {
 		writers[3] = new EnergyWriter();
 		writers[4] = new StatisticsWriter(n, nequil);
 		
-		String name = String.format("%d_%d_%d_a_%.1f_lam_%.1f_P_%.1f_D_%.1f_t_%d_run_%d.dat",
+		String name = String.format(
+				"%d_%d_%d_a_%.1f_lam_%.1f_P_%.1f_D_%.1f_t_%d_run_%d.dat",
 				nx, ny, q, alpha, lambda, motility, rotateDiff, n, trial);
 		
 		writers[0].openWriter(Paths.get(filepath, "cm_" + name).toString());
@@ -44,7 +73,7 @@ public class Measurement implements Runnable {
 		writers[4].openWriter(Paths.get(filepath, "stats_" + name).toString());
 		
 		
-		//initialise the model
+		//Initialise the model
 		model = new CellPottsModel(nx, ny, q, temp, lambda, 
 				alpha, beta, motility, rotateDiff, -1, n, nequil, writers, false);
 		model.initSpin(spin);
@@ -64,16 +93,29 @@ public class Measurement implements Runnable {
 		
 		notifyThreadCompleteListener();
 	}
-
-	//for notifying the listeners when the model has finished running
+	
+	
+	/**
+	 * Add to the list of listeners to notify 
+	 * when the simulation has completed
+	 * @param l listener
+	 */
 	public void addThreadCompleteListener(ThreadCompleteListener l){
 		threadListeners.add(l);
 	}
-
+	
+	/**
+	 * Remove from the list of listeners to notify 
+	 * when the simulation has completed
+	 * @param l listener
+	 */
 	public void removeThreadCompleteListener(ThreadCompleteListener l){
 		threadListeners.remove(l);
 	}
 
+	/**
+	 * Notify the registered listeners that the simulation has completed
+	 */
 	public void notifyThreadCompleteListener(){
 		for (ThreadCompleteListener l : threadListeners){
 			l.notifyThreadComplete(this);

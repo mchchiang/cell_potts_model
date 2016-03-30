@@ -6,7 +6,7 @@ package cell_potts_model;
  * An interface implemented by classes which need to know when a thread
  * finishes all its tasks  
  * 
- * @author MichaelChiang
+ * @author Michael Chiang
  *
  */
 public interface ThreadCompleteListener {

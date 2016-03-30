@@ -10,7 +10,7 @@ import javax.swing.*;
  * Handle the window operations for the GUI. Main class of the program
  * for simulations with visualisation.
  * 
- * @author MichaelChiang
+ * @author Michael Chiang
  *
  */
 
@@ -20,6 +20,7 @@ public class PottsView extends JFrame {
 	private PottsViewPanel viewPanel;
 	private PottsControlPanel controlPanel;
 	
+	//constructor
 	public PottsView(){
 		this.setSize(1000, 1000);
 		this.setTitle("Cellular Potts Model");
@@ -40,14 +41,24 @@ public class PottsView extends JFrame {
 		new PottsView();
 	}
 	
+	/**
+	 * Set the model to be display on screen
+	 * @param model
+	 */
 	public void setModel(SpinModel model){
 		viewPanel.setModel(model);
 	}
 	
+	/**
+	 * Start drawing the model configuration to screen
+	 */
 	public void initImage(){
 		viewPanel.initImage();
 	}
 	
+	/**
+	 * Stop drawing the model configuration to screen
+	 */
 	public void stopDrawingImage(){
 		viewPanel.stopDrawingImage();
 	}

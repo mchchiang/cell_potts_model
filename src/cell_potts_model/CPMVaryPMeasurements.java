@@ -1,5 +1,16 @@
 package cell_potts_model;
 
+/**
+ * CPMVaryPMeasurements.java
+ * 
+ * Main class for the vary cell motility strength (P) experiment. 
+ * It allows user to specify all the parameters of the model, 
+ * the range of motility strength values that should be tested, 
+ * the number of threads to run, and the output directory
+ * 
+ * @author Michael Chiang
+ *
+ */
 public class CPMVaryPMeasurements implements ThreadCompleteListener {
 	
 	private int nx, ny, q;
@@ -17,6 +28,27 @@ public class CPMVaryPMeasurements implements ThreadCompleteListener {
 	
 	private boolean completeAllTrials = false;
 	
+	/**
+	 * Initialise the experiment
+	 * @param nx number of columns in the lattice
+	 * @param ny number of rows in the lattice
+	 * @param q number of cells
+	 * @param temp effective temperature
+	 * @param lambda strength on area constraint
+	 * @param alpha interfacial energy between cells
+	 * @param beta free boundary energy
+	 * @param motility  starting motility value
+	 * @param maxMotility maximum motility value
+	 * @param inc interval between tested motility values
+	 * @param rotateDiff rotational diffusion coefficient
+	 * @param n number of Monte-Carlo steps (MCS) to take in the simulation
+	 * @param nequil number of MCS to take before making measurements
+	 * @param maxTrial number of trials for each motility value
+	 * @param numOfThreads number of threads to run for the experiment (i.e.
+	 * number of trials to run at the same time)
+	 * @param spinFile file storing the initial condition of the lattice
+	 * @param filepath output file directory
+	 */
 	public CPMVaryPMeasurements(
 			int nx, int ny, int q,
 			double temp, double lambda,
@@ -50,18 +82,13 @@ public class CPMVaryPMeasurements implements ThreadCompleteListener {
 				break;
 			}
 			runNewThread();
-			if (trial < maxTrial){
-				trial++;
-			} else {
-				trial = 1;
-				this.motility = this.motility + this.inc;
-				if (this.motility > this.maxMotility){
-					completeAllTrials = true;
-				}
-			}
+			updateTrialNumber();
 		}
 	}	
 	
+	/**
+	 * Run a new trial on a separate thread
+	 */
 	public void runNewThread(){
 		boolean writeCM = false;
 		if (trial == 1) writeCM = true;
@@ -78,14 +105,18 @@ public class CPMVaryPMeasurements implements ThreadCompleteListener {
 	public synchronized void notifyThreadComplete(Runnable r) {		
 		if (!completeAllTrials){
 			runNewThread();
-			if (trial < maxTrial){
-				trial++;
-			} else {
-				trial = 1;
-				motility = motility + inc;
-				if (motility > maxMotility){
-					completeAllTrials = true;
-				}
+			updateTrialNumber();
+		}
+	}
+	
+	private void updateTrialNumber(){
+		if (trial < maxTrial){
+			trial++;
+		} else {
+			trial = 1;
+			motility = motility + inc;
+			if (motility > maxMotility){
+				completeAllTrials = true;
 			}
 		}
 	}

@@ -3,9 +3,10 @@ package cell_potts_model;
 /**
  * CPMVaryAlphaMeasurements.java
  * 
- * Main class for the varying alpha experiment. It allows user to specify
- * the all the parameters of the model and the range of alpha values that
- * should be tested.
+ * Main class for the vary interfacial energy (alpha) experiment. 
+ * It allows user to specify all the parameters of the model, 
+ * the range of alpha values that should be tested, 
+ * the number of threads to run, and the output directory
  * 
  * @author Michael Chiang
  *
@@ -27,6 +28,27 @@ public class CPMVaryAlphaMeasurements implements ThreadCompleteListener {
 	
 	private boolean completeAllTrials = false;
 	
+	/**
+	 * Initialise the experiment
+	 * @param nx number of columns in the lattice
+	 * @param ny number of rows in the lattice
+	 * @param q number of cells
+	 * @param temp effective temperature
+	 * @param lambda strength on area constraint
+	 * @param startAlpha starting alpha value
+	 * @param maxAlpha maximum alpha value
+	 * @param alphaInc interval between tested alpha values
+	 * @param beta free boundary energy
+	 * @param motility cell motility strength (P)
+	 * @param rotateDiff rotational diffusion coefficient
+	 * @param n number of Monte-Carlo steps (MCS) to take in the simulation
+	 * @param nequil number of MCS to take before making measurements
+	 * @param maxTrial number of trials for each alpha value
+	 * @param numOfThreads number of threads to run for the experiment (i.e.
+	 * number of trials to run at the same time)
+	 * @param spinFile file storing the initial condition of the lattice
+	 * @param filepath output file directory
+	 */
 	public CPMVaryAlphaMeasurements(
 			int nx, int ny, int q,
 			double temp, double lambda,
@@ -60,18 +82,13 @@ public class CPMVaryAlphaMeasurements implements ThreadCompleteListener {
 				break;
 			}
 			runNewThread();
-			if (trial < maxTrial){
-				trial++;
-			} else {
-				trial = 1;
-				alpha = alpha + inc;
-				if (alpha > maxAlpha){
-					completeAllTrials = true;
-				}
-			}
+			updateTrialNumber();
 		}
 	}	
 	
+	/**
+	 * Run a new trial on a separate thread
+	 */
 	public void runNewThread(){
 		boolean writeCM = false;
 		if (trial == 1) writeCM = true;
@@ -83,19 +100,22 @@ public class CPMVaryAlphaMeasurements implements ThreadCompleteListener {
 		t.start();
 	}
 	
-	
 	@Override
 	public synchronized void notifyThreadComplete(Runnable r) {		
 		if (!completeAllTrials){
 			runNewThread();
-			if (trial < maxTrial){
-				trial++;
-			} else {
-				trial = 1;
-				alpha = alpha + inc;
-				if (alpha > maxAlpha){
-					completeAllTrials = true;
-				}
+			updateTrialNumber();
+		}
+	}
+	
+	private void updateTrialNumber(){
+		if (trial < maxTrial){
+			trial++;
+		} else {
+			trial = 1;
+			alpha = alpha + inc;
+			if (alpha > maxAlpha){
+				completeAllTrials = true;
 			}
 		}
 	}

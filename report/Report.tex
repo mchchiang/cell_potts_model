@@ -25,6 +25,13 @@
 \epstopdfsetup{update}
 \usepackage[]{cite}
 
+\newcommand*{\MyPath}{/Users/MichaelChiang/Dropbox/Edinburgh/Courses/Year 3/SH_Project/cell_potts_model}%
+
+\lstset{language=Java,
+	basicstyle={\scriptsize\ttfamily},
+	%keywordstyle=\color{blue},
+	%commentstyle=\color{codegreen},
+	tabsize = 4}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \renewcommand{\vec}[1]{\mathbf{#1}}
@@ -56,12 +63,12 @@
 \begin{center}
         \Large\bf \Large\bf Senior Honours Project\\
         \Large\bf Physics 4\\[10pt]                     % Change to MP/CP/Astro
-        \LARGE\bf Investigation of Jamming in the Cellular Potts Model       % Change to suit
+        \LARGE\bf Investigation of Jamming in the\\ Cellular Potts Model       % Change to suit
 \end{center}
 \vspace*{0.5cm}
 \begin{center}
         \bf Michael Chiang\\                           % Repace with your name
-        25 March 2015                                    % Submission Date
+        30 March 2015                                    % Submission Date
 \end{center}
 \vspace*{5mm}
 %
@@ -84,7 +91,7 @@
 \end{quotation}
 
 \vspace*{2cm}
-Signature:\hspace*{8cm}Date: 25 March 2015
+Signature: Michael Chiang \hspace*{6.5cm}Date: 30 March 2015
 
 \vfill
 {\bf Supervisor:} Prof. D. Marenduzzo                 % Change to suit
@@ -109,30 +116,17 @@ Another widely used model in simulating cell dynamics in tissues is the cellular
 
 The remaining sections of this paper are organised as follows: Section 2 provides a description of the CPM, the concept of jamming, and its connection to the dynamics in dense biological tissues. Section 3 outlines the implementation of the model and the experimental methods for investigating whether CPM can induce the jamming transition. Section 4 and 5 present and discuss the results obtained from the simulations. 
 
-
-%The introduction section of the report should introduce the project in
-%more detail than in the abstract. In particular it should present the
-%motivation, the aims, outline of techniques used, and the scope of the project. 
-%It should also contain references to similar work in the
-%same field to put your work in the correct context.
-%
-%As a general rule, people reading the abstract and introduction alone
-%should have a good idea of the material in the project, the techniques
-%employed and the results obtained. A typical introduction should be
-%about 1 page, (300-450 words). 
-
-
 \section{Background and Theory}
 \subsection{Cellular Potts Model}
 \label{sec:CPM}
-Developed by Glazier and Graner\cite{graner1992}, the cellular Potts model (CPM)\footnote{The CPM is also known as the GGH model, naming after Glazier and Graner who first proposed it and Hogeweg who extended it for various biological modelling applications.} is a stochastic model widely used in simulating the motion of closely packed cells in a monolayer. The model is an extension of the Potts model used in statistical physics and takes into account of the physical characteristics and dynamics of biological cells. The model has successfully explained collective behaviours such as cell sorting \cite{graner1992} and streaming\cite{szabo2010}.
+Developed by Glazier and Graner\cite{graner1992}, the cellular Potts model (CPM)\footnote{The CPM is also known as the GGH model, naming after Glazier and Graner who first proposed it and Hogeweg who extended it for various biological modelling applications \cite{singlecell}.} is a stochastic model widely used in simulating the motion of closely packed cells in a monolayer. The model is an extension of the Potts model used in statistical physics and takes into account of the physical characteristics and dynamics of biological cells. The model has successfully explained collective behaviours such as cell sorting \cite{graner1992} and streaming\cite{szabo2010}.
 
 In the CPM, a cell monolayer is represented on a two dimensional lattice. Each lattice site is assigned with a non-negative integer spin $\sigma$ known as the cell index, where $\sigma \in [0,N]$ and $N$ is the total number of cells. Two lattice sites which share a side or a corner are considered as neighbours. A biological cell is denoted by a set of connected sites with the same spin (see figure \ref{fig:CPM}). $\sigma = 0$ is reserved for enumerating sites that are not part of any cell. Throughout this project, periodic boundary conditions were applied such that the boundaries have no influence on the cells dynamics.
 
 \begin{figure}[h]
 \centering
 \includegraphics[width=7.0cm]{figure/CPMDiagram.png}
-\caption{A pictorial representation of the cellular Potts model. A cell is represented by a domain in the lattice, which is a set of interconnecting sites with the same spin value. Diagram taken from Glazier \etal, Single Cell Based Models in Biology and Medicine [cite].}
+\caption{A pictorial representation of the cellular Potts model. A cell is represented by a domain in the lattice, which is a set of interconnecting sites with the same spin value. Diagram taken from ref. \cite{singlecell}.}
 \label{fig:CPM}
 \end{figure}
 
@@ -162,7 +156,7 @@ where $\alpha$ and $\beta$ are parameters for modelling the interfacial energy b
 
 The second term addresses the fact that cells are approximately the same size due to their incompressibility and resistance to height fluctuations. These aspects are modelled as an elastic constraint in the Hamiltonian. $a_i$ and $A_i$ are the current and target area of the $i$th cell. $\lambda$ sets the strength of this constraint and governs the degree of fluctuations of each cell's area.
 
-The third term is proposed by Szabo \emph{et al.} in their study of collective streaming behaviours in cell monolayers \cite{szabo2010}. It captures the aspect that  cells can generate a motile force and move along a polarized direction. The term models this effect by favouring spin changes which result in the cells moving along their preferred direction. Within the term, $\bm{n}_i$ is a polarity vector that describes the preferred direction of the cell, $\bm{r}_i$ is the centre of mass of the cell, and $P$ is a free parameter associated with the strength of the motility (taken to be homogeneous). The specific mechanisms of how a cell generates a polarized motion and how the polarity changes over time remain poorly understood and are subject to intense investigations [cite]. A simple model, as suggested by Bi \emph{et al.} \cite{bi2015motility} and is implemented in this work, is to assume that the polarity vector undergoes rotational diffusion over time. If one defines the polarity angle of the $i$th cell ($\theta_i$) as the angle between the cell's polarity vector ($\bm{n}_i$) and a reference axis (taken to be the $x$-axis herein), the rotational diffusion process is governed by the following equations:
+The third term is proposed by Szabo \emph{et al.} in their study of collective streaming behaviours in cell monolayers \cite{szabo2010}. It captures the aspect that  cells can generate a motile force and move along a polarized direction. The term models this effect by favouring spin changes which result in the cells moving along their preferred direction. Within the term, $\bm{n}_i$ is a polarity vector that describes the preferred direction of the cell, $\bm{r}_i$ is the centre of mass of the cell, and $P$ is a free parameter associated with the strength of the motility (taken to be homogeneous). The specific mechanisms of how a cell generates a polarized motion and how the polarity changes over time remain poorly understood and are subject to intense investigations\cite{ridley2003,mori2008}. A simple model, as suggested by Bi \emph{et al.} \cite{bi2015motility} and is implemented in this work, is to assume that the polarity vector undergoes rotational diffusion over time. If one defines the polarity angle of the $i$th cell ($\theta_i$) as the angle between the cell's polarity vector ($\bm{n}_i$) and a reference axis (taken to be the $x$-axis herein), the rotational diffusion process is governed by the following equations:
 \begin{eqnarray}
 \partial_t\theta_i(t) & = & \eta_i(t)\\
 \langle{\eta_i(t)\eta_j(t')\rangle} & = & 2D_r\delta(t-t')\delta_{ij}
@@ -175,12 +169,13 @@ where $\eta_i$ is a noise function with zero mean and a variance of $2D_r$ with 
 where $\tilde\eta$ is a random number generated such that the last term reproduces the statistical mean and variance of the noise function. For simplicity, this can be achieved by generating a uniformly distributed random number between $\sqrt{3}\,[-1,1)$ , where the factor of $\sqrt{3}$ comes from normalisation\footnote{See Appendix \ref{app:rotatediff} for a detailed derivation of this relation.}.
 
 \subsection{Jamming Transitions in Biological Tissues}
+\label{sec:jamminginbio}
 In condensed matter, jamming describes the transition from a fluid to a rigid state in which the structure of the material remains disordered. This occurs in various non-biological systems such as emulsions, foams, granular materials, and colloidal dispersions\cite{hecke2010}. For example, colloidal particles can jam and become rigid when the packing fraction is increased beyond a critical point, while foams can lose its ability to flow when the applied stress is lowered. The conditions for the transition are described by the ``jamming phase diagram,'' which was first proposed by Liu and Nagel (see figure \ref{fig:JammingPhaseDiagram}) \cite{liu1998}. The key parameters governing the transition are the temperature, the applied stress, and the density of the material. For instance, in the well-known glass transition, a fluid becomes solid-like but maintains a disordered structure when cooled. This corresponds to moving downwards along the temperature -- 1/density plane in the diagram. 
 
 \begin{figure}[h]
 \centering
 \includegraphics[width=9.0cm]{figure/JammingPhaseDiagram.jpeg}
-\caption{The jamming phase diagram proposed by Liu and Nagel. The glass transition corresponds to moving vertically in the temperature -- 1/density plane.}
+\caption{The jamming phase diagram proposed by Liu and Nagel. The glass transition corresponds to moving vertically in the temperature -- 1/density plane. Diagram taken from ref. \cite{liu2010}.}
 \label{fig:JammingPhaseDiagram}
 \end{figure}
 
@@ -212,45 +207,49 @@ The main structure and design of the code are described as follows: There are th
 \begin{figure}[h]
 \centering
 \includegraphics[width=0.65\textwidth]{figure/CPMGUI.pdf}
-\caption{Developed Graphical User Interface for the Cellular Potts Model}
+\caption{Developed Graphical User Interface for the Cellular Potts Model.}
 \label{fig:CPMGUI}
 \end{figure}
 \FloatBarrier
 
 The dependency between the model and visualisation classes is kept at a minimum to reduce the potential impact or changes required when one of them is modified. This is achieved by means of the observer design pattern. The model class extends the native Java class \texttt{Observable}, while the visualisation classes implement the \texttt{Observer} interface, which requires classes to implement the method \texttt{update()} that is called when the \texttt{Observable} has changed (see figure \ref{fig:ClassDiagram}). The \texttt{Observable} class manages the entire process of notifying the classes which implement the \texttt{Observer} interface when the model has changed. The actual model classes, therefore, do not need to have specific knowledge about the visualisation classes, so the coupling between the model and visualisation classes is minimised.
 
-For more details about the responsibilities and functionalities of each class, please see the \texttt{Javadocs} included in the source code (see Appendix ?? for more information about accessing the source code). 
-
+For more details about the responsibilities and functionalities of each class, please see the \texttt{Javadocs} included in the source code (see Appendix \ref{app:sourcecode} for more information about accessing the source code). 
 
 
 \subsubsection{Verification of the Implemented Model}
-It is important to verify that the program implemented the model correctly before using it to perform experiments. This was achieved via two approaches: Firstly, a set of unit test cases were developed to test individual methods of the program to ensure the calculations are correct. These test cases are included in the source code package. Secondly, the program was tested against the results from other published papers which investigated the CPM. In particular, simulation data for a single cell suspended in a fluid are compared to those obtained by Szabo and coworkers \cite{szabo2010}. By using the same set of parameters (i.e. $\alpha = 2.0$, $\beta = 1.0$, $\lambda = 1.0$, $P = 0.0$, and cell target area $A = 50$) and averaging the results from 1000 trials, the root-mean-square displacement (see section 3.2.1) of the cell after 600 MCS was found to be $5 \pm 3$ pixels. This agrees, within the measurement error, to that reported by the researchers, which is approximately $3 \pm 1$ pixels. Therefore, there is a high degree of confidence that the written program has implemented the model accurately.
+It is important to verify that the program implemented the model correctly before using it to perform experiments. This was achieved via two approaches: Firstly, a set of unit test cases were developed to test individual methods of the program to ensure the calculations are correct. These test cases are included in the source code package. Secondly, the program was tested against the results from other published papers which investigated the CPM. In particular, simulation data for a single cell suspended in a fluid were compared to those obtained by Szabo and co-workers\cite{szabo2010}. By using the same set of parameters (i.e. $\alpha = 2.0$, $\beta = 1.0$, $\lambda = 1.0$, $P = 0.0$, and cell target area $A = 50$) and averaging the results from 1000 trials, the root-mean-square displacement (see section \ref{sec:statsmeasured}) of the cell after 600 MCS was found to be $5 \pm 3$ pixels (see figure \ref{fig:singlecellmsd} in appendix for a graph of the mean square displacement). This agrees, within the measurement error, to that reported by the researchers, which is approximately 3 pixels \footnote{This value was obtained by estimating the end point of the curve with zero motility (P = 0) in figure 6a in ref. \cite{szabo2010}.}. Therefore, there is a high degree of confidence that the written program has implemented the model accurately.
 
 
 \subsection{Experimental Methods}
 \subsubsection{Simulation Methods}
-All simulations conducted were run on a $200 \times 200$ lattice with 1000 cells. The target area of the cells was set to be the average area occupied by each cell, which is 40 lattice sites. $\lambda$ and  $D_r$ were set to be 1.0 and 0.1, respectively. These parameters were chosen as they produce a physical representation of cells in tissues, and they were also used in other CPM simulations \cite{szabo2010, graner1992}. Notice the value for $\beta$ is irrelevant here since the focus is on confluent tissues, where there is no empty space between cells and hence no free boundaries. As mentioned above, periodic boundary conditions were assumed to eliminate the effects of external boundaries on the cell dynamics. 
+All simulations were conducted on a $200 \times 200$ lattice with 1000 cells. The target area of the cells was set to be the average area occupied by a cell, which is 40 pixel squared. $\lambda$ and $D_r$ were set to be 1.0 and 0.1, respectively. These parameters were chosen as they produce a physical representation of cells in tissues and were also used in other CPM simulations \cite{szabo2010,graner1992}. Notice the value for $\beta$ is irrelevant here since the focus is on confluent tissues, where there is no empty space between cells and hence no free boundaries. As mentioned above, periodic boundary conditions were assumed to eliminate the effects of external boundaries on the cells' dynamics. 
 
-For practical reasons, the same initial condition was used for all simulation. This should not result in correlation between measurements obtained in different trials, as the spin-update process is randomised and a different seed was used in each trial for the random number generator. The initial condition was prepared such that the system begins in a steady-state condition. This minimises the effect of transient behaviours on the measurements. To achieve this, cells were first initialise as squares with equal area on the lattice. The system was then allowed to run for 200000 MCS to reach steady-state. 
+For practical reasons, the same initial condition was used in all simulations. This, however, should not result in correlations between measurements obtained in different trials since the spin update in each elementary step is a random process, and a different seed was used for the random number generator in each trial. The initial condition is a steady-state configuration of the system where its total energy has stabilised. This minimises the effect of transient behaviours on the measurements. The steady-state configuration was obtained by first initialising the cells as squares with equal area on the lattice. The system was then allowed to run for $2 \times 10^5$ MCS with $\alpha = 8$. This time range resulted in a steady state arrangement, as it was observed that the total energy of the system had plateaued after $10^5$ MCS (see figure \ref{fig:energyinitcondition} in appendix \ref{app:addfig} system's total energy versus time graph). The high $\alpha$ value was chosen to maintain smooth boundaries between cells.
+
 
 \subsubsection{Experiments Conducted}
-Two experiments were performed to determine if jamming exists in the CPM. The first experiment investigates whether increasing the model parameter $\alpha$, which represents the interfacial energy between cells, would induce a jamming transition. Physically, this corresponds to an increase in the cells' surface tension or a reduction in the adhesiveness between cells. To testify this, 20 simulation trials were performed for each $\alpha$ ranging from 0.5 to 10.0 in increment of 0.5 with no cell motility. Each trial was run for 100000 MCS, which is a typical time range used in CPM simulations \cite{kabla2012}. Despite the typical $\alpha$ values explored by researchers are between 0.5 to 4.0, higher  values were considered in this project to obtain a complete picture of the parameter?s effect on the system. Furthermore,  $\alpha$'s lower than 0.5 were not considered as cells tend to dissociate in this range. 
+Two experiments were performed to determine if jamming exists in the CPM. The first experiment investigates whether increasing the model parameter $\alpha$, which represents the surface energy between cells, would induce the fluid-to-solid transition. Physically, this corresponds to an increase in the cells' surface tension or a reduction in the adhesiveness between cells. In the experiment, $\alpha$ between 0.5 and 10.0 were investigated in increments of 0.5. For each $\alpha$, 20 simulation trials were performed without cell motility (i.e. $P = 0$). Each trial was run for 100000 MCS, which is a typical time range used in CPM simulations\cite{kabla2012}. Even though the normal $\alpha$ values used by researchers are between 1.0 to 4.0 \cite{szabo2010}, values above this range were considered in this project in order to obtain a complete picture of the parameter's effect on the system. Furthermore, $\alpha$ values below 0.5 were not studied as cells tend to dissociate in this range. 
 
-The second experiment investigates whether increasing the cell motility strength,, would relax the rigidity of the system as observed in the vertex model. The variation of  was explored in systems with different ?s ranging between 1.0 to 4.0 in intervals of 0.2. For each $\alpha$, $P$ was systematically increased from 0.0 to 5.0 in increments of 0.2. 10 simulation trials were conducted for each set of  $\{\alpha,P\}$, and each trial was run for 10000 MCS. The number of trials and simulation time were reduced for this experiment due to the substantial increase in computation required when motility is induced, as one needs to calculate the centre of mass of the affected cells in every elementary step (see equation ??). 
+The second experiment investigates whether increasing the cell motility strength, $P$, would reduce the rigidity of the system as observed in the vertex model. The variation of $P$ was explored in systems with $\alpha$'s between 1.0 and 4.0 in intervals of 0.2. For each $\alpha$, $P$ was systematically increased from 0.0 to 5.0 in increments of 0.2. 10 simulation trials were conducted for each set of $\{ \alpha, P\}$, and each trial was run for 10000 MCS. Compared with the first experiment, a reduced number of trials and a shorter simulation time were considered because of the increase in complexity and duration of the simulation when motility was induced.  
+
+Since the number of accepted spin-change attempts would vary for different parameters, it was decided to rescale the time values in the data for each parameter set by the corresponding acceptance rate, which is defined as the ratio of the number of spin-change accepted to the number of elementary steps taken. This ensures a fair comparison of the measured statistical quantities for different parameters at a particular time. It also allows one to relate simulation results more closely with experimental data\cite{sanz2010}.
+
 
 \subsubsection{Statistics Measured in Simulations}
-\label{sec:StatsMeasure}
+\label{sec:statsmeasured}
 An important step towards determining the existence of jamming in the CPM is to identify whether the system exhibits rigid, glassy dynamics. Two statistical quantities widely used in studying glass-like behaviours are the mean square displacement and the non-Gaussian parameter. These were measured in all simulation trials. 
 
-\paragraph{Mean Square Displacment}
-The mean square displacement (MSD) of the system at a particular time $t$ is given by:
+\paragraph{Mean Square Displacement}
+The mean square displacement (MSD) of a cell at a particular time $t$ is given by:
 \begin{equation}
 \langle{\bm{r}^2(t)\rangle} = \langle{\left(\bm{r}_i(t) - \bm{r}_i(0)\right)^2\rangle},
 \end{equation}
-where $\bm{r}_i (t)$ is the centre of mass of the $i$th cell at the time $t$ and $\langle...\rangle$ denotes an ensemble average over all cell trajectories of the system. The MSD measures the deviation of the cells from their initial positions. In the fluid regime, the cells are diffusive and their MSD is expected to increase linearly with time:\begin{eqnarray}
+where $\bm{r}_i (t)$ is the centre of mass of the $i$th cell at time $t$ and $\langle...\rangle$ denotes an ensemble average over all cell trajectories of the system. The MSD measures the deviation of the cells from their initial positions. In the fluid regime, the cells are diffusive and their MSD is expected to increase linearly with time:
+\begin{eqnarray}
 \langle{\bm{r}^2(t)\rangle} = 2dDt, 
 \end{eqnarray}
-where $D$ is the diffusion coefficient or the diffusivity and $d$ is the number of dimensions of the system, which is 2 in this case. In the glass-like regime, cells movements are restricted due to the cage effect (section 2.2). This causes sub-diffusive behaviours at intermediate time scales when cells remain trapped in their cages, and the MSD typically shows a power-law relationship with time where the exponent is smaller than one [Hofling]. This effect is indicated by a plateauing region when plotting the MSD curve against time on a logarithmic scale (see figure 4).
+where $D$ is the diffusion coefficient or the diffusivity and $d$ is the number of dimensions of the system (which is 2 in this case). In the glass-like regime, cells movements are restricted due to the cage effect (see section \ref{sec:jamminginbio}). This causes sub-diffusive behaviours at intermediate time scales when cells remain trapped in their cages, and the MSD typically shows a power law relationship with time where the exponent is smaller than one \cite{hofling2013}. This effect is indicated by a plateauing region when plotting the MSD curve against time on a logarithmic scale (see figure \ref{fig:MSDExpectedCurve}).
 \begin{figure}[h]
 \centering
 \includegraphics[width=0.5\textwidth]{figure/MSDExpectedCurve.pdf}
@@ -259,270 +258,190 @@ where $D$ is the diffusion coefficient or the diffusivity and $d$ is the number 
 \end{figure}
 
 \paragraph{Non-Gaussian Parameter}
-The non-Gaussian parameter $\alpha_2$ measures the deviation from a Gaussian form in the van Hove self-correlation function, which is related to the probability distribution of a particle's displacement from its original position after a specific time [Rahman1964] [Hofling]. Mathematically, the parameter is the kurtosis of the correlation function and, in two dimensions, is given by:
+The non-Gaussian parameter ($\alpha_2$) measures the deviation from a Gaussian form in the van Hove self-correlation function, which is related to the probability distribution of a particle's displacement from its original position after a specific time \cite{rahman1964,hofling2013}. Mathematically, the parameter is the kurtosis of the correlation function and, in two dimensions, is given by:
 \begin{equation}
 \alpha_2 = \frac{1}{2}\,\frac{\langle{\bm{r}^4(t)\rangle}}{\langle{\bm{r}^2(t)\rangle}^2} - 1,
 \end{equation}
-where $\langle{\bm{r}^4(t)\rangle} \equiv \langle{\left(\bm{r}_i(t) - \bm{r}_i(t_0)\right)^4\rangle}$. The parameter is zero when the probability distribution is Gaussian, which is the case when the system is diffusive in the fluid regime. The motivation for measuring this parameter is to detect the cage breaking events that occur in glass-like regime at intermediate time scales [Schotz]. These events would cause the probability distribution to become non-Gaussian as cells would have more directed motion when changing neighbours.
+where $\langle{\bm{r}^4(t)\rangle} \equiv \langle{\left(\bm{r}_i(t) - \bm{r}_i(0)\right)^4\rangle}$. The parameter is zero when the probability distribution is Gaussian, which is the case when the system is diffusive in the fluid regime. The motivation for measuring this parameter is to detect the cage breaking events that occur in glass-like regime at intermediate time scales\cite{schoetz2013}. These events would cause the probability distribution to become non-Gaussian as cells would have more directed motion when changing neighbours. 
 
 \subsubsection{Classification of Fluid and Solid-Like Behaviour}
-To quantitatively distinguish the system?s behaviour between the fluid and solid regime, the diffusivity and the exponent of the MSD were measured. These quantities were also used to analyse whether the transition from fluid to solid, if exists, is a smooth crossover or a critical phenomenon. 
+\label{sec:fluidsolidmeasure}
+To quantitatively distinguish the system's behaviour between being a fluid and a solid, the diffusivity and the exponent of the MSD were measured. These quantities are explained as follows: 
 
 \paragraph{Diffusivity}
-The diffusivity $D$ measures the ability of the system to diffuse. In two dimensions, it is defined by:
+The diffusivity $D$ measures the ability of the cells to spread. In two dimensions, it is defined by:
  \begin{eqnarray}
 D = \frac{1}{4}\, \lim_{t \rightarrow \infty} \frac{\langle{\bm{r}^2(t)\rangle}}{t}.
 \end{eqnarray}
-If the system is deep in the jammed state, the cells would remain frozen for a long period of time due to confinement by their neighbours. This results in a low diffusivity. In the limit where the system is completely rigid and sub-diffusive behaviour (i.e. MSD scales sub-linearly with time) persists for infinitely long, the diffusivity is zero. Therefore, one can argue that the fluid-to-solid transition occurs when the system?s diffusivity falls below a certain threshold limit. This quantity was used by Bi et al. as part of their analysis in determining the transition point in the vertex model [Bi2015].
+If the system is deep in the jammed state, the cells would remain frozen for a long period of time due to confinement by their neighbours. This would result in a low diffusivity. In the limit where the system is completely rigid and sub-diffusive behaviour (i.e. MSD scales sub-linearly with time) persists for infinitely long, the diffusivity is zero. Therefore, one can argue that the fluid-to-solid transition occurs when the system's diffusivity falls below a certain threshold. This quantity was used by Bi \emph{et al.} as part of their analysis in determining the transition point in the vertex model \cite{bi2015motility}.
 
-There are two common approaches in calculating the diffusivity of the system. One approach is to perform a linear least squares fit at a timescale beyond the sub-diffusive interval where the mean square displacement is linear. Another approach uses the definition of diffusivity. As the simulation time for each trial is at least $10^4$ MCS, one can approximate the diffusivity by using the mean square displacement value from the final time step $t_f$:
+There are two common approaches in calculating the diffusivity of the system. One approach is to perform a linear least squares fit at a timescale beyond the sub-diffusive interval where the mean square displacement is linear (i.e. least squares estimate) \cite{michalet2010}. Another approach uses the definition of diffusivity. As the simulation time for each trial is at least $10^4$ MCS, one can approximate the diffusivity by using the mean square displacement value from the final time step $t_f$ (i.e. end-point estimate) \cite{bi2015motility}:
 \begin{eqnarray}
 D \approx \frac{1}{4} \frac{\langle{\bm{r}^2(t_f)\rangle}}{t_f}.
 \end{eqnarray}
-Both methods were used in the project to find the diffusivity of the system. The obtained results are compared in the section 4.1.
+Both methods were used in the project to find the diffusivity of the system. The obtained results are compared in the section \ref{sec:varyalphaeffects}.
 
-\paragraph{Diffusion Exponent}
-As mentioned above, systems with glassy dynamics exhibit sub-diffusive behaviours at intermediate time scales during which the MSD has a power-law relationship with time. Therefore, a useful parameter to classify whether the system has a fluid or solid behaviour is the exponent $\gamma$ in the power law, which is given by:
+\paragraph{MSD Exponent}
+As mentioned above, systems with glassy dynamics exhibit sub-diffusive behaviours at intermediate time scales during which the MSD has a power law relationship with time. Therefore, a useful parameter to classify whether the system has a fluid or solid behaviour is the exponent $\gamma$ in the power law, which is given by:
 \begin{equation}
-\langle\bm{r}^2(t)\rangle \sim t^{\gamma}
+\langle\bm{r}^2(t)\rangle \sim t^{\gamma}.
 \end{equation}
-At a specific time, one can consider the system to be fluid-like if the cells are diffusive and $\gamma = 1$. On the other hand, one can classify the system to be in the solid, glassy regime if the cells are sub-diffusive and $\gamma < 1$.
+At a specific time, one can consider the system to be fluid-like if the cells are diffusive and $\gamma$ is around 1.0. On the other hand, one can classify the system to be in the solid, glassy regime if the cells are sub-diffusive and $\gamma$ falls below a certain threshold from 1.0.
 
 \section{Results}
-\subsection{Effects of Varying Cellular Interaction ($\alpha$)}
+\subsection{Effects of Varying the Surface Energy ($\alpha$) on the Model}
+\label{sec:varyalphaeffects}
 \begin{figure}[h]
 \centering
-\includegraphics[width=0.8\textwidth]{figure/R2_Alpha.pdf}
+\includegraphics[width=\textwidth]{figure/R2_Alpha.pdf}
 \caption{Mean square displacement of the cells versus time on a log-log plot for $\alpha$ = 0.5 (top green curve) to 10 (bottom yellow curve) in increments of 0.5. The typical intercellular separation (squared) is also plotted as a dashed-line to indicate whether the cells have exchanged neighbours. Notice the difference between the final MSD value for $\alpha = 1.0$ (light blue curve) and that for  $\alpha = 1.5$ (orange curve) is more than decade, which is larger than the difference between the final MSD values for higher $\alpha$.
 }
 \label{fig:r2alpha}
 \end{figure}
+Figure \ref{fig:r2alpha} shows the MSD of the cells versus time on a log-log plot for $\alpha$ between 0.5 and 10.0 in increments of 0.5 (and without cell motility). As $\alpha$ increases, the displacement of the cells become suppressed. The MSD curves flatten in the time interval between 10 and 1000 MCS for $\alpha > 5$. Furthermore, for $\alpha$ between 1.5 and 4, the curves start to bend when $t \sim 100$ MCS. The plateauing behaviour indicates the cells are sub-diffusive. This can be explained by the cage effect where cells are confined by their neighbours and have difficulty to diffuse. 
 
-Figure \ref{fig:r2alpha} shows the MSD of the cells versus time on a logarithmic scale for $\alpha$ between 0.5 and 10.0 in increments of 0.5. As $\alpha$ increases, the displacement of the cells become suppressed. The MSD curves flatten in the time interval between 10 and 1000 MCS for $\alpha > 5$. Furthermore, for $\alpha$ between 1.5 and 4, the curves start to bend when $t \sim 100$ MCS. The plateauing behaviour indicates the cells are sub-diffusive. This can be explained by the cage effect where cells are confined by their neighbours and have difficulty to diffuse. 
+The gradients of the MSD curves (in log scale) also suggest that the system exhibits two types of behaviours. For $\alpha < 1.5$, the cells are diffusive as one can qualitatively see the MSD increases linearly with time (the actual exponents of the MSDs are measured and will be discussed further below). For $\alpha > 1.5$, the system remains sub-diffusive even by the end of the simulation as indicated by the plateauing behaviour. It should also be noted that the difference between the MSD values at the final time step for $\alpha = 1.0$ and $\alpha = 1.5$ is more than a decade, which is much larger than the difference between the final MSD values for higher $\alpha$'s. These observations suggest that there is a change in the system's dynamics at around $\alpha = 1.5$, with the system acting like a fluid below this point. 
 
-The slopes of the MSD curves also suggest that the system exhibits two types of dynamics. For $\alpha < 1.5$, the cells are diffusive as one can qualitatively see the MSD increases linearly with time (the actual exponents are measured and will be discussed further below). For $\alpha > 1.5$, the system remains sub-diffusive even by the end of the simulation as indicated by the plateauing behaviour. It should also be noted that the difference between the final points of the MSD for $\alpha = 1.0$ and $\alpha = 1.5$ is more than a decade, which is much larger than the difference between those for higher $\alpha$ values. These observations suggest that there is a change in the dynamics of the system at around $\alpha = 1.5$, with the system behaving like a fluid below this point. 
-
-It is also possible to estimate whether the system has a fluid or solid-like dynamics by comparing the average displacement of the cells to the typical separation between two cells (i.e. the intercellular distance). When the system is fluid-like, one would expect the cells to have travelled, on average, more than the intercellular distance over the simulation period, as they would have experienced multiple neighbour exchange events. Since the target area of each cell is 40 $\textrm{pixel}^2$, cells are likely to have changed neighbours when the MSD surpasses this threshold, which is indicated by a dashed line in the figure. 
 \begin{figure}[h]
 \centering
-\begin{subfigure}[h]{0.49\textwidth}
+\begin{subfigure}[h]{0.496\textwidth}
 \includegraphics[width=\textwidth]{figure/CM_Alpha_1.pdf}
 \caption*{$\alpha = 1.0$}
 \end{subfigure}
-\begin{subfigure}[h]{0.49\textwidth}
+\begin{subfigure}[h]{0.496\textwidth}
 \includegraphics[width=\textwidth]{figure/CM_Alpha_2.pdf}
 \caption*{$\alpha = 2.0$}
 \end{subfigure}
-\begin{subfigure}[h]{0.49\textwidth}
+\begin{subfigure}[h]{0.496\textwidth}
 \includegraphics[width=\textwidth]{figure/CM_Alpha_5.pdf}
 \caption*{$\alpha = 5.0$}
 \end{subfigure}
-\begin{subfigure}[h]{0.49\textwidth}
+\begin{subfigure}[h]{0.496\textwidth}
 \includegraphics[width=\textwidth]{figure/CM_Alpha_10.pdf}
 \caption*{$\alpha = 10.0$}
 \end{subfigure}
-\caption{The recorded trajectories of a sample of 100 cells in the simulation. }
-\label{fig:CM}
+\caption{Recorded trajectories of a sample of cells near the centre of the lattice for $\alpha = 1.0$ (top left), 2.0 (top right), 5.0 (bottom left), and 10.0 (bottom right). }
+\label{fig:cmalpha}
 \end{figure}
- It can be seen that only the MSDs for $\alpha$ between 0.5 and 1.5 go beyond this limit, suggesting that the system behaves like a fluid in this $\alpha$ range. This is consistent with the qualitative analysis on the slopes of the MSDs. 
+\FloatBarrier
 
-Moreover, the observations on the MSDs are in agreement with the measured trajectories of the cells, which are shown in figure \ref{fig:CM}. When $\alpha = 1.0$, the trajectories overlap with each other to the extent that it is difficult to identify any structural pattern. This indicates that the system is fluid-like. When $\alpha = 2.0$, most trajectories become localised and a hexagonal structure starts to emerge, suggesting the system has solid-like behaviours. This agrees with the conjecture that there is a change in the system?s dynamics at around $\alpha = 1.5$. For $\alpha = 5.0$ and $\alpha = 10.0$, the trajectories are further suppressed, supporting the view that the system becomes more solid-like as $\alpha$ increases.  
+It is also possible to estimate whether the system has a fluid or solid-like dynamics by comparing the average displacement of the cells to the typical separation between two cells (i.e. the intercellular distance). When the system is fluid-like, one would expect the cells to have travelled, on average, more than the intercellular distance over the simulation period, as they would have experienced multiple neighbour exchange events. Since the target area of each cell is 40 pixel squared, cells are likely to have changed neighbours when the MSD surpasses this threshold, which is indicated by a dashed line in the figure. It can be seen that only the MSDs for $\alpha$ between 0.5 and 1.5 go beyond this limit, suggesting that the system behaves like a fluid in this $\alpha$ range. This is consistent with the qualitative analysis on the slopes of the MSDs.  
+
+
+Moreover, the observations on the MSDs are in agreement with the measured trajectories of the cells, which are shown in figure \ref{fig:cmalpha}. When $\alpha = 1.0$, the trajectories overlap with each other to the extent that it is difficult to identify any structural pattern. This indicates the system is fluid-like. When $\alpha = 2.0$, most trajectories become localised and a hexagonal structure starts to emerge, suggesting the system has solid-like behaviour. This agrees with the conjecture that there is a change in the system's dynamics at around $\alpha = 1.5$. For $\alpha = 5.0$ and $\alpha = 10.0$, the trajectories are further suppressed, supporting the view that the system becomes more solid-like as $\alpha$ increases. 
 
 \begin{figure}[h]
 \centering
-\includegraphics[width=0.8\textwidth]{figure/A2_Alpha_All.pdf}
+\includegraphics[width=\textwidth]{figure/A2_Alpha_All.pdf}
 \caption{The non-Gaussian parameter $\alpha_2$ of the cells versus time on a semi-log plot for $\alpha$ ranging from 0.5 (the green line at the top) to 10.0 (the yellow line at the bottom) in increments of 0.5. As $\alpha$ increases, the dynamics of the cells are slowed down.}
 \label{fig:a2alpha}
 \end{figure}
 
-Figure \ref{fig:a2alpha} shows the measured non-Gaussian parameters for the studied $\alpha$ values. The behaviours of the parameters over time are consistent with the MSD data. The maximum of the parameter for each ? occurs at the time interval when the corresponding MSD plateaus. This is expected since sub-diffusive motion would necessarily result in a non-Gaussian probability distribution for the cell?s displacement. Moreover, the parameter has a higher maximum as $\alpha$ increases. This is consistent with the observation that the system becomes more sub-diffusive as $\alpha$ rises. 
+Figure \ref{fig:a2alpha} shows the measured non-Gaussian parameters for the studied $\alpha$ values. The behaviours of the parameters over time are consistent with the MSD data. The maximum of the parameter for each $\alpha$ occurs at the time interval when the corresponding MSD plateaus. This is expected since sub-diffusive motion would typically result in a non-Gaussian probability distribution for the cell's displacement. Moreover, the parameter has a higher maximum as $\alpha$ increases. This is consistent with the observation that the system becomes more sub-diffusive as $\alpha$ rises. 
 
-As discussed in section 3.3, the motivation of measuring the non-Gaussian parameter is to identify the cage escape effect, which is a signature of glassy dynamics. However, as illustrated in figure \ref{fig:r2alpha}, the cells have moved an average distance that is less than the intercellular distance when $\alpha \ge 2.0$. This suggests that the non-Gaussian nature of the probability distribution cannot be attributed to the anticipated effect. Further investigation on individual cell trajectories would be needed to understand the origin of this non-Gaussian aspect. 
+As discussed in section \ref{sec:statsmeasured}, the motivation of measuring the non-Gaussian parameter is to identify the cage escape effect, which is a signature of glassy dynamics. However, as illustrated by figure \ref{fig:r2alpha}, the cells have moved an average distance that is less than the intercellular distance when $\alpha \ge 2.0$. This suggests that the non-Gaussian nature of the probability distribution cannot be attributed to the anticipated effect. Further investigation on individual cell trajectories would be needed to understand the origin of this non-Gaussian aspect. 
 
 
-
-With both the MSD and the non-Gaussian parameter indicating the presence of glass-like, solid regime in the model, the analysis is focused on understanding whether the change from the fluid to a solid regime is a smooth crossover or a critical phenomenon. This was done by analysing the diffusivity and the exponent of the MSD obtained for the ? values and inv
-
-Figure 8 shows the diffusivity of the system for the investigated ? values using both methods as discussed in section 3.4. The results obtained are in agreement for ? below 1.0 when the cells the diffusivity is non-negligible (D > 0.02). Both methods show that the diffusivity decreases as ? increases, especially in the region between 0.5 to 2.0. This is consistent with the picture developed from analysing the mean square displacement curves, that there is a change from fluid to solid behaviour in this region. However, the lack
-
-Beyond ? = 1.5, the obtained diffusivity differs by around 50\% between the two approaches (see inset of figure 8). This is not surprising since the cell movements are sub-diffusive. The endpoint approach would definitely overestimate the diffusivity as it effectively measures the slope of a straight line from the origin to that point, which is clearly not the case as seen from the MSD figure. This suggest that the standard approach in determi
-
-A more accurate approach in quantifying the state behaviour of the system is to consider the exponent of the MSD (?), which directly describes the degree of sub-diffusiveness of the system. Figure 9 shows the exponents for the studied ? values, which were obtained by performing least squares fit on the MSD curves in the time interval from t = 10000 to 50000 MCS. It provides a much more conclusive indication that there is a critical behaviour between 1.0 to 2.0. ? is near 1.0 for both ? = 0.5 and 1.0. However, when ? increases to 1.5, ? drops rapidly to 0.5 and remains within the range between 0.3 to 0.7 for higher ? values. This supports the view that the system is in a fluid regime when ? is below 1.5 and in a rigid, glassy regime when ? is above this value. The sudden, non-monotonic decrease in the exponent also indicate 
-
-The fact that ? settles at around 0.5 is an interesting behaviour, as it coincides with the exponent predicted for systems undergoing single-file diffusion (SFD). This is the phenomenon when the system is rigid but has a porous which allow the movements of a single stream of particles or elements of the system. 
+The MSDs and the cell trajectories provide a qualitative indication that the model changes from fluid to solid-like as $\alpha$ increases. This is supported quantitatively by the measured diffusivity and MSD exponents. Figure \ref{fig:diffalpha} shows the diffusivity of the system for the studied $\alpha$ values obtained by the two methods discussed in section \ref{sec:fluidsolidmeasure} – least squares fit estimate and end point estimate. The results from both methods are in agreement for $\alpha < 1.5$ within the determined error. They show that the diffusivity falls below 0.005 and becomes negligible when $\alpha$ goes beyond 1.5. This is consistent with the previous analysis that the change from fluid to solid-like behaviour takes place near this $\alpha$ value. When $\alpha > 1.5$, the obtained values for the diffusivity differ by around 50\% between the two methods (see inset of figure \ref{fig:diffalpha}). This is not surprising since the cells are sub-diffusive in this regime, so the end point estimate, which measures the slope of a straight line connecting the origin to the final point of the MSD, would be larger than the least squares fit estimate, which measures the slope near the end of the MSD curve. Because of this inconsistency and the fact that the diffusivity changes smoothly with $\alpha$, it was decided not to use this measure to quantitatively distinguish the fluid and solid-like behaviour of the system.
 \begin{figure}[h]
 \centering
 \includegraphics[width=0.9\textwidth]{figure/Diffusivity_Combined_Alpha.pdf}
-\caption{The measured diffusion exponent $\gamma$ for $\alpha$ ranging from 0.5 to 10.0 in an increment of 0.5. Error bars are plotted for the data points but are too small to be seen. Notice the abrupt decrease in the exponent between $\alpha = 1$ and $2$.  indicates that }
+\caption{The diffusivity of the system for the investigated $\alpha$ values obtained using both the least squares fitting (green line) and the endpoint estimate approach (purple line). The error bars for the least squares fit estimate are also shown but are too small to be seen. The inset shows the fractional difference between the two estimates.}
+\label{fig:diffalpha}
 \end{figure}
-\FloatBarrier
+
 
 \begin{figure}[h]
 \centering
 \includegraphics[width=0.9\textwidth]{figure/MSDExpAvg_Alpha.pdf}
-\caption{The measured diffusion exponent $\gamma$ for $\alpha$ ranging from 0.5 to 10.0 in an increment of 0.5. Error bars are plotted for the data points but are too small to be seen. Notice the abrupt decrease in the exponent between $\alpha = 1$ and $2$.  indicates that }
+\caption{The fitted exponents of the MSD for the investigated $\alpha$ values. Notice the critical behaviour in the exponent between $\alpha$ = 1.0 to 2.0 when it drops abruptly from approximately 1.0 to 0.5.}
+\label{fig:diffexpalpha}
 \end{figure}
-\FloatBarrier
 
-\subsection{Effects of Inducing Cell Motility $P$}
+Another quantity used to classify the system's dynamics is the MSD exponent ($\gamma$) as discussed in section \ref{sec:fluidsolidmeasure}. Figure \ref{fig:diffexpalpha} shows the exponents for the studied $\alpha$ values. These were computed by performing least squares fits on the MSD curves shown in figure \ref{fig:r2alpha} in the time range from $t = 10000$ to $50000$ MCS. It can be seen that $\gamma$ is around 1.0 for $\alpha < 1.5$, meaning the system is diffusive. For $\alpha > 1.5$, $\gamma$ drops to 0.5 and fluctuates mostly between 0.4 to 0.6, indicating the system is sub-diffusive. This further supports the view that the system is fluid-like when $\alpha$ is below 1.5 and rigid-like when above. The abrupt change in the exponent at around 1.5 suggests that the system does not change smoothly from a fluid to solid behaviour. It also shows that exponent can provide a clear distinction between the fluid and solid-like dynamics of the system. Moreover, the fact that $\gamma$ settles at around 0.5 is an interesting behaviour, as it coincides with the exponent predicted for systems undergoing one dimensional single-file diffusion. A more detailed discussion on this subject is presented in section \ref{sec:jammingincpm}.
+
+
+\subsection{Effects of Varying Cell Motility Strength ($P$) on the Model}
+The previous section demonstrated that an increase in the surface energy ($\alpha$) will cause the system to change from fluid to solid-like. This section presents the results obtained from varying the cell motility strength ($P$) of the system, with the aim of understanding whether an increase in the motility can cause a rigid system to flow.
 
 \begin{figure}[h]
 \centering
-\begin{subfigure}[h]{0.49\textwidth}
+\begin{subfigure}[h]{0.496\textwidth}
 \includegraphics[width=\textwidth]{figure/R2_P_1_with_text.pdf}
 \caption*{$\alpha = 1.0$}
 \end{subfigure}
-\begin{subfigure}[h]{0.49\textwidth}
+\begin{subfigure}[h]{0.496\textwidth}
 \includegraphics[width=\textwidth]{figure/R2_P_2_with_text.pdf}
 \caption*{$\alpha = 2.0$}
 \end{subfigure}
+\caption{The mean square displacement of the cells versus time on a log-log plot for $\alpha = 1.0$ (left) and $\alpha = 2.0$ (right) with cell motility strength $P$ from 0.0 (purple curve) to 5.0 (blue curve) in increments of 1.0.}
+\label{fig:r2p}
+\end{figure}
+
+Figure \ref{fig:r2p} shows the MSDs (in log scale) of two systems with $\alpha = 1.0$ and 2.0 under different cell motility strengths from $P = 0.0$ to 5.0. As discussed from the last section, the system is fluid-like when $\alpha = 1.0$ and solid-like when $\alpha = 2.0$ in the limit of zero motility (see figure \ref{fig:cmalpha}). For $\alpha  = 1.0$, the increase in cell motility does not alter the long term dynamics ($t > 1000$ MCS) of the system. It remains diffusive and fluid-like as the MSD increases linearly with time. At time scales between $t = 10$ and 100 MCS, the increase in cell motility even leads to a hyper-diffusive behaviour for $P > 3.0$ as the gradient of the MSD (in log scale) become greater than one. 
+
+The MSDs for $\alpha = 2.0$ reveal a more important observation. One can see that the rise in cell motility gradually changes the system's behaviour from sub-diffusive to diffusive, as shown by the increase in the gradient of the MSD. When $P = 5.0$, the MSD becomes linear with time and surpasses the mean separation between two cells (displayed as a dashed-line on the figure), indicating that the cells have likely exchanged neighbours and the system is fluid-like. Hence, the MSDs demonstrate qualitatively that an increase in cell motility has the ability to change a rigid system into a fluid. 
+
+The analysis on the MSDs is also consistent with the cell trajectories recorded for $\alpha = 2.0$ (see figure \ref{fig:cmp}). When there is no motility, a lot of the trajectories are localised and a hexagonal pattern can be observed, indicating that the system is in the solid regime. However, when $P$ is increased to 5.0, the trajectories overlap and one can no longer identify any structure. This suggests that the system is in the fluid regime and further supports that cell motility can unjam a rigid system. 
+
+\begin{figure}[h]
+\centering
+\begin{subfigure}[h]{0.496\textwidth}
+\includegraphics[width=\textwidth]{figure/CM_P_A_2_0.pdf}
+\caption*{$P = 0.0$}
+\end{subfigure}
+\begin{subfigure}[h]{0.496\textwidth}
+\includegraphics[width=\textwidth]{figure/CM_P_A_2_5.pdf}
+\caption*{$P = 5.0$}
+\end{subfigure}
+\caption{Trajectories of a sample cells near the centre of the lattice with $\alpha = 2.0$ for different cell motility strength $P$. The left figure corresponds to a simulation where there is no cell motility ($P = 0.0$). The right figure corresponds to a simulation where $P = 5.0$.}
+\label{fig:cmp}
 \end{figure}
 
 \begin{figure}[h]
 \centering
-\begin{subfigure}[h]{0.49\textwidth}
-\includegraphics[width=\textwidth]{figure/CM_P_0.pdf}
-\caption*{$P = 0.0$}
-\end{subfigure}
-\begin{subfigure}[h]{0.49\textwidth}
-\includegraphics[width=\textwidth]{figure/CM_P_5.pdf}
-\caption*{$P = 5.0$}
-\end{subfigure}
-\end{figure}
-\begin{figure}[h]
-\centering
-\includegraphics[width=0.7\textwidth]{figure/Alpha_P_PhaseDiagram.pdf}
-\caption{}
+\includegraphics[width=0.8\textwidth]{figure/Alpha_P_PhaseDiagram.pdf}
+\caption{The fitted MSD exponent for different $\alpha$ and $P$. One can clearly see a transition line between the solid and fluid regime which begins at $\alpha = 1.4$ when there is no motility.}
+\label{fig:diffexpalphap}
 \end{figure}
 \FloatBarrier
 
+Moreover, the indication that cell motility can reduce the system's rigidity is supported quantitatively by the measured MSD exponents ($\gamma$). Figure \ref{fig:diffexpalphap} shows the MSD exponents for all possible sets of parameters within the studied phase space of $\alpha$ and $P$. Specifically, $\alpha$ was tested between 1.0 to 4.0 in increments of 0.2 while $P$ was tested between 1.0 to 5.0 with the same increment. The exponents were measured by performing least squares fits between $t = 1000$ to 5000 MCS. The figure demonstrates clearly that the system has two types of dynamics within the parameter space. There is a region where $\gamma$ is approximately 1.0, suggesting that the system is diffusive and fluid-like. Outside this region, $\gamma$ drops abruptly to around 0.5, indicating the system is sub-diffusive and rigid-like. The locations where the exponent changes abruptly give an estimate of the ``transition line'' that distinguishes the two types of behaviours. In the region where $\alpha < 2.5$, the exponents reveal that an increase in cell motility from $P = 0.0$ to 5.0 allows the system to cross the transition line from being sub-diffusive (solid) to diffusive (fluid). It can be extrapolated from the line that a transition will also occur for higher $\alpha$ values, given the motility strength is large enough. Hence, the exponents demonstrate quantitatively that cell motility can increase the fluidity of the system. 
+
+The figure also reveals that there exists a critical value $\alpha^* \sim 1.4$ below which the system is always in the fluid regime, independent of the cell motility strength. This agrees with the finding from varying the surface energy that the system changes dynamics at around 1.5. In addition, similar to the previous experiment, the measured exponents are predominately at around 0.5 when the system is solid-like. This again suggests that the system may be undergoing single-file diffusion, which will be discussed in the next section.
+
+
 
 \section{Discussion}
-%This section must contain a discussion of the results. This should
-%include a discussion of the experimental and/or numerical errors, and a
-%comparison with the predictions of the background and theory underlying
-%the techniques used. This section should highlight particular strengths
-%and/or weaknesses of the methods used.
+\subsection{Jamming in CPM}
+\label{sec:jammingincpm}
+The results presented above provide a strong indication that the CPM exhibits jamming, or the fluid-to-solid transition. In the experiment of varying the surface energy ($\alpha$) with zero cell motility, it was found that an increase in the energy can change the system from being diffusive to sub-diffusive, which was interpreted as a transition from fluid to solid-like behaviour. The transition was illustrated qualitatively by the cell trajectories and the mean square displacement (MSD) and quantitatively by the diffusivity and the MSD exponent. It was noted that the change in dynamics does not occur gradually; rather, there exists a critical value of $\alpha \sim 1.5$ where the behaviour alters suddenly from fluid to rigid-like, as indicated by the drop in the exponent from 1.0 to around 0.5. The large change in the exponent across the transition also suggests that it can serve as a good parameter to distinguish the system between the two types of dynamics. 
 
+Physically, an increase in surface energy causes the cells to prefer having less surface area. It corresponds to a reduction in the adhesiveness between cells or an increase in their surface tension. Hence, the results suggest that reducing cell-cell adhesion would lead to more rigid-like behaviour. This observation agrees with the jamming conditions found in the vertex model \cite{bi2015density, bi2015motility} and is consistent with experimental findings. For instance, in their study on asthmatic airway epithelium, Park \emph{et al.} found that there is a lower intercellular adhesive stress when the tissues are more rigid and jammed \cite{park2015}.  The fact that reducing adhesiveness intensifies jamming may be counter-intuitive from a particulate perspective, as one would expect individual particles to be less restricted and have greater ability to flow in such condition.  However, cells are interconnected in the lattice with no empty spacing in between. A larger adhesive force leads to more interfaces between cells, which in turn provides more degrees of freedom in the system and hence more liquid-like behaviour \cite{bi2015density}. 
 
+In the experiment of varying the cell motility strength, it was found that an increase in motility can unjam a rigid system and cause it to flow. The change in behaviour was again demonstrated by the cell trajectories, the MSD, and the change in the MSD exponent. The finding is consistent the effects of cell motility on jamming in the vertex model \cite{bi2015motility}. It further supports that individual cell motion is a key parameter underpinning the dynamics of the tissue. 
+
+The combined effects of varying both the surface energy and the cell motility on the system?s rigidity are summarised well by the MSD exponents measured across all points within the studied parameter space (see figure \ref{fig:diffexpalphap}). With this space, there exists a line where the exponent changes abruptly across it from 1.0 to 0.5. This was taken as a ``transition line'' that distinguishes the system between the fluid and solid regime. It can be noticed that the line is approximately linear when $\alpha \gtrsim 1.6$, indicating that the transition is only dependent on the ratio of the cell motility strength to the surface energy in this regime. This conforms with the analysis by Kabla on studying the effect of motility and surface tension on collective behaviours in tissues \cite{kabla2012}. However, it also identifies that using this ratio to quantify the transition may not be accurate when $\alpha$ falls below this region.  Another interesting observation in both experiments is that the MSD exponent fluctuates mostly at around 0.5 in the solid regime.  This coincides with the predicted exponent for systems undergoing single-file diffusion (SFD), which refers to the one-dimensional motion of particles in a confined channel where overtaking is not possible \cite{levitt1973}. Simulations of systems near the glass transition have revealed string-like motions, where particles move in quasi-1D channels, that closely resemble the dynamics of SFD \cite{donati1998}. One might, therefore, wonder if the cells within the current model are displaying this type of behaviour. It should be emphasised that this remains a plain speculation as there may be other mechanisms which can account for the same exponent value. Further, the exponents were computed by fitting only the final decade of the MSD curves. A step towards making a more conclusive statement about the system?s dynamics is to extend the simulation time for another decade and check if the exponents maintain the same value. 
+
+\subsection{Validity of the Results}
+The measured statistical quantities in the project are in general consistent with each other, giving confidence in the validity of the obtained results. For example, the length scales of the recorded cell trajectories agree with the calculated MSDs, and the maxima of the non-Gaussian parameters correspond well to the region where the MSDs plateau. In addition, the qualitative prediction of where the system changes its dynamics based on the trajectories and the MSD agrees with the transition points determined quantitatively from the diffusivity and the MSD exponent. Furthermore, as mentioned in section 3.2, the simulation program was unit-tested and was shown to be capable of reproducing results reported by others. These further enhance the credibility of the collected data. The only notable inconsistency within the measured results is the diffusivity of the system. It was shown that the calculated values using the two common approaches, the least squares fit estimate and the end point estimate, can differ by 50\% in the regime when the system is sub-diffusive. This suggests that one should take extra care in defining the procedure of computing this metric, as different approaches would not generally produce the same result.  
+
+\subsection{Future Work}
+Although the project has achieved all of the objectives set out initially and demonstrated that the CPM exhibits jamming, more work could be done in the following areas: Firstly, due to the limited time of the project, the effects of the rotational diffusion coefficient, which is another parameter of the CPM, on jamming has not been investigated. Computer simulations in the vertex model have shown that a smaller rotational diffusion coefficient, which corresponds to individual cells having more persistent motion, would lead to a more fluid-like behaviour \cite{bi2015motility}. One could, therefore, try varying this coefficient in the CPM and investigate whether the same change in dynamics can be observed. Secondly, the analysis on jamming has been focused on using the MSD exponent to quantitatively distinguish the system's state between fluid and solid. One may wish to further confirm that this classification is correct by calculating other metrics that can determine the system's rigidity and checking that the same transition line can be produced.  A possible metric is the self-intermediate scattering function\cite{hove1954}. It characterises the mean relaxation time of the system. The function tends to zero when the system has relaxed and become fluid-like but remain close to one when the system has not relaxed and is rigid. Furthermore, the novel aspect that the MSD exponents hover at around 0.5 in the solid regime also provides an interesting avenue for future research. One of the speculations, as described above, is that the system is undergoing quasi-one-dimensional single-file diffusion. To investigate such effect, one would need to analyse individual cell trajectories to identify whether there exists correlated motion in quasi-one-dimensional channels. \\ \\Finally, it should be reminded of the potential significance in developing a better understanding on jamming in biological tissues. A particular promising avenue is that the unjamming process is remarkably similar to the Epithelial Mesenchymal Transition (EMT), where rigid-like epithelial cells are transformed into motile, fluid-like cells \cite{kalluri2009}. Apart from playing a pivotal role in embryonic development and tissue generation, the transition is also found in pathological processes such as tumour progression \cite{thiery2002}. Therefore, understanding the precise mechanisms that allow tissues to change from solid to fluid-like may further improve the current theories on cancer invasion and metastasis, which may lead to advance in therapies and treatments. 
 
 \section{Conclusion}
 %This section should summarise the results obtained, detail
 %conclusions reached, suggest future work, and changes that you would make if you repeated the
 %experiment. This section should in general be short, 100 to 150 words
 %being typical for most projects.
-%\par\noindent
-%If you have opted to have multiple {\bf Theory, Method, Results}
-%sections, draw all the results together in a {\bf single} conclusion.
-%\section{References}
-%
-%Don't forget this section. Detail the relevant references which
-%should be cited at the correct place in the text of the report. There
-%are no fixed rules as to how many references are {\it needed}. Generally
-%the longer the project, and the more background reading you had to do,
-%the more references will be required. 
-%
-%When you cite a reference you must give sufficient information. For
-%example, for a journal article give, {\it Author}, {\it Title of
-%article},
-%{\it Journal Name}, {\it Volumn}, {\it Page}, and {\it Year}, 
-%while for a book give, {\it Author}, {\it Title},
-%{\it (Editor if there is one)}, {\it Publisher}, and {\it Year}.        
 
-%\bibliographystyle{unsrt}   
-%\bibliography{bibliography}
-\begin{thebibliography}{99}
-	\bibitem{bi2015motility}
-		D. Bi \etal
-		Motility-driven glass and jamming transitions in biological tissues.
-		\emph{arXiv}
-		(2015)
-	
-	\bibitem{sanz2010}
-		E. Sanz, D. Marenduzzo.
-		Dynamic Monte Carlo versus Brownian dynamics: A comparison for self-diffusion and crystallization in colloidal fluids.
-		\emph{J. Chem. Phys.}
-		\textbf{132}, 194102 (2010)
-	
-	\bibitem{szabo2010}
-		A. Szabo \etal
-		Collective cell motion in endothelial monolayers.
-		\emph{Phys. Biol.}
-		\textbf{7} 046007 (2010)
-		
-	\bibitem{schoetz2013}
-		E.-M. Schoetz \etal
-		Glassy dynamics in three-dimensional embryonic tissues.
-		\emph{J. R. Soc. Interface}
-		\textbf{10} 20130726 (2013)
-	
-	\bibitem{angelini2010}
-		T. E. Angelini \etal
-		Glass-like dynamics of collective cell migration.
-		\emph{Proc. Natl. Acad. Sci. U.S.A}
-		\textbf{108} 4714 (2011)
-	
-	\bibitem{hecke2010}
-		M. Hecke
-		Jamming of soft particles: geometry, mechanics, scaling and isostaticity.
-		\emph{J. Phys.: Condens. Matter}
-		\textbf{22} 033101 (2010)
-	
-	\bibitem{liu2010}
-		A. J. Liu, S. R. Nagel
-		The jamming transition and the marginally jammed solid.
-		\emph{Annu. Rev. Condens. Matter Phys.}
-		\textbf{1} 347 (2010)
-		
-	\bibitem{graner1992}
-		F. Graner, J. A. Glazier
-		Simulation of biological cell sorting using a two-dimensional extended Potts model.
-		\emph{Phys. Rev. Lett.}
-		\textbf{69} 2013 (1992)
-	
-	\bibitem{bi2015density}
-		D. Bi \etal
-		A density-independent rigidity transition in biological tissues.
-		\emph{Nat. Phys.}
-		\textbf{11} 1074 (2015)
-		
-	\bibitem{kabla2012}
-		A. J. Kabla
-		Collective cell migration: leadership, invasion and segregation.
-		\emph{J. R. Soc. Interface}
-		\textbf{9} 3268 (2012)
-	
-	\bibitem{nagai2001}
-		T. Nagai, H. Honda
-		A dynamic cell model for the formation of epithelial tissues.
-		\emph{Philos. Mag. Part B}
-		\textbf{81} 699 (2001)
-	
-	\bibitem{friedl2009}
-		P. Friedl, D. Gilmour
-		Collective cell migration in morphogenesis, regeneration and cancer.
-		\emph{Nat. Rev. Mol. Cell Biol.}
-		\textbf{10} 445 (2009)
-	
-	\bibitem{liu1998}
-		A. J. Liu, S. R. Nagel
-		Nonlinear dynamics: Jamming is not just cool any more.
-		\emph{Nature}
-		\textbf{396} 21 (1998)
-		
-	\bibitem{hofling2013}
-		F. H\"ofling, T. Franosch
-		Anomalous transport in the crowded world of biological cells.
-		\emph{Rep. Prog. Phys.}
-		\textbf{76} 046602 (2013)
-	
-	
 
-\end{thebibliography}
+\bibliographystyle{mybibstyle}   
+\bibliography{bibliography}
 
 \appendix
 \section{Appendices}
-\subsection{Implementing Rotational Diffusion of the Cells on Computer}
+\subsection{Implementing Rotational Diffusion of the Cell's Polarity Vector on the Computer}
 \label{app:rotatediff}
 In section \ref{sec:CPM}, the implementation for the rotational diffusion of the cell's polarity vector was discussed. The rotational diffusion process can be described by the following Langevin equations:
 \begin{eqnarray}
@@ -565,12 +484,118 @@ a & = & \sqrt{3},
 so the random values must be between $\tilde\eta \in \sqrt{3}[-1,1)$.
 
 \subsection{Additional Figures}
+\label{app:addfig}
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.65\textwidth]{figure/Initial_Condition_Energy.pdf}
+\caption{The total energy of the system versus time for a simulation used to produce the steady-state initial configuration. Notice the energy of the system has stabilised after $t > 10^5$ MCS.}
+\label{fig:energyinitcondition}
+\end{figure}
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.65\textwidth]{figure/RMS_SingleCell.pdf}
+\caption{The root-mean-square displacement of a cell versus time for the single cell suspended in fluid simulation. The shaded area indicates the error of the measurement.}
+\label{fig:rmssinglecell}
+\end{figure}
+\FloatBarrier
+\subsection{Instructions for Using the Simulation Code}
+\subsubsection{Downloading and Compiling the Code}
+The source code is readily available on GitHub and can be accessed by the following link: \url{https://github.com/mchchiang/cell_potts_model}. The following is the procedure to clone the source code:
+\begin{enumerate}
+\item Navigate to the desired directory where the code will be stored in terminal.
+\item Enter the following command to clone the code from GitHub:
+\begin{lstlisting}[language=bash, basicstyle={\small\ttfamily}]
+git clone https://github.com/mchchiang/cell_potts_model.git
+\end{lstlisting}
 
 
-\subsection{Accessing the Source Code}
-Due to the substantial size of the program, a copy of the source code is not included in the appendix of the report. The source code is available on GitHub with the following link: 
+\end{enumerate}
 
-To download a copy of the source code, 
+\subsubsection{Running the Code with Visualisation}
+\begin{enumerate}
+\item Navigate to the source code directory (i.e. \texttt{../src}) in terminal.
+\item Enter the following command to run the simulation:
+\begin{lstlisting}[language=bash, basicstyle={\small\ttfamily}]
+java cell_potts_model.PottsView
+\end{lstlisting}
+\end{enumerate}
 
-Please contact the author if a 
+\subsubsection{Running the Code without Visualisation}
+\begin{enumerate}
+\item Navigate to the source code directory (i.e. \texttt{../src}) in terminal.
+\item 
+\begin{lstlisting}[language=bash, basicstyle={\small\ttfamily}]
+java cell_pott_model.CellPottsModel <args>
+\end{lstlisting}
+\end{enumerate}
+
+\subsection{Simulation Code}
+\label{app:sourcecode}
+The following is the source code of the project. The classes are organised into the three groups as mentioned in section \ref{sec:codestructure}.
+
+\subsubsection{Model Classes}
+
+\noindent\texttt{SpinModel.java}
+\lstinputlisting{"\MyPath/src/cell_potts_model/SpinModel.java"}
+\vspace*{0.5cm}
+\noindent\texttt{CellPottsModel.java}
+\lstinputlisting{"\MyPath/src/cell_potts_model/CellPottsModel.java"}
+\vspace*{0.5cm}
+\noindent\texttt{NullModel.java}
+\lstinputlisting{"\MyPath/src/cell_potts_model/NullModel.java"}
+
+\subsubsection{Visualisation Classes}
+
+\noindent\texttt{PottsView.java}
+\lstinputlisting{"\MyPath/src/cell_potts_model/PottsView.java"}
+\vspace*{0.5cm}
+\noindent\texttt{PottsControlPanel.java}
+\lstinputlisting{"\MyPath/src/cell_potts_model/PottsControlPanel.java"}
+\vspace*{0.5cm}
+\noindent\texttt{PottsViewPanel.java}
+\lstinputlisting{"\MyPath/src/cell_potts_model/PottsViewPanel.java"}
+
+
+\subsubsection{I/O Classes}
+\noindent\texttt{DataWriter.java}
+\lstinputlisting{"\MyPath/src/cell_potts_model/DataWriter.java"}
+\vspace*{0.5cm}
+\noindent\texttt{EnergyWriter.java}
+\lstinputlisting{"\MyPath/src/cell_potts_model/EnergyWriter.java"}
+\vspace*{0.5cm}
+\noindent\texttt{CMWriter.java}
+\lstinputlisting{"\MyPath/src/cell_potts_model/CMWriter.java"}
+\vspace*{0.5cm}
+\noindent\texttt{R2Writer.java}
+\lstinputlisting{"\MyPath/src/cell_potts_model/R2Writer.java"}
+\vspace*{0.5cm}
+\noindent\texttt{A2Writer.java}
+\lstinputlisting{"\MyPath/src/cell_potts_model/A2Writer.java"}
+\vspace*{0.5cm}
+\noindent\texttt{SpinWriter.java}
+\lstinputlisting{"\MyPath/src/cell_potts_model/SpinWriter.java"}
+\vspace*{0.5cm}
+\noindent\texttt{StatisticsWriter.java}
+\lstinputlisting{"\MyPath/src/cell_potts_model/StatisticsWriter.java"}
+\vspace*{0.5cm}
+\noindent\texttt{NullWriter.java}
+\lstinputlisting{"\MyPath/src/cell_potts_model/NullWriter.java"}
+\vspace*{0.5cm}
+\noindent\texttt{SpinReader.java}
+\lstinputlisting{"\MyPath/src/cell_potts_model/SpinReader.java"}
+
+\subsubsection{Measurement Classes}
+
+\noindent\texttt{Measurement.java}
+\lstinputlisting{"\MyPath/src/cell_potts_model/Measurement.java"}
+\vspace*{0.5cm}
+\noindent\texttt{ThreadCompleteListener.java}
+\lstinputlisting{"\MyPath/src/cell_potts_model/ThreadCompleteListener.java"}
+\vspace*{0.5cm}
+\noindent\texttt{CPMVaryAlphaMeasurements.java}
+\lstinputlisting{"\MyPath/src/cell_potts_model/CPMVaryAlphaMeasurements.java"}
+\vspace*{0.5cm}
+\noindent\texttt{CPMVaryPMeasurements.java}
+\lstinputlisting{"\MyPath/src/cell_potts_model/CPMVaryPMeasurements.java"}
+
 \end{document}

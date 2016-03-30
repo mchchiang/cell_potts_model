@@ -10,6 +10,10 @@ public class SpinWriter extends DataWriter {
 	
 	private int numOfSweeps;
 	
+	/**
+	 * Initialise the spin writer
+	 * @param sweeps number of sweeps or MCS for the simulation
+	 */
 	public SpinWriter(int sweeps){
 		numOfSweeps = sweeps;
 	}
@@ -17,7 +21,6 @@ public class SpinWriter extends DataWriter {
 	@Override
 	public void writeData(CellPottsModel model, int time) {
 		if (numOfSweeps-1 == time){
-			System.out.println("Writing spin file");
 			int nx = model.getNumOfColumns();
 			int ny = model.getNumOfRows();
 			writer.println(nx + " " + ny);

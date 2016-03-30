@@ -9,6 +9,15 @@ import java.util.Observer;
 import java.util.Timer;
 import java.util.TimerTask;
 
+/**
+ * PottsViewPanel.java
+ * 
+ * Paint the lattice configuration on screen
+ * 
+ * @author Michael Chiang
+ *
+ */
+
 @SuppressWarnings("serial")
 public class PottsViewPanel extends JPanel implements Observer {
 	
@@ -17,12 +26,21 @@ public class PottsViewPanel extends JPanel implements Observer {
 	private BufferedImage fg = null;
 	private Timer timer = null;
 	
+	
+	/**
+	 * Initialise the view panel
+	 * @param model the spin model to be displayed on screen
+	 */
 	public PottsViewPanel(SpinModel model){
 		this.model = model;
 		this.model.addObserver(this);
 		setColours();
 	}
 	
+	/**
+	 * Set the spin model to be displayed on screen
+	 * @param model spin model
+	 */
 	public void setModel(SpinModel model){
 		this.model.deleteObserver(this);
 		this.model = model;
@@ -31,14 +49,9 @@ public class PottsViewPanel extends JPanel implements Observer {
 		repaint();
 	}
 	
-	public void turnOnGraphics(){
-		this.model.addObserver(this);
-	}
-	
-	public void turnOffGraphics(){
-		this.model.deleteObserver(this);
-	}
-	
+	/**
+	 * Set the colour for each spin
+	 */
 	public void setColours(){
 		int typesOfSpin = model.getTypesOfSpin();
 		colours = new Color [typesOfSpin];
@@ -51,6 +64,10 @@ public class PottsViewPanel extends JPanel implements Observer {
 		}
 	}
 	
+	/**
+	 * Begin painting the model configuration on screen with fixed 
+	 * update rate
+	 */
 	public void initImage(){
 		int width = model.getNumOfColumns();
 		int height = model.getNumOfRows();
@@ -80,6 +97,9 @@ public class PottsViewPanel extends JPanel implements Observer {
 		}, 0, 33);
 	}
 	
+	/**
+	 * Stop painting the model configuration on screen
+	 */
 	public void stopDrawingImage(){
 		timer.cancel();
 		timer = null;
@@ -100,6 +120,11 @@ public class PottsViewPanel extends JPanel implements Observer {
 		drawSpin((Integer) spinIndices[0], (Integer) spinIndices[1]);
 	}	
 	
+	/**
+	 * Update the spin value of a particular lattice site on screen
+	 * @param i column index of the site
+	 * @param j row index of the site
+	 */
 	public void drawSpin(int i, int j){
 		fg.setRGB(i, j, colours[model.getSpin(i, j)].getRGB());
 	}

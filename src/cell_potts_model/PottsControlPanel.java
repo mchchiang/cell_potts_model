@@ -143,16 +143,23 @@ public class PottsControlPanel extends JPanel implements ActionListener {
 					int seed = -1;
 					int numOfSweeps = Integer.parseInt(txtNumOfSteps.getText());
 					int nequil = 0;
+					
 					btnRun.setEnabled(false);
+					
 					CellPottsModel model = new CellPottsModel(
 							nx, ny, q, temp, lambda, alpha, beta, motility, rotateDiff,
 							seed, numOfSweeps, nequil, new DataWriter [] {}, true);
+					
 					model.initSpin();
 					model.initPolarity();
+					
 					view.setModel(model);
 					view.initImage();
+					
 					model.run();
+					
 					view.stopDrawingImage();
+					
 					btnRun.setEnabled(true);
 				}
 			};

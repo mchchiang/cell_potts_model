@@ -15,6 +15,11 @@ public class StatisticsWriter extends DataWriter {
 	private int numOfSweeps; 
 	private int nequil;
 	
+	/**
+	 * Initialise the stats writer
+	 * @param numOfSweeps number of sweeps or MCS for the simulation
+	 * @param nequil number of MCS to take before measurement begins
+	 */
 	public StatisticsWriter(int numOfSweeps, int nequil){
 		this.numOfSweeps = numOfSweeps;
 		this.nequil = nequil;
