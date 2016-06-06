@@ -75,14 +75,10 @@
 %                       Insert your abstract HERE
 %                       
 \begin{abstract}
-        The abstract is a short, concise explanation of the project
-        covering the aims, outlines of techniques used and a short
-        summary of the results. It should contain enough information to
-        make the aims and success of the project clear, but contain no details.
-        A typical abstract should be between 50 and 100 words.
+This project investigates the existence of jamming, or the fluid-to-solid transition, in the cellular Potts model (CPM) by systematically varying two of the model's parameters: the surface energy ($\alpha$) and the cell motility strength ($P$). From analysing the mean square displacement (MSD), non-Gaussian parameter, diffusivity and MSD exponent of the cells, the model was found to exhibit jamming: an increase in surface energy changes the system's behaviour from fluid to solid-like, and an increase in the motility reduces the system's rigidity. From calculating the MSD exponents, a transition line which separates the fluid and solid-like behaviour of the system was obtained within the studied parameter space. 
 \end{abstract}
 
-\vspace*{1cm}
+\vspace*{0.5cm}
 
 \subsubsection*{Declaration}
 
@@ -90,7 +86,7 @@
         I declare that this project and report is my own work.
 \end{quotation}
 
-\vspace*{2cm}
+\vspace*{0.5cm}
 Signature: Michael Chiang \hspace*{6.5cm}Date: 30 March 2015
 
 \vfill
@@ -112,7 +108,7 @@ Recent experiments have demonstrated that these dense tissues exhibit both fluid
 
 Computer simulations have been conducted to further understand the mechanics behind the fluid and rigid behaviours of tissues. To this end, multiple models have been developed to describe the dynamics of cells within tissues. A particular successful model is the vertex model, where cells are represented as a polygonal tiling of space and their dynamics are governed by a set of force equations on the vertices of the polygons \cite{nagai2001}. Recent computational studies indicate that the model exhibits a jamming transition in agreement with empirical observations, with cell shape and cell motility being the key parameters in determining the rigidity of the tissue \cite{bi2015density, bi2015motility}.
 
-Another widely used model in simulating cell dynamics in tissues is the cellular Potts model (CPM). This model represents cells as domains on a lattice, and their movements are governed by an energy function that characterises the cellular interactions. There, however, has not been simulations conducted to verify whether the model has a fluid to rigid transition. With this in mind, the aim of this project is to implement the cellular Potts model and to investigate whether varying the model parameters would reproduce the jamming transition observed in dense tissues. 
+Another widely used model in simulating cell dynamics in tissues is the cellular Potts model (CPM). This model represents cells as domains on a lattice, and their movements are governed by an energy function that characterises the cellular interactions. There, however, has not been simulation conducted to verify whether the model has a fluid to rigid transition. With this in mind, the aim of this project is to implement the cellular Potts model and to investigate whether varying the model's parameters would reproduce the jamming transition observed in dense tissues. 
 
 The remaining sections of this paper are organised as follows: Section 2 provides a description of the CPM, the concept of jamming, and its connection to the dynamics in dense biological tissues. Section 3 outlines the implementation of the model and the experimental methods for investigating whether CPM can induce the jamming transition. Section 4 and 5 present and discuss the results obtained from the simulations. 
 
@@ -130,7 +126,7 @@ In the CPM, a cell monolayer is represented on a two dimensional lattice. Each l
 \label{fig:CPM}
 \end{figure}
 
-The dynamics of the cells are evolved using a modified version of the Metropolis algorithm: In the simulation, a series of elementary steps are taken with the goal of minimising an effective Hamiltonian $H$ that characterises the properties of cells and their interactions. Each step is an attempt to change the spin of a random lattice site $\bm{a}$ to that of a randomly chosen neighbour site $\bm{b}$, where $\sigma(\bm{a}) \neq \sigma(\bm{b})$. The probability of accepting a spin change, $p\left(\sigma(\bm{a}) \rightarrow \sigma(\bm{b})\right)$, is determined by the associated change in energy ($\inc H$): if $\inc H \leq 0$, the spin change is always accepted; if $\inc H > 0$, the spin change is accepted with a probability of $\exp(-\inc H / kT)$, where $k$ is the Boltzmann constant and $T$ is the effective temperature. These relations can be conveniently summarised by the following expression:
+The dynamics of the cells are evolved using a modified version of the Metropolis algorithm: In the simulation, a series of elementary steps are taken and are governed by an effective Hamiltonian $H$ that characterises the properties of cells and their interactions. Each step is an attempt to change the spin of a random lattice site $\bm{a}$ to that of a randomly chosen neighbour site $\bm{b}$, where $\sigma(\bm{a}) \neq \sigma(\bm{b})$. The probability of accepting a spin change, $p\left(\sigma(\bm{a}) \rightarrow \sigma(\bm{b})\right)$, is determined by the associated change in energy ($\inc H$): if $\inc H \leq 0$, the spin change is always accepted; if $\inc H > 0$, the spin change is accepted with a probability of $\exp(-\inc H / kT)$, where $k$ is the Boltzmann constant and $T$ is the effective temperature. These relations can be conveniently summarised by the following expression:
 \begin{eqnarray}
 \ln p\left(\sigma(\bm{a}) \rightarrow \sigma(\bm{b})\right) = \min\left[0,-\frac{\inc H}{kT}\right].
 \end{eqnarray}
@@ -166,7 +162,7 @@ where $\eta_i$ is a noise function with zero mean and a variance of $2D_r$ with 
 \label{eqn:computerRotateDiff}
 \theta_i(t+\Delta t) = \theta_i(t) + \sqrt{2D_r\Delta t}\,\tilde\eta
 \end{eqnarray}
-where $\tilde\eta$ is a random number generated such that the last term reproduces the statistical mean and variance of the noise function. For simplicity, this can be achieved by generating a uniformly distributed random number between $\sqrt{3}\,[-1,1)$ , where the factor of $\sqrt{3}$ comes from normalisation\footnote{See Appendix \ref{app:rotatediff} for a detailed derivation of this relation.}.
+where $\tilde\eta$ is a random number generated such that the last term reproduces the statistical mean and variance of the noise function. For simplicity, this can be achieved by generating a uniformly distributed random number between $\sqrt{3}\,[-1,1)$ , where the factor of $\sqrt{3}$ comes from producing the correct variance\footnote{See Appendix \ref{app:rotatediff} for a detailed derivation of this relation.}.
 
 \subsection{Jamming Transitions in Biological Tissues}
 \label{sec:jamminginbio}
@@ -188,16 +184,17 @@ Recently, Bi and co-workers demonstrated that the vertex model and its variant, 
 
 A less extensive effort, however, has been done on investigating whether the jamming transition exists in the CPM. Although the work by Kabla \cite{kabla2012} and Szab\'o \cite{szabo2010} have hinted such a possibility, there has not been a specific study conducted to analyse jamming in the CPM.  This project, thus, aims to provide this analysis. As suggested by Bi \emph{et al.}, cellular interactions, which affect the cell shape, and cell motility are two key quantities in determining the transition point. These correspond well to the CPM parameters $\alpha$ and $P$, respectively. In light of this, there are two objectives in this project: Firstly, to determine whether varying the parameter $\alpha$, which models the interfacial effects of cells such as surface tension and cell-cell adhesion, has the ability to induce a jamming transition. Secondly, to understand the effect of altering the strength of cell motility, $P$, has on the rigidity of the system.
 
-
+\newpage
 \section{Methodology}
-The project is divided into two parts to achieve the objectives as discussed. The first part focuses on implementing the cellular Potts model on a computer. The second part is devoted to changing the model parameters systematically to investigate whether the model exhibits the jamming transition.
+The project is divided into two parts to achieve the objectives as discussed. The first part focuses on implementing the cellular Potts model on a computer. The second part is devoted to changing the model's parameters systematically to investigate whether the model exhibits the jamming transition.
 
 \subsection{Implementation of the Cellular Potts Model}
 \subsubsection{Programming Language and Software Used}
 The CPM was implemented in Java as it is a robust, platform-agnostic language. Java also provides an easy-to-use framework for developing a graphical user interface, which is needed in this project to visualise the cell motions. To facilitate the development process, the Eclipse integrated development environment was used, as it has a comprehensive code browsing and debugging toolkit. In addition, the version control system, Git, was used to maintain a history of the development and to facilitate the synchronisation of the code across multiple platforms. The ANT automated build system was also employed to allow rapid code compilation.
 
 \subsubsection{Code Design and Structure}
-The main structure and design of the code are described as follows: There are three main groups of classes in the program (see figure \ref{fig:ClassDiagram}). Firstly, there are the model classes that handle the main computation as specified by the CPM. These include the \texttt{CellPottsModel} and the \texttt{SpinModel} class. \texttt{CellPottsModel} contains most of the logic of the model, including the Metropolis algorithm for updating spins and the calculation of the various statistical quantities measured in the experiments. The \texttt{SpinModel} is the main interface by which other classes access data from the model. The second group is the visualisation classes which display the model to the user in a graphical user interface (see figure \ref{fig:CPMGUI} for the developed interface). These include the \texttt{CPMView}, \texttt{CPMViewPanel}, and the \texttt{CPMControlPanel} classes. The \texttt{CPMView} manages the operations related to the window frame. The \texttt{CPMViewPanel} visualises the model by drawing individual domains or cells on the screen with different colours as the simulation progresses. The \texttt{CPMControlPanel} handles the parameters supplied by the user for running the model.  A third group of classes is responsible for I/O processes. These include a set of \texttt{DataWriter} classes which record the statistical quantities measured at each time step of the simulation to text files. In addition, the \texttt{SpinReader} class is responsible for parsing any inital lattice configurations specified by the user to the program.  
+\label{sec:codestructure}
+The main structure and design of the code are described as follows: There are three main groups of classes in the program (see figure \ref{fig:ClassDiagram}). Firstly, there are the model classes that handle the main computation as specified by the CPM. These include the \texttt{CellPottsModel} and the \texttt{SpinModel} class. \texttt{CellPottsModel} contains most of the logic, including the Metropolis algorithm for updating spins and the calculation of the various statistical quantities used in the experiments. The \texttt{SpinModel} is the main interface by which other classes access data from the model. The second group is the visualisation classes which display the model to the user in a graphical user interface (see figure \ref{fig:CPMGUI} for the developed interface). These include the \texttt{CPMView}, \texttt{CPMViewPanel}, and the \texttt{CPMControlPanel} classes. The \texttt{CPMView} manages the operations related to the window frame. The \texttt{CPMViewPanel} visualises the model by drawing individual domains or cells on the screen with different colours as the simulation progresses. The \texttt{CPMControlPanel} handles the parameters supplied by the user for running the model.  A third group of classes is responsible for I/O processes. These include a set of \texttt{DataWriter} classes which record the statistical quantities calculated at each time step of the simulation to text files. In addition, the \texttt{SpinReader} class is responsible for parsing any inital lattice configurations specified by the user to the program.  
 \begin{figure}[h]
 \centering
 \includegraphics[width=0.85\textwidth]{figure/ClassDiagram.pdf}
@@ -212,13 +209,13 @@ The main structure and design of the code are described as follows: There are th
 \end{figure}
 \FloatBarrier
 
-The dependency between the model and visualisation classes is kept at a minimum to reduce the potential impact or changes required when one of them is modified. This is achieved by means of the observer design pattern. The model class extends the native Java class \texttt{Observable}, while the visualisation classes implement the \texttt{Observer} interface, which requires classes to implement the method \texttt{update()} that is called when the \texttt{Observable} has changed (see figure \ref{fig:ClassDiagram}). The \texttt{Observable} class manages the entire process of notifying the classes which implement the \texttt{Observer} interface when the model has changed. The actual model classes, therefore, do not need to have specific knowledge about the visualisation classes, so the coupling between the model and visualisation classes is minimised.
+The dependency between the model and visualisation classes is kept at a minimum to reduce the changes required when one of them is modified. This is achieved by means of the observer design pattern. The model class extends the native Java class \texttt{Observable}, while the visualisation classes implement the \texttt{Observer} interface, which requires classes to implement the method \texttt{update()} that is called when the \texttt{Observable} has changed (see figure \ref{fig:ClassDiagram}). The \texttt{Observable} class manages the entire process of notifying the classes which implement the \texttt{Observer} interface when the model has changed. The actual model classes, therefore, do not need to have specific knowledge about the visualisation classes, so the coupling between the model and visualisation classes is minimised.
 
 For more details about the responsibilities and functionalities of each class, please see the \texttt{Javadocs} included in the source code (see Appendix \ref{app:sourcecode} for more information about accessing the source code). 
 
 
 \subsubsection{Verification of the Implemented Model}
-It is important to verify that the program implemented the model correctly before using it to perform experiments. This was achieved via two approaches: Firstly, a set of unit test cases were developed to test individual methods of the program to ensure the calculations are correct. These test cases are included in the source code package. Secondly, the program was tested against the results from other published papers which investigated the CPM. In particular, simulation data for a single cell suspended in a fluid were compared to those obtained by Szabo and co-workers\cite{szabo2010}. By using the same set of parameters (i.e. $\alpha = 2.0$, $\beta = 1.0$, $\lambda = 1.0$, $P = 0.0$, and cell target area $A = 50$) and averaging the results from 1000 trials, the root-mean-square displacement (see section \ref{sec:statsmeasured}) of the cell after 600 MCS was found to be $5 \pm 3$ pixels (see figure \ref{fig:singlecellmsd} in appendix for a graph of the mean square displacement). This agrees, within the measurement error, to that reported by the researchers, which is approximately 3 pixels \footnote{This value was obtained by estimating the end point of the curve with zero motility (P = 0) in figure 6a in ref. \cite{szabo2010}.}. Therefore, there is a high degree of confidence that the written program has implemented the model accurately.
+It is important to verify that the program implemented the model correctly before using it to perform experiments. This was achieved via two approaches: Firstly, a set of unit test cases were developed to test individual methods of the program to ensure the calculations are correct. These test cases are included in the source code package. Secondly, the program was tested against the results from other published papers which investigated the CPM. In particular, simulation data for a single cell suspended in a fluid were compared to those obtained by Szabo and co-workers\cite{szabo2010}. By using the same set of parameters (i.e. $\alpha = 2.0$, $\beta = 1.0$, $\lambda = 1.0$, $P = 0.0$, and cell target area $A = 50$) and averaging the results from 1000 trials, the root-mean-square displacement (see section \ref{sec:statsmeasured}) of the cell after 600 MCS was found to be $5 \pm 3$ pixels (see figure \ref{fig:rmssinglecell} in appendix \ref{app:addfig} for a graph of the root-mean-square displacement). This agrees, within the measurement error, to that reported by the researchers, which is approximately 3 pixels \footnote{This value was obtained by estimating the end point of the curve with zero motility (P = 0) in figure 6a in ref. \cite{szabo2010}.}. Therefore, there is a high degree of confidence that the written program has implemented the model accurately.
 
 
 \subsection{Experimental Methods}
@@ -253,7 +250,7 @@ where $D$ is the diffusion coefficient or the diffusivity and $d$ is the number 
 \begin{figure}[h]
 \centering
 \includegraphics[width=0.5\textwidth]{figure/MSDExpectedCurve.pdf}
-\caption{The typical MSD versus time graph on a log-log plot. Notice the plateau region due to the sub-diffusive movement of the cells because of the caging effect. Diagram take from: \cite{hofling2013}.}
+\caption{The typical MSD versus time graph on a log-log plot. Notice the plateau region due to the sub-diffusive movement of the cells because of the caging effect. Diagram take from ref. \cite{hofling2013}.}
 \label{fig:MSDExpectedCurve}
 \end{figure}
 
@@ -286,7 +283,7 @@ As mentioned above, systems with glassy dynamics exhibit sub-diffusive behaviour
 \begin{equation}
 \langle\bm{r}^2(t)\rangle \sim t^{\gamma}.
 \end{equation}
-At a specific time, one can consider the system to be fluid-like if the cells are diffusive and $\gamma$ is around 1.0. On the other hand, one can classify the system to be in the solid, glassy regime if the cells are sub-diffusive and $\gamma$ falls below a certain threshold from 1.0.
+At a specific time, one can consider the system to be fluid-like if the cells are diffusive and $\gamma$ is around 1.0. On the other hand, one can classify the system to be in the solid, glassy regime if the cells are sub-diffusive and $0 < \gamma < 1$.
 
 \section{Results}
 \subsection{Effects of Varying the Surface Energy ($\alpha$) on the Model}
@@ -325,15 +322,15 @@ The gradients of the MSD curves (in log scale) also suggest that the system exhi
 \end{figure}
 \FloatBarrier
 
-It is also possible to estimate whether the system has a fluid or solid-like dynamics by comparing the average displacement of the cells to the typical separation between two cells (i.e. the intercellular distance). When the system is fluid-like, one would expect the cells to have travelled, on average, more than the intercellular distance over the simulation period, as they would have experienced multiple neighbour exchange events. Since the target area of each cell is 40 pixel squared, cells are likely to have changed neighbours when the MSD surpasses this threshold, which is indicated by a dashed line in the figure. It can be seen that only the MSDs for $\alpha$ between 0.5 and 1.5 go beyond this limit, suggesting that the system behaves like a fluid in this $\alpha$ range. This is consistent with the qualitative analysis on the slopes of the MSDs.  
+It is also possible to estimate whether the system has a fluid or solid-like dynamics by comparing the average displacement of the cells to the typical separation between two cells (i.e. the intercellular distance). When the system is fluid-like, one would expect the cells to travel, on average, more than the intercellular distance over the simulation period, as they would have experienced multiple neighbour exchange events. Since the target area of each cell is 40 pixel squared, cells are likely to have changed neighbours when the MSD surpasses this threshold, which is indicated by a dashed line in the figure. It can be seen that only the MSDs for $\alpha$ between 0.5 and 1.5 go beyond this limit, suggesting that the system behaves like a fluid in this $\alpha$ range. This is consistent with the qualitative analysis on the slopes of the MSDs.  
 
 
 Moreover, the observations on the MSDs are in agreement with the measured trajectories of the cells, which are shown in figure \ref{fig:cmalpha}. When $\alpha = 1.0$, the trajectories overlap with each other to the extent that it is difficult to identify any structural pattern. This indicates the system is fluid-like. When $\alpha = 2.0$, most trajectories become localised and a hexagonal structure starts to emerge, suggesting the system has solid-like behaviour. This agrees with the conjecture that there is a change in the system's dynamics at around $\alpha = 1.5$. For $\alpha = 5.0$ and $\alpha = 10.0$, the trajectories are further suppressed, supporting the view that the system becomes more solid-like as $\alpha$ increases. 
 
 \begin{figure}[h]
 \centering
-\includegraphics[width=\textwidth]{figure/A2_Alpha_All.pdf}
-\caption{The non-Gaussian parameter $\alpha_2$ of the cells versus time on a semi-log plot for $\alpha$ ranging from 0.5 (the green line at the top) to 10.0 (the yellow line at the bottom) in increments of 0.5. As $\alpha$ increases, the dynamics of the cells are slowed down.}
+\includegraphics[width=\textwidth]{figure/A2_Alpha_All_new.pdf}
+\caption{The non-Gaussian parameter $\alpha_2$ of the cells versus time on a semi-log plot for $\alpha$ ranging from 0.5 (the green line at the top) to 10.0 (the yellow line at the bottom) in increments of 0.5.}
 \label{fig:a2alpha}
 \end{figure}
 
@@ -401,14 +398,14 @@ The analysis on the MSDs is also consistent with the cell trajectories recorded 
 \begin{figure}[h]
 \centering
 \includegraphics[width=0.8\textwidth]{figure/Alpha_P_PhaseDiagram.pdf}
-\caption{The fitted MSD exponent for different $\alpha$ and $P$. One can clearly see a transition line between the solid and fluid regime which begins at $\alpha = 1.4$ when there is no motility.}
+\caption{The fitted MSD exponents for different $\alpha$ and $P$. One can clearly see a transition line between the solid and fluid regime which begins at $\alpha \sim 1.4$ when there is no motility.}
 \label{fig:diffexpalphap}
 \end{figure}
 \FloatBarrier
 
 Moreover, the indication that cell motility can reduce the system's rigidity is supported quantitatively by the measured MSD exponents ($\gamma$). Figure \ref{fig:diffexpalphap} shows the MSD exponents for all possible sets of parameters within the studied phase space of $\alpha$ and $P$. Specifically, $\alpha$ was tested between 1.0 to 4.0 in increments of 0.2 while $P$ was tested between 1.0 to 5.0 with the same increment. The exponents were measured by performing least squares fits between $t = 1000$ to 5000 MCS. The figure demonstrates clearly that the system has two types of dynamics within the parameter space. There is a region where $\gamma$ is approximately 1.0, suggesting that the system is diffusive and fluid-like. Outside this region, $\gamma$ drops abruptly to around 0.5, indicating the system is sub-diffusive and rigid-like. The locations where the exponent changes abruptly give an estimate of the ``transition line'' that distinguishes the two types of behaviours. In the region where $\alpha < 2.5$, the exponents reveal that an increase in cell motility from $P = 0.0$ to 5.0 allows the system to cross the transition line from being sub-diffusive (solid) to diffusive (fluid). It can be extrapolated from the line that a transition will also occur for higher $\alpha$ values, given the motility strength is large enough. Hence, the exponents demonstrate quantitatively that cell motility can increase the fluidity of the system. 
 
-The figure also reveals that there exists a critical value $\alpha^* \sim 1.4$ below which the system is always in the fluid regime, independent of the cell motility strength. This agrees with the finding from varying the surface energy that the system changes dynamics at around 1.5. In addition, similar to the previous experiment, the measured exponents are predominately at around 0.5 when the system is solid-like. This again suggests that the system may be undergoing single-file diffusion, which will be discussed in the next section.
+The figure also reveals that there exists a critical value $\alpha^* \sim 1.4$ below which the system is always in the fluid regime, independent of the cell motility strength. This agrees with the finding from varying the surface energy that the system changes dynamics at around 1.5. In addition, similar to the previous experiment, the measured exponents are predominately at around 0.5 when the system is solid-like.
 
 
 
@@ -421,19 +418,32 @@ Physically, an increase in surface energy causes the cells to prefer having less
 
 In the experiment of varying the cell motility strength, it was found that an increase in motility can unjam a rigid system and cause it to flow. The change in behaviour was again demonstrated by the cell trajectories, the MSD, and the change in the MSD exponent. The finding is consistent the effects of cell motility on jamming in the vertex model \cite{bi2015motility}. It further supports that individual cell motion is a key parameter underpinning the dynamics of the tissue. 
 
-The combined effects of varying both the surface energy and the cell motility on the system?s rigidity are summarised well by the MSD exponents measured across all points within the studied parameter space (see figure \ref{fig:diffexpalphap}). With this space, there exists a line where the exponent changes abruptly across it from 1.0 to 0.5. This was taken as a ``transition line'' that distinguishes the system between the fluid and solid regime. It can be noticed that the line is approximately linear when $\alpha \gtrsim 1.6$, indicating that the transition is only dependent on the ratio of the cell motility strength to the surface energy in this regime. This conforms with the analysis by Kabla on studying the effect of motility and surface tension on collective behaviours in tissues \cite{kabla2012}. However, it also identifies that using this ratio to quantify the transition may not be accurate when $\alpha$ falls below this region.  Another interesting observation in both experiments is that the MSD exponent fluctuates mostly at around 0.5 in the solid regime.  This coincides with the predicted exponent for systems undergoing single-file diffusion (SFD), which refers to the one-dimensional motion of particles in a confined channel where overtaking is not possible \cite{levitt1973}. Simulations of systems near the glass transition have revealed string-like motions, where particles move in quasi-1D channels, that closely resemble the dynamics of SFD \cite{donati1998}. One might, therefore, wonder if the cells within the current model are displaying this type of behaviour. It should be emphasised that this remains a plain speculation as there may be other mechanisms which can account for the same exponent value. Further, the exponents were computed by fitting only the final decade of the MSD curves. A step towards making a more conclusive statement about the system?s dynamics is to extend the simulation time for another decade and check if the exponents maintain the same value. 
+The combined effects of varying both the surface energy and the cell motility on the system's rigidity are summarised well by the MSD exponents measured across all points within the studied parameter space (see figure \ref{fig:diffexpalphap}). With this space, there exists a line where the exponent changes abruptly across it from 1.0 to 0.5. This was taken as a ``transition line'' that distinguishes the system between the fluid and solid regime. It can be noticed that the line is approximately linear when $\alpha \gtrsim 1.6$, indicating that the transition is only dependent on the ratio of the cell motility strength to the surface energy in this regime. This conforms with the analysis by Kabla on studying the effect of motility and surface tension on collective behaviours in tissues \cite{kabla2012}. However, it also identifies that using this ratio to quantify the transition may not be accurate when $\alpha$ falls below this region.  
+
+Another interesting observation in both experiments is that the MSD exponent fluctuates mostly at around 0.5 in the solid regime.  This coincides with the predicted exponent for systems undergoing single-file diffusion (SFD), which refers to the one-dimensional motion of particles in a confined channel where overtaking is not possible \cite{levitt1973}. Simulations of systems near the glass transition have revealed string-like motions, where particles move in quasi-1D channels, that closely resemble the dynamics of SFD \cite{donati1998}. One might, therefore, wonder if the cells within the current model are displaying this type of behaviour. However, it should be emphasised that this remains a plain speculation, as there may be other mechanisms which can account for the same exponent value. Further, the exponents were computed by fitting only the final decade of the MSD curves. A step towards making a more conclusive statement about the system's dynamics is to extend the simulation time for another decade and check if the exponents maintain the same value. 
+
 
 \subsection{Validity of the Results}
-The measured statistical quantities in the project are in general consistent with each other, giving confidence in the validity of the obtained results. For example, the length scales of the recorded cell trajectories agree with the calculated MSDs, and the maxima of the non-Gaussian parameters correspond well to the region where the MSDs plateau. In addition, the qualitative prediction of where the system changes its dynamics based on the trajectories and the MSD agrees with the transition points determined quantitatively from the diffusivity and the MSD exponent. Furthermore, as mentioned in section 3.2, the simulation program was unit-tested and was shown to be capable of reproducing results reported by others. These further enhance the credibility of the collected data. The only notable inconsistency within the measured results is the diffusivity of the system. It was shown that the calculated values using the two common approaches, the least squares fit estimate and the end point estimate, can differ by 50\% in the regime when the system is sub-diffusive. This suggests that one should take extra care in defining the procedure of computing this metric, as different approaches would not generally produce the same result.  
+The measured statistical quantities in the project are in general consistent with each other, giving confidence in the validity of the obtained results. For example, the length scales of the recorded cell trajectories agree with the calculated MSDs, and the maxima of the non-Gaussian parameters correspond well to the region where the MSDs plateau. In addition, the qualitative prediction of where the system changes its dynamics based on the trajectories and the MSD agrees with the transition points determined quantitatively from the diffusivity and the MSD exponent. Furthermore, as mentioned in section 3.2, the simulation program was unit-tested and was shown to be capable of reproducing results reported by others. These further enhance the credibility of the collected data. 
+
+The only notable inconsistency within the measured results is the diffusivity of the system. It was shown that the calculated values using the two common approaches, the least squares fit estimate and the end point estimate, can differ by 50\% in the regime when the system is sub-diffusive. This suggests that one should take extra care in defining the procedure of computing this metric, as different approaches would not generally produce the same result.  
+
 
 \subsection{Future Work}
-Although the project has achieved all of the objectives set out initially and demonstrated that the CPM exhibits jamming, more work could be done in the following areas: Firstly, due to the limited time of the project, the effects of the rotational diffusion coefficient, which is another parameter of the CPM, on jamming has not been investigated. Computer simulations in the vertex model have shown that a smaller rotational diffusion coefficient, which corresponds to individual cells having more persistent motion, would lead to a more fluid-like behaviour \cite{bi2015motility}. One could, therefore, try varying this coefficient in the CPM and investigate whether the same change in dynamics can be observed. Secondly, the analysis on jamming has been focused on using the MSD exponent to quantitatively distinguish the system's state between fluid and solid. One may wish to further confirm that this classification is correct by calculating other metrics that can determine the system's rigidity and checking that the same transition line can be produced.  A possible metric is the self-intermediate scattering function\cite{hove1954}. It characterises the mean relaxation time of the system. The function tends to zero when the system has relaxed and become fluid-like but remain close to one when the system has not relaxed and is rigid. Furthermore, the novel aspect that the MSD exponents hover at around 0.5 in the solid regime also provides an interesting avenue for future research. One of the speculations, as described above, is that the system is undergoing quasi-one-dimensional single-file diffusion. To investigate such effect, one would need to analyse individual cell trajectories to identify whether there exists correlated motion in quasi-one-dimensional channels. \\ \\Finally, it should be reminded of the potential significance in developing a better understanding on jamming in biological tissues. A particular promising avenue is that the unjamming process is remarkably similar to the Epithelial Mesenchymal Transition (EMT), where rigid-like epithelial cells are transformed into motile, fluid-like cells \cite{kalluri2009}. Apart from playing a pivotal role in embryonic development and tissue generation, the transition is also found in pathological processes such as tumour progression \cite{thiery2002}. Therefore, understanding the precise mechanisms that allow tissues to change from solid to fluid-like may further improve the current theories on cancer invasion and metastasis, which may lead to advance in therapies and treatments. 
+Although the project has achieved all of the objectives set out initially and demonstrated that the CPM exhibits jamming, more work could be done in the following areas: 
+
+Firstly, due to the limited time of the project, the effects of the rotational diffusion coefficient, which is another parameter of the CPM, on jamming has not been investigated. Computer simulations in the vertex model have shown that a smaller rotational diffusion coefficient, which corresponds to individual cells having more persistent motion, would lead to a more fluid-like behaviour \cite{bi2015motility}. One could, therefore, try varying this coefficient in the CPM and investigate whether the same change in dynamics can be observed. 
+
+Secondly, the analysis on jamming has been focused on using the MSD exponent to quantitatively distinguish the system's state between fluid and solid. One may wish to further confirm that this classification is correct by calculating other metrics that can determine the system's rigidity and checking that the same transition line can be produced.  A possible metric is the self-intermediate scattering function\cite{hove1954}. It characterises the mean relaxation time of the system. The function tends to zero when the system has relaxed and become fluid-like but remain close to one when the system has not relaxed and is rigid. 
+
+Furthermore, the fact that the MSD exponents hover at around 0.5 in the solid regime also provides an interesting avenue for future research. One of the speculations, as described above, is that the system is undergoing quasi-one-dimensional single-file diffusion. To investigate such effect, one would need to analyse individual cell trajectories to identify whether there exists correlated motion in quasi-one-dimensional channels. 
+
+\subsection*{}
+Finally, one should be reminded of the potential significance in developing a better understanding on jamming in biological tissues. A particular promising avenue is that the unjamming process is remarkably similar to the Epithelial Mesenchymal Transition (EMT), where rigid-like epithelial cells are transformed into motile, fluid-like cells \cite{kalluri2009}. Apart from playing a pivotal role in embryonic development and tissue generation, the transition is also found in pathological processes such as tumour progression \cite{thiery2002}. Therefore, understanding the precise mechanisms that allow tissues to change from solid to fluid-like may further improve current theories on cancer invasion and metastasis, which may lead to advance in therapies and treatments. 
+
 
 \section{Conclusion}
-%This section should summarise the results obtained, detail
-%conclusions reached, suggest future work, and changes that you would make if you repeated the
-%experiment. This section should in general be short, 100 to 150 words
-%being typical for most projects.
+In conclusion, the project has demonstrated that the cellular Potts model (CPM) exhibits jamming, or the fluid-to-solid transition, by systematically varying the model's parameters which describe the cell's surface energy ($\alpha$) and motility ($P$). The dynamics of the system were analysed by calculating the mean square displacement (MSD), non-Gaussian parameter, diffusivity and MSD exponent of the cells. In the limit of zero motility, it was found that an increase in the surface energy can change the system's dynamics from fluid to solid-like. In particular, the transition occurs abruptly at around $\alpha \sim 1.5$, where the exponent drops from 1.0 to 0.5. The large change in the value of exponent showed that it is a good parameter in distinguishing the system's behaviour between fluid and solid. In the case where cells are motile, it was observed that an increase in the motility strength can reduce the rigidity of the system. From computing the MSD exponent for all points within the studied parameter space of $\alpha$ and $P$, a transition line which separates the fluid and solid-like behaviour of the system was identified.  Furthermore, it was noted that the MSD exponents fluctuate at around 0.5 when the system is in the solid regime. These coincide with the predicted exponent for single-file diffusion. Potential future work could be to determine the effect of the rotational diffusion coefficient on jamming in the model, to investigate other metrics that can quantitatively describe the system's rigidity, and to further study the system's dynamics in the solid regime which led to an MSD exponent value of 0.5. 
 
 
 \bibliographystyle{mybibstyle}   
@@ -443,12 +453,12 @@ Although the project has achieved all of the objectives set out initially and de
 \section{Appendices}
 \subsection{Implementing Rotational Diffusion of the Cell's Polarity Vector on the Computer}
 \label{app:rotatediff}
-In section \ref{sec:CPM}, the implementation for the rotational diffusion of the cell's polarity vector was discussed. The rotational diffusion process can be described by the following Langevin equations:
+In section \ref{sec:CPM}, the implementation for the rotational diffusion of the cell's polarity vector was discussed. The rotational diffusion process can be described by the following equations:
 \begin{eqnarray}
 \partial_t\theta_i(t) & = & \eta_i(t)\label{eqn:langevin}\\
 \langle{\eta_i(t)\eta_j(t')\rangle} & = & 2D_r\delta(t-t')\delta_{ij}.
 \end{eqnarray}
-One can integrate equation \ref{eqn:langevin} to give:
+where $\eta_i$ is a noise function with zero mean and a variance of $2D_r$ with $D_r$ being the rotational diffusion coefficient. One can integrate equation \ref{eqn:langevin} to give:
 \begin{eqnarray}
 \theta_i(t+\inc t) - \theta_i(t) = \int_{t}^{t+\inc t} \eta_i (t')\,dt'.
 \end{eqnarray}
@@ -462,11 +472,11 @@ Similarly, the variance is:
 & = & 2D_r \int_{t}^{t+\inc t}\int_{t}^{t+\inc t} \delta(t'-t'')\,dt'\,dt''\\
 & = & 2D_r\inc t\label{eqn:anglevar}.
 \end{eqnarray}
-To implement this rotational diffusion process on a computer, one can use a random generator to produce a distribution of values that gives the same statistical mean and variance when evaluating the change in the polarity angle for each cell over many times. The simplest way to achieve this is to generate a uniform distribution of random values between $[-a,a)$, as this will satisfy the requirement of the mean automatically. The value $a$ is yet to be determined to give the required variance. The polarity angles of the cells can be updated by the following expression on the computer:
+To implement this rotational diffusion process on a computer, one can use a random generator to produce a distribution of values that gives the same statistical mean and variance when evaluating the change in the polarity angle. The simplest way to achieve this is to generate a uniform distribution of random values between $[-a,a)$, as this will satisfy the requirement of the mean automatically. The value $a$ is yet to be determined to give the required variance. The polarity angles of the cells can be updated by the following expression on a computer:
 \begin{eqnarray}
 \theta_i (t + \inc t) = \theta_i (t) + \sqrt{2 D_r \inc t}\, \tilde\eta,
 \end{eqnarray}
-where $\tilde\eta$ is the random number generated and $\inc t$ can be taken as the number of Monto-Carlo steps between each update (which is taken to be one in the written program). With this expression, one can determine $a$ to give the correct variance for the distribution of the change in polarity angles as specified by equation \ref{eqn:anglevar}. Since the random values are uniformly distributed, normalisation requires the probability density for each random value ($p(\tilde\eta)$) to be:
+where $\tilde\eta$ is the random number generated and $\inc t$ can be taken as the number of Monto-Carlo steps between each update (which is set to be one in the written program). With this expression, one can determine $a$ to give the correct variance for the distribution of the change in polarity angles as specified by equation \ref{eqn:anglevar}. Since the random values are uniformly distributed, normalisation requires the probability density for each random value ($p(\tilde\eta)$) to be:
 \begin{eqnarray}
 p(\tilde\eta) = \frac{1}{2a}.
 \end{eqnarray}
@@ -499,7 +509,7 @@ so the random values must be between $\tilde\eta \in \sqrt{3}[-1,1)$.
 \end{figure}
 \FloatBarrier
 \subsection{Instructions for Using the Simulation Code}
-\subsubsection{Downloading and Compiling the Code}
+\subsubsection{Downloading the Source Code}
 The source code is readily available on GitHub and can be accessed by the following link: \url{https://github.com/mchchiang/cell_potts_model}. The following is the procedure to clone the source code:
 \begin{enumerate}
 \item Navigate to the desired directory where the code will be stored in terminal.
@@ -507,13 +517,27 @@ The source code is readily available on GitHub and can be accessed by the follow
 \begin{lstlisting}[language=bash, basicstyle={\small\ttfamily}]
 git clone https://github.com/mchchiang/cell_potts_model.git
 \end{lstlisting}
+\end{enumerate}
 
 
+\subsubsection{Compiling the Code}
+\begin{enumerate}
+\item Navigate to the root directory of the downloaded code (i.e. \texttt{../cell\_potts\_model}) in terminal.
+\item To compile the source code only (without the test cases), enter this command:
+\begin{lstlisting}[language=bash, basicstyle={\small\ttfamily}]
+ant compile
+\end{lstlisting}
+
+\item To compile both the source code and the test cases, enter this command (note: the \texttt{JUnit4} library must be installed on the machine):
+\begin{lstlisting}[language=bash, basicstyle={\small\ttfamily}]
+ant compile
+ant compile test
+\end{lstlisting}
 \end{enumerate}
 
 \subsubsection{Running the Code with Visualisation}
 \begin{enumerate}
-\item Navigate to the source code directory (i.e. \texttt{../src}) in terminal.
+\item Navigate to the source code directory (i.e. \texttt{../cell\_potts\_model/src}) in terminal.
 \item Enter the following command to run the simulation:
 \begin{lstlisting}[language=bash, basicstyle={\small\ttfamily}]
 java cell_potts_model.PottsView
@@ -522,16 +546,16 @@ java cell_potts_model.PottsView
 
 \subsubsection{Running the Code without Visualisation}
 \begin{enumerate}
-\item Navigate to the source code directory (i.e. \texttt{../src}) in terminal.
+\item Navigate to the source code directory (i.e. \texttt{../cell\_potts\_model/src}) in terminal.
 \item 
 \begin{lstlisting}[language=bash, basicstyle={\small\ttfamily}]
-java cell_pott_model.CellPottsModel <args>
+java cell_pott_model.CellPottsModel 
 \end{lstlisting}
 \end{enumerate}
 
 \subsection{Simulation Code}
 \label{app:sourcecode}
-The following is the source code of the project. The classes are organised into the three groups as mentioned in section \ref{sec:codestructure}.
+The following is the source code of the project. The classes are organised into the three groups as mentioned in section \ref{sec:codestructure}. There is an extra group of classes at the end for running experiments.
 
 \subsubsection{Model Classes}
 

@@ -145,12 +145,13 @@ public class PottsControlPanel extends JPanel implements ActionListener {
 					int nequil = 0;
 					
 					btnRun.setEnabled(false);
-					
+					SpinReader reader = new SpinReader();
+					reader.openReader("init_spin.dat");
 					CellPottsModel model = new CellPottsModel(
 							nx, ny, q, temp, lambda, alpha, beta, motility, rotateDiff,
 							seed, numOfSweeps, nequil, new DataWriter [] {}, true);
 					
-					model.initSpin();
+					model.initSpin(reader.readSpins());
 					model.initPolarity();
 					
 					view.setModel(model);
