@@ -43,9 +43,11 @@ public class CalculateMSD {
 				new BufferedWriter(new FileWriter(outputFile)));
 
 		double sum;
+		double sumOverCell;
 		for (int j = 0; j < time; j++){
 			System.out.println("Computing dt = " + j);
-			writer.printf("%d ", j);
+			//writer.printf("%d ", j);
+			sumOverCell = 0.0;
 			for (int k = 1; k <= cells; k++){
 				sum = 0.0;
 				if (j != 0){
@@ -55,9 +57,12 @@ public class CalculateMSD {
 					}
 				}
 				sum /= (time-j);
-				writer.printf("%.8f ", sum);
+				//writer.printf("%.8f ", sum);
+				sumOverCell += sum;
 			}
-			writer.printf("\n");
+			sumOverCell /= (double) cells;
+			writer.printf("%d %.8f\n", j, sumOverCell);
+			//writer.printf("\n");
 		}
 
 		writer.close();
