@@ -55,7 +55,7 @@ public class CalculateMSD {
 					}
 				}
 				sum /= (time-j);
-				writer.printf("%f ", sum);
+				writer.printf("%.8f ", sum);
 			}
 			writer.printf("\n");
 		}
