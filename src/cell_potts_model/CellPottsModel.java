@@ -57,6 +57,7 @@ public class CellPottsModel extends SpinModel {
 
 	//variables for calculating acceptance rate
 	private double acceptRate;
+	private long diffSpinStep;
 
 	//varaibles for generating random numbers
 	private int seed;
@@ -256,6 +257,7 @@ public class CellPottsModel extends SpinModel {
 	 */
 	public void run(){
 		acceptRate = 0.0;
+		diffSpinStep = 0;
 
 		for (int n = 0;  n < numOfSweeps; n++){
 			for (int k = 0; k < nx*ny; k++){
@@ -276,7 +278,8 @@ public class CellPottsModel extends SpinModel {
 			}
 			
 		}
-		acceptRate /= (double) ((long) numOfSweeps * nx * ny);//potentially big
+		//acceptRate /= (double) ((long) numOfSweeps * nx * ny);//potentially big
+		acceptRate /= (double) diffSpinStep;
 		writeData(numOfSweeps-1);
 	}
 
@@ -294,6 +297,8 @@ public class CellPottsModel extends SpinModel {
 
 		//only perform calculations if the neighbours don't have the same spin
 		if (!hasSameNeighbours(i,j)){
+			diffSpinStep++;
+			
 			/*
 			 * randomly pick one of its neighbour's spin (including 
 			 * the ones located at the corners with respect to
