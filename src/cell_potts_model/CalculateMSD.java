@@ -44,6 +44,7 @@ public class CalculateMSD {
 
 		double sum;
 		for (int j = 0; j < time; j++){
+			System.out.println("Computing dt = " + j);
 			writer.printf("%d ", j);
 			for (int k = 1; k <= cells; k++){
 				sum = 0.0;
