@@ -38,10 +38,10 @@ public class CalculateMSDMultiThread implements ThreadCompleteListener{
 			line = reader.readLine();
 			array = line.trim().split("\\s++");
 			if (array.length > 0 && !(array.length == 1 && array[0].equals(""))){
-				if (array.length != x){
+				/*if (array.length != x){
 					System.out.println("error in line " + count + " array length: " 
 							+ array.length + " x: " + x);
-				}
+				}*/
 				for (int i = 0; i < x; i++){
 					data[count][i] = Double.parseDouble(array[i]);
 				}
