@@ -60,8 +60,6 @@ public class CalculateMSDMultiThread implements ThreadCompleteListener{
 		int cellCount = 1;
 		int startCell = 0, endCell = 0;
 		
-		MSDThread [] threads = new MSDThread [numOfThreads];
-		
 		for (int i = 0; i < numOfThreads; i++){
 			startCell = cellCount;
 			if (i < numOfThreads-1){
@@ -69,9 +67,10 @@ public class CalculateMSDMultiThread implements ThreadCompleteListener{
 			} else {
 				endCell = cells;
 			}
-			threads[i] = new MSDThread(startCell, endCell, i+1);
-			threads[i].addThreadCompleteListener(this);
-			threads[i].run();
+			MSDThread job = new MSDThread(startCell, endCell, i+1);
+			job.addThreadCompleteListener(this);
+			Thread t =  new Thread(job);
+			t.start();
 			cellCount += cellsPerThread;
 		}
 	}
