@@ -4,23 +4,25 @@ import java.io.*;
 
 public class CalculateMSD {
 
-	private int nx, ny;
-
+	private int nx, ny, time;
+	private volatile double [][] data;
 	public CalculateMSD(int nx, int ny, int cells, 
 			int time, String dataFile, String outputFile) throws IOException {
 
 		this.nx = nx;
 		this.ny = ny;
+		this.time = time;
 
 		int x = cells * 2 + 3;
 		int y = time;
 
+		//retrieve cm data into array
 		BufferedReader reader = new BufferedReader(new FileReader(dataFile));
 
 		int count = 0;
 		String line;
 
-		double [][] data = new double [y][x];
+		data = new double [y][x];
 
 		String [] array;
 		while (reader.ready() && count < y){
@@ -39,6 +41,7 @@ public class CalculateMSD {
 		}
 		reader.close();
 
+		//compute MSD using time average
 		PrintWriter writer = new PrintWriter(
 				new BufferedWriter(new FileWriter(outputFile)));
 
@@ -64,10 +67,46 @@ public class CalculateMSD {
 			writer.printf("%d %.8f\n", j, sumOverCell);
 			//writer.printf("\n");
 		}
+		
+		//print displacement
+		/*int j = 1000;
+		int k = 2;
+		double [] displacement = new double [time-j];
+		double max = 0;
+		double min = 0;
+		int numOfBins = 1000;
+		for (int i = 0; i < time-j; i++){
+			displacement[i] = Math.sqrt(mag2(xDiff(data[i+j][k*2+1], data[i][k*2+1]),
+					yDiff(data[i+j][k*2+2], data[i][k*2+2])));
+			System.out.println(displacement[i]);
+			if (i == 0){
+				max = displacement[i];
+				min = max;
+			} else {
+				if (displacement[i] > max){
+					max = displacement[i];
+				}
+				if (displacement[i] < min){
+					min = displacement[i];
+				}
+			}
+		}
+		double binwidth = (max - min) / numOfBins;
+		int [] bincount = new int [numOfBins];
+		for (int i = 0; i < displacement.length; i++){
+			int index = (int) Math.floor((displacement[i] - min) /binwidth);
+			if (index >= numOfBins){
+				System.out.println("index >= numOfBins");
+				index = numOfBins-1; 
+			}
+			bincount[index]++;
+		}
+		for (int i = 0; i < numOfBins; i++){
+			writer.printf("%.5f %d\n", (i+1) * binwidth / 2.0, bincount[i]);
+		}*/
 
 		writer.close();
 	}
-
 
 	/**
 	 * Calculate the difference between the x components of two points in 
