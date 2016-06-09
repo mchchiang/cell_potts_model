@@ -95,7 +95,6 @@ public class CalculateMSDMultiThread implements ThreadCompleteListener{
 				if (j % 1000 == 0 || j == time-1) {
 					System.out.println("Thread " + index + " - computing dt = " + j);
 				}
-				//writer.printf("%d ", j);
 				for (int k = startCell; k <= endCell; k++){
 					sum = 0.0;
 					if (j != 0){
